@@ -1,8 +1,9 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
 import _ from 'lodash'
 import { getProfile, getRelations } from './query'
 import SpriteText from 'three-spritetext'
+import { Backdrop, TextField, Box, Grid, Button, Paper, Typography } from '@mui/material'
 
 const transformHandleData = ({ profile, following, followers }) => {
   const nodes = []
@@ -59,9 +60,11 @@ const fetchHandleData = async handle => {
   return { profile, following, followers }
 }
 
-const DynamicGraph = ({ rootHandle }) => {
+function App() {
   const [queriedHandles, setQueriedHandles] = useState([])
   const [graphData, setGraphData] = useState({ nodes: [], links: [] })
+
+  const handleInputRef = useRef()
 
   const addHandleToGraph = useCallback(handle => {
     console.log('fetching handle:', handle)
@@ -87,31 +90,51 @@ const DynamicGraph = ({ rootHandle }) => {
     })
   }, [queriedHandles, setQueriedHandles, graphData, setGraphData])
 
-  useEffect(() => {
-    addHandleToGraph(rootHandle)
-  }, [])
-
-  return <ForceGraph3D
-    enableNodeDrag={false}
-    onNodeClick={node => addHandleToGraph(node.handle)}
-    graphData={graphData}
-    linkDirectionalParticles={1}
-    nodeAutoColorBy="group"
-    nodeThreeObject={node => {
-      const sprite = new SpriteText(node.handle);
-      const isQueried = queriedHandles.includes(node.handle)
-      sprite.color = isQueried ? 'yellow' : 'white';
-      sprite.textHeight = 2;
-      return sprite;
-    }}
-  />
-}
-
-function App() {
-  const rootHandle = 'wagmi.lens'
   return (
     <div className='App'>
-      <DynamicGraph rootHandle={rootHandle} />
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={queriedHandles.length === 0}
+      >
+        <Box>
+          <Paper elevation={1}>
+            <Grid container spacing={2} sx={{ p: 3 }}>
+              <Grid item xs={12}>
+                <Typography>Add a lens handle to start exploring</Typography>
+              </Grid>
+              <Grid item xs={12} sm={10}>
+                <TextField
+                  inputRef={handleInputRef}
+                  name='handle'
+                  required
+                  fullWidth
+                  id='handle'
+                  label='Lens Handle'
+                  defaultValue='lensprotocol'
+                  autoFocus
+                />
+              </Grid>
+              <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
+                <Button onClick={() => addHandleToGraph(handleInputRef.current.value)} variant='contained'>Add</Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Box>
+      </Backdrop>
+      <ForceGraph3D
+        enableNodeDrag={false}
+        onNodeClick={node => addHandleToGraph(node.handle)}
+        graphData={graphData}
+        linkDirectionalParticles={1}
+        nodeAutoColorBy='group'
+        nodeThreeObject={node => {
+          const sprite = new SpriteText(node.handle);
+          const isQueried = queriedHandles.includes(node.handle)
+          sprite.color = isQueried ? 'yellow' : 'white';
+          sprite.textHeight = 2;
+          return sprite;
+        }}
+      />
     </div>
   )
 }
