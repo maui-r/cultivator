@@ -81,6 +81,8 @@ const DynamicGraph = ({ rootHandle }) => {
 
       setQueriedHandles([...queriedHandles, handle])
       setGraphData({ nodes: uniqueNodes, links: uniqueLinks })
+    }).catch(error => {
+      console.log('invalid handle:', handle)
     })
   }, [queriedHandles, setQueriedHandles, graphData, setGraphData])
 
