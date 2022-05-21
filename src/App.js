@@ -1,114 +1,85 @@
 import { useState, useCallback, useEffect } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
-import { gql, useQuery } from '@apollo/client'
 import _ from 'lodash'
+import { getProfile, getFollowing } from './query'
 
-
-const GET_PROFILE_BY_HANDLE = gql`
-  query GetProfileByHandle {
-    profiles(request: { handles: ["wagmi.lens"], limit: 1 }) {
-      items {
-        id
-        handle
-        ownedBy
-        stats {
-          totalFollowers
-          totalFollowing
-        }
-      }
-    }
-    following(request: { 
-      address: "0x4A1a2197f307222cD67A1762D9A352F64558d9Be"
-    }) {
-      items {
-        profile {
-          id
-          handle
-          ownedBy
-          stats {
-            totalFollowers
-            totalFollowing
-          }
-        }
-      }
-    }
-  }
-`
-
-const formatGraphData = (data) => {
+const transformHandleData = ({ profile, following }) => {
   const nodes = []
   const links = []
 
-  if (!data?.following?.items || !data?.profiles?.items) {
-    return
+  if (!profile || !following) {
+    return { nodes, links }
   }
 
-  const [root] = data.profiles.items
   nodes.push({
-    id: parseInt(root.id, 16),
-    handle: root.handle,
+    id: parseInt(profile.id, 16),
+    handle: profile.handle,
   })
 
-  data.following.items.forEach((f) => {
+  following.forEach((f) => {
     nodes.push({
       id: parseInt(f.profile.id, 16),
       handle: f.profile.handle,
     })
 
     links.push({
-      source: parseInt(root.id, 16),
+      source: parseInt(profile.id, 16),
       target: parseInt(f.profile.id, 16),
     })
   })
 
-  // filter out duplicates
-  const uniqueNodes = _.uniqBy(nodes, 'id')
-
-  return { nodes: uniqueNodes, links: links }
+  return { nodes, links }
 }
 
-const DynamicGraph = () => {
-  const [graphData, setGraphData] = useState({
-    nodes: [],
-    links: []
-  })
-  const { loading, error, data } = useQuery(GET_PROFILE_BY_HANDLE, {
-    //onCompleted: data => setGraphData(formatGraphData(data))
-  })
+const fetchHandleData = async handle => {
+  const profile = await getProfile(handle)
+  const following = await getFollowing(profile.ownedBy)
+  return { profile, following }
+}
+
+const DynamicGraph = ({ rootHandle }) => {
+  const [queriedHandles, setQueriedHandles] = useState([])
+  const [graphData, setGraphData] = useState({ nodes: [], links: [] })
+
+  const addHandleToGraph = useCallback(handle => {
+    console.log('fetching handle:', handle)
+    if (queriedHandles.includes(handle)) {
+      console.log('handle has been queried, already')
+      return
+    }
+
+    fetchHandleData(handle).then(handleData => {
+      const { nodes, links } = graphData
+      const transformedHandleData = transformHandleData(handleData)
+      const newNodes = [...nodes, ...transformedHandleData.nodes]
+      const newLinks = [...links, ...transformedHandleData.links]
+
+      // Filter out duplicates
+      const uniqueNodes = _.uniqBy(newNodes, 'id')
+      const uniqueLinks = _.uniq(newLinks)
+
+      setQueriedHandles([...queriedHandles, handle])
+      setGraphData({ nodes: uniqueNodes, links: uniqueLinks })
+    })
+  }, [queriedHandles, setQueriedHandles, graphData, setGraphData])
 
   useEffect(() => {
-    setGraphData(formatGraphData(data))
-  }, [data])
-
-  const handleClick = useCallback(node => {
-    const { nodes, links } = graphData
-
-    // TODO
-    const newNodes = [...nodes]
-    const newLinks = [...links]
-
-    setGraphData({ nodes: newNodes, links: newLinks })
-  }, [graphData, setGraphData])
-
-  if (loading) return <div>Loading...</div>
-
-  if (error) {
-    console.log(error)
-    return <div>Error :(</div>
-  }
+    addHandleToGraph(rootHandle)
+  }, [])
 
   return <ForceGraph3D
     enableNodeDrag={false}
-    onNodeClick={handleClick}
+    onNodeClick={node => addHandleToGraph(node.handle)}
     graphData={graphData}
     nodeLabel='handle'
   />
 }
 
 function App() {
+  const rootHandle = 'wagmi.lens'
   return (
     <div className='App'>
-      <DynamicGraph />
+      <DynamicGraph rootHandle={rootHandle} />
     </div>
   )
 }

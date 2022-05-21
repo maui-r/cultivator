@@ -1,27 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import {
-  ApolloProvider,
-  ApolloClient,
-  InMemoryCache,
-} from '@apollo/client'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-
-const API_URL = 'https://api.lens.dev/'
-
-export const apolloClient = new ApolloClient({
-  uri: API_URL,
-  cache: new InMemoryCache(),
-})
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={apolloClient}>
-      <App />
-    </ApolloProvider>
+    <App />
   </React.StrictMode>
 )
 
