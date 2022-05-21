@@ -71,6 +71,7 @@ const DynamicGraph = ({ rootHandle }) => {
     enableNodeDrag={false}
     onNodeClick={node => addHandleToGraph(node.handle)}
     graphData={graphData}
+    linkDirectionalParticles={1}
     nodeLabel='handle'
   />
 }
