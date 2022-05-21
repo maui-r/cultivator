@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
 import _ from 'lodash'
-import { getProfile, getFollowing } from './query'
+import { getProfile, getRelations } from './query'
 
-const transformHandleData = ({ profile, following }) => {
+const transformHandleData = ({ profile, following, followers }) => {
   const nodes = []
   const links = []
 
@@ -11,11 +11,13 @@ const transformHandleData = ({ profile, following }) => {
     return { nodes, links }
   }
 
+  // Add profile
   nodes.push({
     id: parseInt(profile.id, 16),
     handle: profile.handle,
   })
 
+  // Add following
   following.forEach((f) => {
     nodes.push({
       id: parseInt(f.profile.id, 16),
@@ -28,13 +30,32 @@ const transformHandleData = ({ profile, following }) => {
     })
   })
 
+  // Add followers
+  followers.forEach((f) => {
+    if (!f.wallet?.defaultProfile?.id) {
+      // TODO: visualize as well
+      console.log(f.wallet?.address, 'has no default profile set up')
+      return
+    }
+
+    nodes.push({
+      id: parseInt(f.wallet.defaultProfile.id, 16),
+      handle: f.wallet.defaultProfile.handle,
+    })
+
+    links.push({
+      source: parseInt(f.wallet.defaultProfile.id, 16),
+      target: parseInt(profile.id, 16),
+    })
+  })
+
   return { nodes, links }
 }
 
 const fetchHandleData = async handle => {
   const profile = await getProfile(handle)
-  const following = await getFollowing(profile.ownedBy)
-  return { profile, following }
+  const { following, followers } = await getRelations(profile)
+  return { profile, following, followers }
 }
 
 const DynamicGraph = ({ rootHandle }) => {

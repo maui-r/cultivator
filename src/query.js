@@ -23,8 +23,8 @@ query Profile($handle: Handle!) {
 }
 `
 
-const queryGetFollowingByAddress = `
-query Following($address: EthereumAddress!) {
+const queryGetRelations = `
+query Relations($id: ProfileId!, $address: EthereumAddress!) {
   following(request: {address: $address}) {
     items {
       profile {
@@ -34,6 +34,22 @@ query Following($address: EthereumAddress!) {
         stats {
           totalFollowers
           totalFollowing
+        }
+      }
+    }
+  }
+  followers(request: {profileId: $id}) {
+    items {
+      wallet {
+        address
+        defaultProfile {
+          id
+          handle
+          ownedBy
+          stats {
+            totalFollowers
+            totalFollowing
+          }
         }
       }
     }
@@ -51,12 +67,13 @@ export const getProfile = async (handle) => {
     return response?.data?.profiles?.items[0]
 }
 
-export const getFollowing = async (address) => {
+export const getRelations = async ({ id, ownedBy }) => {
     const response = await apolloClient.query({
-        query: gql(queryGetFollowingByAddress),
-        variables: {
-            address
-        }
+        query: gql(queryGetRelations),
+        variables: { id: id, address: ownedBy }
     })
-    return response?.data?.following?.items
+    return {
+        following: response?.data?.following?.items || [],
+        followers: response?.data?.followers?.items || [],
+    }
 }
