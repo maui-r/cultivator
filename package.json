@@ -12,6 +12,7 @@
     "react-dom": "^18.1.0",
     "react-force-graph-3d": "^1.21.12",
     "react-scripts": "5.0.1",
+    "three-spritetext": "^1.6.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

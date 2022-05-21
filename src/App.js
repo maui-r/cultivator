@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
 import _ from 'lodash'
 import { getProfile, getRelations } from './query'
+import SpriteText from 'three-spritetext'
 
 const transformHandleData = ({ profile, following, followers }) => {
   const nodes = []
@@ -95,7 +96,12 @@ const DynamicGraph = ({ rootHandle }) => {
     onNodeClick={node => addHandleToGraph(node.handle)}
     graphData={graphData}
     linkDirectionalParticles={1}
-    nodeLabel='handle'
+    nodeAutoColorBy="group"
+    nodeThreeObject={node => {
+      const sprite = new SpriteText(node.handle);
+      sprite.textHeight = 2;
+      return sprite;
+    }}
   />
 }
 
