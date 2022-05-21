@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Cultivator",
+  "name": "Explore the Lens Protocol social graph",
   "icons": [
     {
       "src": "favicon.ico",
