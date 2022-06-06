@@ -128,11 +128,11 @@ function App() {
         linkDirectionalParticles={1}
         nodeAutoColorBy='group'
         nodeThreeObject={node => {
-          const sprite = new SpriteText(node.handle);
+          const sprite = new SpriteText(node.handle)
           const isQueried = queriedHandles.includes(node.handle)
-          sprite.color = isQueried ? 'yellow' : 'white';
-          sprite.textHeight = 2;
-          return sprite;
+          sprite.color = isQueried ? 'yellow' : 'white'
+          sprite.textHeight = 2
+          return sprite
         }}
       />
     </div>
