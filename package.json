@@ -29,7 +29,17 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "quotes": [
+        "warn",
+        "single"
+      ],
+      "semi": [
+        "warn",
+        "never"
+      ]
+    }
   },
   "browserslist": {
     "production": [
