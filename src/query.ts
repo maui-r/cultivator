@@ -1,10 +1,10 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import { ApolloClient, gql, InMemoryCache } from '@apollo/client'
 
 const API_URL = 'https://api.lens.dev/'
 
 export const apolloClient = new ApolloClient({
-    uri: API_URL,
-    cache: new InMemoryCache(),
+  uri: API_URL,
+  cache: new InMemoryCache(),
 })
 
 const queryGetProfileByHandle = `
@@ -57,23 +57,23 @@ query Relations($id: ProfileId!, $address: EthereumAddress!) {
 }
 `
 
-export const getProfile = async (handle) => {
-    const response = await apolloClient.query({
-        query: gql(queryGetProfileByHandle),
-        variables: {
-            handle: handle
-        }
-    })
-    return response?.data?.profiles?.items[0]
+export const getProfile = async (handle: string) => {
+  const response = await apolloClient.query({
+    query: gql(queryGetProfileByHandle),
+    variables: {
+      handle: handle
+    }
+  })
+  return response?.data?.profiles?.items[0]
 }
 
-export const getRelations = async ({ id, ownedBy }) => {
-    const response = await apolloClient.query({
-        query: gql(queryGetRelations),
-        variables: { id: id, address: ownedBy }
-    })
-    return {
-        following: response?.data?.following?.items || [],
-        followers: response?.data?.followers?.items || [],
-    }
+export const getRelations = async ({ id, ownedBy }: { id: string, ownedBy: string }) => {
+  const response = await apolloClient.query({
+    query: gql(queryGetRelations),
+    variables: { id: id, address: ownedBy }
+  })
+  return {
+    following: response?.data?.following?.items || [],
+    followers: response?.data?.followers?.items || [],
+  }
 }

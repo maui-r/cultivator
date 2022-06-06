@@ -1,13 +1,43 @@
 import { useState, useCallback, useRef } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
-import _ from 'lodash'
 import { getProfile, getRelations } from './query'
 import SpriteText from 'three-spritetext'
 import { Backdrop, TextField, Box, Grid, Button, Paper, Typography } from '@mui/material'
+import _ from 'lodash'
 
-const transformHandleData = ({ profile, following, followers }) => {
-  const nodes = []
-  const links = []
+type Profile = {
+  id: string,
+  handle: string,
+}
+
+type Following = {
+  profile: Profile,
+}
+
+type Wallet = {
+  address: number,
+  defaultProfile?: Profile,
+}
+
+type Follower = {
+  wallet?: Wallet,
+}
+
+type Node = {
+  id: number,
+  handle: string,
+}
+
+type Link = {
+  source: number,
+  target: number,
+}
+
+const transformHandleData = (
+  { profile, following, followers }: { profile: Profile, following: Following[], followers: Follower[] }
+) => {
+  const nodes: Node[] = []
+  const links: Link[] = []
 
   if (!profile || !following) {
     return { nodes, links }
@@ -20,7 +50,7 @@ const transformHandleData = ({ profile, following, followers }) => {
   })
 
   // Add following
-  following.forEach((f) => {
+  following.forEach((f: Following) => {
     nodes.push({
       id: parseInt(f.profile.id, 16),
       handle: f.profile.handle,
@@ -33,7 +63,7 @@ const transformHandleData = ({ profile, following, followers }) => {
   })
 
   // Add followers
-  followers.forEach((f) => {
+  followers.forEach((f: Follower) => {
     if (!f.wallet?.defaultProfile?.id) {
       // TODO: visualize as well
       console.log(f.wallet?.address, 'has no default profile set up')
@@ -54,20 +84,24 @@ const transformHandleData = ({ profile, following, followers }) => {
   return { nodes, links }
 }
 
-const fetchHandleData = async handle => {
+const fetchHandleData = async (handle: string) => {
   const profile = await getProfile(handle)
   const { following, followers } = await getRelations(profile)
   return { profile, following, followers }
 }
 
 function App() {
-  const [queriedHandles, setQueriedHandles] = useState([])
-  const [graphData, setGraphData] = useState({ nodes: [], links: [] })
+  const [queriedHandles, setQueriedHandles] = useState<string[]>([])
+  const [graphData, setGraphData] = useState<{ nodes: Node[], links: Link[] }>({ nodes: [], links: [] })
 
-  const handleInputRef = useRef()
+  const handleInputRef = useRef<HTMLInputElement>()
 
-  const addHandleToGraph = useCallback(handle => {
+  const addHandleToGraph = useCallback((handle: string | undefined) => {
     console.log('fetching handle:', handle)
+    if (!handle) {
+      console.log('handle is empty')
+      return
+    }
     if (queriedHandles.includes(handle)) {
       console.log('handle has been queried, already')
       return
@@ -115,7 +149,7 @@ function App() {
                 />
               </Grid>
               <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
-                <Button onClick={() => addHandleToGraph(handleInputRef.current.value)} variant='contained'>Add</Button>
+                <Button onClick={() => addHandleToGraph(handleInputRef?.current?.value)} variant='contained'>Add</Button>
               </Grid>
             </Grid>
           </Paper>
@@ -123,11 +157,11 @@ function App() {
       </Backdrop>
       <ForceGraph3D
         enableNodeDrag={false}
-        onNodeClick={node => addHandleToGraph(node.handle)}
+        onNodeClick={(node: any) => addHandleToGraph(node.handle)}
         graphData={graphData}
         linkDirectionalParticles={1}
         nodeAutoColorBy='group'
-        nodeThreeObject={node => {
+        nodeThreeObject={(node: Node) => {
           const sprite = new SpriteText(node.handle)
           const isQueried = queriedHandles.includes(node.handle)
           sprite.color = isQueried ? 'yellow' : 'white'
