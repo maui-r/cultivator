@@ -1,18 +1,34 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { CssBaseline } from '@mui/material'
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import reportWebVitals from './reportWebVitals'
 
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1b3c63',
+      contrastText: '#fff',
+    },
+    secondary: {
+      main: '#e3cf1c',
+      contrastText: '#000',
+    }
+  }
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <CssBaseline />
-    <App />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>
 )
 

@@ -164,7 +164,7 @@ function App() {
         nodeThreeObject={(node: Node) => {
           const sprite = new SpriteText(node.handle)
           const isQueried = queriedHandles.includes(node.handle)
-          sprite.color = isQueried ? 'yellow' : 'white'
+          sprite.color = isQueried ? '#e3cf1c' : '#fff'
           sprite.textHeight = 2
           return sprite
         }}
