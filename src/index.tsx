@@ -4,6 +4,7 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import { RecoilRoot } from 'recoil'
+import { SnackbarProvider } from 'notistack'
 import App from './App'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -28,7 +29,9 @@ root.render(
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RecoilRoot>
-        <App />
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>

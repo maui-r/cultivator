@@ -2,6 +2,7 @@ import { Backdrop, Box, Grid, Paper, TextField, Typography } from '@mui/material
 import { atom, useRecoilState } from 'recoil'
 import { getProfile, getRelations } from './query'
 import { useCallback, useRef, useState } from 'react'
+import { useSnackbar } from 'notistack'
 import ForceGraph3D from 'react-force-graph-3d'
 import LoadingButton from '@mui/lab/LoadingButton'
 import SpriteText from 'three-spritetext'
@@ -101,6 +102,7 @@ function App() {
   const [fetchingHandle, setFetchingHandle] = useRecoilState(fetchingHandleState)
   const [queriedHandles, setQueriedHandles] = useState<string[]>([])
   const [graphData, setGraphData] = useState<{ nodes: Node[], links: Link[] }>({ nodes: [], links: [] })
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleInputRef = useRef<HTMLInputElement>()
 
@@ -109,12 +111,12 @@ function App() {
 
     console.log('fetching handle:', handle)
     if (!handle) {
-      console.log('handle is empty')
+      enqueueSnackbar('Please enter a non-empty handle', { variant: 'error' })
       setFetchingHandle(false)
       return
     }
     if (queriedHandles.includes(handle)) {
-      console.log('handle has been queried, already')
+      console.log(`handle "${handle}" has been queried, already`)
       setFetchingHandle(false)
       return
     }
@@ -133,10 +135,10 @@ function App() {
       setGraphData({ nodes: uniqueNodes, links: uniqueLinks })
       setFetchingHandle(false)
     }).catch(error => {
-      console.log('invalid handle:', handle)
+      enqueueSnackbar(`Handle not found: ${handle}`, { variant: 'error' })
       setFetchingHandle(false)
     })
-  }, [queriedHandles, setQueriedHandles, graphData, setGraphData, setFetchingHandle])
+  }, [queriedHandles, setQueriedHandles, graphData, setGraphData, setFetchingHandle, enqueueSnackbar])
 
   return (
     <div className='App'>
