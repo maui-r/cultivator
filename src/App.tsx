@@ -1,9 +1,11 @@
 import { useState, useCallback, useRef } from 'react'
 import ForceGraph3D from 'react-force-graph-3d'
-import { getProfile, getRelations } from './query'
+import { atom, useRecoilState } from 'recoil'
 import SpriteText from 'three-spritetext'
-import { Backdrop, TextField, Box, Grid, Button, Paper, Typography } from '@mui/material'
+import { Backdrop, TextField, Box, Grid, Paper, Typography } from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
 import _ from 'lodash'
+import { getProfile, getRelations } from './query'
 
 type Profile = {
   id: string,
@@ -90,13 +92,21 @@ const fetchHandleData = async (handle: string) => {
   return { profile, following, followers }
 }
 
+const fetchingHandleState = atom<boolean>({
+  key: 'fetchingHandle',
+  default: false,
+})
+
 function App() {
+  const [fetchingHandle, setFetchingHandle] = useRecoilState(fetchingHandleState)
   const [queriedHandles, setQueriedHandles] = useState<string[]>([])
   const [graphData, setGraphData] = useState<{ nodes: Node[], links: Link[] }>({ nodes: [], links: [] })
 
   const handleInputRef = useRef<HTMLInputElement>()
 
   const addHandleToGraph = useCallback((handle: string | undefined) => {
+    setFetchingHandle(true)
+
     console.log('fetching handle:', handle)
     if (!handle) {
       console.log('handle is empty')
@@ -119,10 +129,12 @@ function App() {
 
       setQueriedHandles([...queriedHandles, handle])
       setGraphData({ nodes: uniqueNodes, links: uniqueLinks })
+      setFetchingHandle(false)
     }).catch(error => {
       console.log('invalid handle:', handle)
+      setFetchingHandle(false)
     })
-  }, [queriedHandles, setQueriedHandles, graphData, setGraphData])
+  }, [queriedHandles, setQueriedHandles, graphData, setGraphData, setFetchingHandle])
 
   return (
     <div className='App'>
@@ -149,7 +161,12 @@ function App() {
                 />
               </Grid>
               <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
-                <Button onClick={() => addHandleToGraph(handleInputRef?.current?.value)} variant='contained'>Add</Button>
+                <LoadingButton
+                  loading={fetchingHandle}
+                  onClick={() => addHandleToGraph(handleInputRef?.current?.value)}
+                  variant='contained'>
+                  Add
+                </LoadingButton>
               </Grid>
             </Grid>
           </Paper>
