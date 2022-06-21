@@ -14,6 +14,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+#### `npm run lint`
+Show eslint errors.
+
+#### `npm run lint:fix`
+Auto-fix eslint errors.
+
 #### `npm start`
 
 Runs the app in the development mode.\
