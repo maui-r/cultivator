@@ -135,8 +135,13 @@ function App() {
       setGraphData({ nodes: uniqueNodes, links: uniqueLinks })
       setFetchingHandle(false)
     }).catch(error => {
-      enqueueSnackbar(`Handle not found: ${handle}`, { variant: 'error' })
-      setFetchingHandle(false)
+      if (typeof handle !== 'string' || handle.endsWith('.lens')) {
+        enqueueSnackbar(`Handle not found: ${handle}`, { variant: 'error' })
+        setFetchingHandle(false)
+        return
+      }
+      // Try again with '.lens' appended
+      addHandleToGraph(handle + '.lens')
     })
   }, [queriedHandles, setQueriedHandles, graphData, setGraphData, setFetchingHandle, enqueueSnackbar])
 
