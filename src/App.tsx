@@ -1,11 +1,11 @@
-import { useState, useCallback, useRef } from 'react'
-import ForceGraph3D from 'react-force-graph-3d'
+import { Backdrop, Box, Grid, Paper, TextField, Typography } from '@mui/material'
 import { atom, useRecoilState } from 'recoil'
-import SpriteText from 'three-spritetext'
-import { Backdrop, TextField, Box, Grid, Paper, Typography } from '@mui/material'
-import LoadingButton from '@mui/lab/LoadingButton'
-import _ from 'lodash'
 import { getProfile, getRelations } from './query'
+import { useCallback, useRef, useState } from 'react'
+import ForceGraph3D from 'react-force-graph-3d'
+import LoadingButton from '@mui/lab/LoadingButton'
+import SpriteText from 'three-spritetext'
+import _ from 'lodash'
 
 type Profile = {
   id: string,
