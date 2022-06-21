@@ -110,10 +110,12 @@ function App() {
     console.log('fetching handle:', handle)
     if (!handle) {
       console.log('handle is empty')
+      setFetchingHandle(false)
       return
     }
     if (queriedHandles.includes(handle)) {
       console.log('handle has been queried, already')
+      setFetchingHandle(false)
       return
     }
 
