@@ -53,7 +53,11 @@
         "never"
       ],
       "sort-imports": [
-        "warn"
+        "warn",
+        {
+          "ignoreCase": true,
+          "ignoreDeclarationSort": true
+        }
       ],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": [
