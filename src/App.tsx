@@ -159,6 +159,13 @@ function App() {
               </Grid>
               <Grid item xs={12} sm={10}>
                 <TextField
+                  onKeyDown={(evt: React.KeyboardEvent<HTMLDivElement>) => {
+                    if (evt.key === 'Enter') {
+                      evt.preventDefault()
+                      if (fetchingHandle) return
+                      addHandleToGraph(handleInputRef?.current?.value)
+                    }
+                  }}
                   inputRef={handleInputRef}
                   name='handle'
                   required
