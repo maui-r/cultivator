@@ -20,7 +20,18 @@ const theme = createTheme({
       main: '#e3cf1c',
       contrastText: '#000',
     }
-  }
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+        body {
+          // Hide scrollbars to avoid interference
+          // with graph resize handler
+          overflow: hidden;
+        }
+      `,
+    },
+  },
 })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
