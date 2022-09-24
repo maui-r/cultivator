@@ -20,10 +20,14 @@ interface Props {
     addHandleToGraph: Function
     graphData: GraphData
     queriedHandles: string[]
+    width: number
+    height: number
 }
 
-const Graph3D = ({ addHandleToGraph, graphData, queriedHandles }: Props) => {
+const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }: Props) => {
     return <ForceGraph3D
+        width={width}
+        height={height}
         enableNodeDrag={false}
         onNodeClick={(node: any) => addHandleToGraph(node.handle)}
         graphData={graphData}

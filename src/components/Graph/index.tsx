@@ -96,7 +96,12 @@ const fetchingHandleState = atom<boolean>({
     default: false,
 })
 
-const Graph = () => {
+interface Props {
+    width: number
+    height: number
+}
+
+const Graph = ({ width, height }: Props) => {
     const [fetchingHandle, setFetchingHandle] = useRecoilState(fetchingHandleState)
     const [queriedHandles, setQueriedHandles] = useState<string[]>([])
     const [graphData, setGraphData] = useState<{ nodes: Node[], links: Link[] }>({ nodes: [], links: [] })
@@ -142,10 +147,10 @@ const Graph = () => {
     }, [queriedHandles, setQueriedHandles, graphData, setGraphData, setFetchingHandle, enqueueSnackbar])
 
     return (
-        <div className='App'>
+        <>
             <SelectHandle queriedHandles={queriedHandles} fetchingHandle={fetchingHandle} setFetchingHandle={setFetchingHandle} addHandleToGraph={addHandleToGraph} />
-            <Graph3D addHandleToGraph={addHandleToGraph} graphData={graphData} queriedHandles={queriedHandles} />
-        </div>
+            <Graph3D width={width} height={height} addHandleToGraph={addHandleToGraph} graphData={graphData} queriedHandles={queriedHandles} />
+        </>
     )
 }
 
