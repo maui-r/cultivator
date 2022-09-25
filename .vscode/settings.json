@@ -4,6 +4,7 @@
         "fontsource",
         "lensprotocol",
         "notistack",
-        "spritetext"
+        "spritetext",
+        "zustand"
     ]
 }
