@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles'
 import { useEffect, useRef, useState } from 'react'
 import Graph from './components/Graph'
 import Header from './components/Header'
+import SettingsDrawer from './components/Settings'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -34,6 +35,9 @@ const App = () => {
   return (
     <Wrapper>
       <Header />
+
+      <SettingsDrawer />
+
       <Main ref={mainRef}>
         <Graph width={width} height={height} />
       </Main>
