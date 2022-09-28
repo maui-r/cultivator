@@ -28,6 +28,13 @@
     "typescript": "^4.7.3",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.1.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.1",
+    "semantic-release": "^19.0.5"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -36,6 +43,11 @@
     "lint:fix": "npx eslint --fix .",
     "cz": "cz",
     "eject": "react-scripts eject"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -82,15 +94,8 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.1"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maui-r/cultivator.git"
   }
 }
