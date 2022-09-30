@@ -47,13 +47,13 @@ const SelectNodeStyleButtonGroup = () => {
                 aria-labelledby="settings-node-style"
                 fullWidth
             >
-                <IconToggleButton value={NodeStyle.Ball} aria-label="Ball">
-                    <BubbleChartIcon fontSize="small" />
-                    Ball
-                </IconToggleButton>
-                <IconToggleButton value={NodeStyle.LensHandle} aria-label="Handle">
+                <IconToggleButton value={NodeStyle.LensHandle} aria-label="Lens Handle">
                     <AlternateEmailIcon fontSize="small" />
-                    Lens Handle
+                    Handle
+                </IconToggleButton>
+                <IconToggleButton value={NodeStyle.Bubble} aria-label="Bubble">
+                    <BubbleChartIcon fontSize="small" />
+                    Bubble
                 </IconToggleButton>
             </ToggleButtonGroup>
         </Box>
