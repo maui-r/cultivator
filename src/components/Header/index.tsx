@@ -3,7 +3,6 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import SettingsIcon from '@mui/icons-material/Settings'
-import GitHubIcon from '@mui/icons-material/GitHub'
 import { Stack, Tooltip } from '@mui/material'
 import { useAppStore } from '../../store'
 
@@ -18,7 +17,7 @@ const Header = () => {
                     Cultivator
                 </Typography>
                 <Stack direction="row" spacing={1.3}>
-                    <Tooltip title={'GitHub repository'} enterDelay={300}>
+                    {/* <Tooltip title={'GitHub repository'} enterDelay={300}>
                         <IconButton
                             component="a"
                             color="inherit"
@@ -27,7 +26,7 @@ const Header = () => {
                         >
                             <GitHubIcon fontSize="small" />
                         </IconButton>
-                    </Tooltip>
+                    </Tooltip> */}
                     <Tooltip title={'Toggle settings drawer'} enterDelay={300}>
                         <IconButton color="inherit" onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
                             <SettingsIcon fontSize="small" />
