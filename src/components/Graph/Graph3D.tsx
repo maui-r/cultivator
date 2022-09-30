@@ -31,7 +31,7 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
 
     var graphProps: ForceGraphProps
     switch (nodeStyle) {
-        case NodeStyle.Ball:
+        case NodeStyle.Bubble:
             graphProps = {
                 nodeLabel: 'handle',
                 // default value

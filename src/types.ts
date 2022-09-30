@@ -1,4 +1,4 @@
 export enum NodeStyle {
-    Ball = 'Ball',
+    Bubble = 'Bubble',
     LensHandle = 'LensHandle',
 }
