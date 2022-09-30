@@ -64,7 +64,7 @@
               "label": "Changelog"
             },
             {
-              "path": "build/**",
+              "path": "build",
               "label": "Build"
             }
           ]
