@@ -20,7 +20,7 @@ export const useAppStore = create<AppState>((set) => ({
 export const useAppPersistStore = create(
     persist<AppPersistState>(
         (set) => ({
-            nodeStyle: NodeStyle.Ball,
+            nodeStyle: NodeStyle.LensHandle,
             setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle }))
         }),
         { name: 'cultivator.store' }
