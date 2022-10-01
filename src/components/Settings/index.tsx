@@ -2,7 +2,7 @@ import { Box, Divider, Drawer, IconButton, styled, ToggleButton, ToggleButtonGro
 import CloseIcon from '@mui/icons-material/Close'
 import BubbleChartIcon from '@mui/icons-material/BubbleChart'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
-import { useAppPersistStore, useAppStore } from '../../store'
+import { useAppPersistStore, useAppStore } from '../../stores'
 import { NodeStyle } from '../../types'
 
 const Heading = styled(Typography)(({ theme }) => ({

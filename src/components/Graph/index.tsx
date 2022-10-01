@@ -1,5 +1,5 @@
 import { atom, useRecoilState } from 'recoil'
-import { getProfile, getRelations } from '../../query'
+import { getProfile, getRelations } from '../../lens'
 import { useCallback, useState } from 'react'
 import { useSnackbar } from 'notistack'
 import _ from 'lodash'

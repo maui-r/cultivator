@@ -1,6 +1,6 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { NodeStyle } from './types'
+import { NodeStyle } from '../types'
 
 interface AppState {
     showSettings: boolean
