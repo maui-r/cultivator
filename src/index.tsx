@@ -2,12 +2,14 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import { RecoilRoot } from 'recoil'
 import { SnackbarProvider } from 'notistack'
+import { createClient, WagmiConfig } from 'wagmi'
+import { getDefaultProvider } from 'ethers'
 import App from './App'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 
 const theme = createTheme({
@@ -34,6 +36,11 @@ const theme = createTheme({
   },
 })
 
+const wagmiClient = createClient({
+  autoConnect: true,
+  provider: getDefaultProvider(),
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
@@ -41,7 +48,9 @@ root.render(
       <CssBaseline />
       <RecoilRoot>
         <SnackbarProvider maxSnack={3}>
-          <App />
+          <WagmiConfig client={wagmiClient}>
+            <App />
+          </WagmiConfig>
         </SnackbarProvider>
       </RecoilRoot>
     </ThemeProvider>
