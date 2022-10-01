@@ -4,18 +4,22 @@ import { NodeStyle } from '../types'
 
 interface AppState {
     showSettings: boolean
-    setShowSettings: (showSettingsModal: boolean) => void
+    setShowSettings: (showSettings: boolean) => void
+    showHelp: boolean
+    setShowHelp: (showHelp: boolean) => void
 }
+
+export const useAppStore = create<AppState>((set) => ({
+    showSettings: false,
+    setShowSettings: (showSettings) => set(() => ({ showSettings })),
+    showHelp: false,
+    setShowHelp: (showHelp) => set(() => ({ showHelp }))
+}))
 
 interface AppPersistState {
     nodeStyle: NodeStyle
     setNodeStyle: (nodeStyle: NodeStyle) => void
 }
-
-export const useAppStore = create<AppState>((set) => ({
-    showSettings: false,
-    setShowSettings: (showSettings) => set(() => ({ showSettings }))
-}))
 
 export const useAppPersistStore = create(
     persist<AppPersistState>(

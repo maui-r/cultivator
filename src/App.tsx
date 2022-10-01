@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles'
 import { useEffect, useRef, useState } from 'react'
+import Help from './components/Dialog/Help'
 import Graph from './components/Graph'
 import Header from './components/Header'
 import SettingsDrawer from './components/Settings'
@@ -37,6 +38,7 @@ const App = () => {
       <Header />
 
       <SettingsDrawer />
+      <Help />
 
       <Main ref={mainRef}>
         <Graph width={width} height={height} />
