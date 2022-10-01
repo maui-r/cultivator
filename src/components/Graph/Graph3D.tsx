@@ -58,6 +58,7 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         height={height}
         enableNodeDrag={false}
         onNodeClick={(node: any) => addHandleToGraph(node.handle)}
+        showNavInfo={false}
         graphData={graphData}
         linkDirectionalParticles={1}
         {...graphProps}

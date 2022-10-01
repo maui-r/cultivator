@@ -2,6 +2,7 @@ import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import { Stack, Tooltip } from '@mui/material'
@@ -39,6 +40,22 @@ const SettingsButton = () => {
     )
 }
 
+const HelpButton = () => {
+    const setShowHelp = useAppStore((state) => state.setShowHelp)
+
+    const handleClick = () => {
+        setShowHelp(true)
+    }
+
+    return (
+        <Tooltip title="Show help" enterDelay={300}>
+            <IconButton color="inherit" onClick={handleClick} sx={{ px: '8px' }}>
+                <HelpIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
 const WalletButton = () => {
     const { isConnected } = useAccount()
     const { connect } = useConnect({
@@ -68,6 +85,7 @@ const Header = () => {
                 <Stack direction="row" spacing={1.3}>
                     <SettingsButton />
                     <WalletButton />
+                    <HelpButton />
                 </Stack>
 
             </Toolbar>
