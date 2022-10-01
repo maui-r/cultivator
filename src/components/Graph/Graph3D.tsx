@@ -1,6 +1,6 @@
 import ForceGraph3D, { ForceGraphProps } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
-import { useAppPersistStore } from '../../store'
+import { useAppPersistStore } from '../../stores'
 import { NodeStyle } from '../../types'
 
 type Node = {

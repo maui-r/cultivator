@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Stack, Tooltip } from '@mui/material'
-import { useAppStore } from '../../store'
+import { useAppStore } from '../../stores'
 
 const Header = () => {
     const showSettings = useAppStore((state) => state.showSettings)
