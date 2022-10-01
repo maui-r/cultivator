@@ -16,6 +16,7 @@
     "@types/node": "^16.11.38",
     "@types/react": "^18.0.12",
     "@types/react-dom": "^18.0.5",
+    "ethers": "^5.7.1",
     "lodash": "^4.17.21",
     "notistack": "^2.0.5",
     "react": "^18.1.0",
@@ -25,6 +26,7 @@
     "recoil": "^0.7.3",
     "three-spritetext": "^1.6.5",
     "typescript": "^4.7.3",
+    "wagmi": "^0.6.7",
     "web-vitals": "^2.1.4",
     "zustand": "^4.1.1"
   },

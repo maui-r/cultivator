@@ -3,36 +3,73 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import SettingsIcon from '@mui/icons-material/Settings'
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import { Stack, Tooltip } from '@mui/material'
+import { useAccount, useConnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
 import { useAppStore } from '../../stores'
 
-const Header = () => {
+/*
+const GitHubButton = () => {
+    return (
+        < Tooltip title="GitHub repository" enterDelay={300} >
+            <IconButton
+                component="a"
+                color="inherit"
+                href="https://github.com/maui-r/cultivator"
+                target="_blank"
+            >
+                <GitHubIcon fontSize="small" />
+            </IconButton>
+        </Tooltip >
+    )
+}
+*/
+
+const SettingsButton = () => {
     const showSettings = useAppStore((state) => state.showSettings)
     const setShowSettings = useAppStore((state) => state.setShowSettings)
 
     return (
+        <Tooltip title="Toggle settings drawer" enterDelay={300}>
+            <IconButton color="inherit" onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
+                <SettingsIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
+const WalletButton = () => {
+    const { isConnected } = useAccount()
+    const { connect } = useConnect({
+        connector: new InjectedConnector(),
+    })
+
+    if (isConnected) return null
+
+    return (
+        <Tooltip title="Connect wallet" enterDelay={300}>
+            <IconButton color="inherit" onClick={() => connect()} sx={{ px: '8px' }}>
+                <AccountBalanceWalletIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
+const Header = () => {
+    return (
         <AppBar position="static">
             <Toolbar variant="dense">
+
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Cultivator
                 </Typography>
+
                 <Stack direction="row" spacing={1.3}>
-                    {/* <Tooltip title={'GitHub repository'} enterDelay={300}>
-                        <IconButton
-                            component="a"
-                            color="inherit"
-                            href={'https://github.com/maui-r/cultivator'}
-                            target={'_blank'}
-                        >
-                            <GitHubIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip> */}
-                    <Tooltip title={'Toggle settings drawer'} enterDelay={300}>
-                        <IconButton color="inherit" onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
-                            <SettingsIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                    <SettingsButton />
+                    <WalletButton />
                 </Stack>
+
             </Toolbar>
         </AppBar>
     )
