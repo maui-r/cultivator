@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Help from './components/Dialog/Help'
 import Graph from './components/Graph'
 import Header from './components/Header'
+import ProfileMenu from './components/Menu/ProfileMenu'
 import SettingsDrawer from './components/Settings'
 
 const Wrapper = styled('div')({
@@ -41,6 +42,7 @@ const App = () => {
       <Help />
 
       <Main ref={mainRef}>
+        <ProfileMenu />
         <Graph width={width} height={height} />
       </Main>
     </Wrapper>
