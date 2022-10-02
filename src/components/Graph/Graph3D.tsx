@@ -1,6 +1,6 @@
-import ForceGraph3D, { ForceGraphProps } from 'react-force-graph-3d'
+import ForceGraph3D, { ForceGraphProps, NodeObject } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
-import { useAppPersistStore } from '../../stores'
+import { useAppPersistStore, useAppStore } from '../../stores'
 import { NodeStyle } from '../../types'
 
 type Node = {
@@ -26,8 +26,21 @@ interface Props {
     height: number
 }
 
+interface ProfileNodeObject extends NodeObject {
+    handle?: string
+}
+
 const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }: Props) => {
+    const setProfileMenu = useAppStore((state) => state.setProfileMenu)
     const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
+
+    const onOpenProfileMenu = (node: ProfileNodeObject, event: MouseEvent) => {
+        if (!node.handle) {
+            return
+        }
+
+        setProfileMenu({ top: event.y, left: event.x }, node.handle)
+    }
 
     var graphProps: ForceGraphProps
     switch (nodeStyle) {
@@ -57,7 +70,8 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         width={width}
         height={height}
         enableNodeDrag={false}
-        onNodeClick={(node: any) => addHandleToGraph(node.handle)}
+        onNodeClick={(node: ProfileNodeObject) => addHandleToGraph(node.handle)}
+        onNodeRightClick={onOpenProfileMenu}
         showNavInfo={false}
         graphData={graphData}
         linkDirectionalParticles={1}
