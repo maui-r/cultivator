@@ -1,7 +1,36 @@
 import { Divider, Menu, MenuItem, styled } from '@mui/material'
+import { useAccount } from 'wagmi'
 import { useAppStore } from '../../stores'
 
 const MenuHeading = styled(MenuItem)({})
+
+const FollowItem = () => {
+    const { address } = useAccount()
+    const onFollow = () => {
+        // TODO
+    }
+
+    // disabled if no wallet connected
+    if (!address) return (
+        <MenuItem disabled={true}>Follow</MenuItem>
+    )
+
+    return (
+        <MenuItem onClick={onFollow}>Follow</MenuItem>
+    )
+}
+
+const ShowOnLensFrensItem = () => {
+    const profileMenuHandle = useAppStore((state) => state.profileMenuHandle)
+    const onShowOnLensFrens = () => {
+        window.open(
+            `https://lensfrens.xyz/${profileMenuHandle}`,
+            '_blank'
+        )
+    }
+
+    return <MenuItem onClick={onShowOnLensFrens}>Show on LensFrens</MenuItem>
+}
 
 const ProfileMenu = () => {
     const profileMenuPosition = useAppStore((state) => state.profileMenuPosition)
@@ -12,13 +41,6 @@ const ProfileMenu = () => {
 
     const onCloseProfileMenu = () => {
         setProfileMenu(null, null)
-    }
-
-    const showOnLensFrens = () => {
-        window.open(
-            `https://lensfrens.xyz/${profileMenuHandle}`,
-            '_blank'
-        )
     }
 
     return (
@@ -38,8 +60,8 @@ const ProfileMenu = () => {
         >
             <MenuHeading>{profileMenuHandle}</MenuHeading>
             <Divider />
-            <MenuItem onClick={onCloseProfileMenu}>Follow</MenuItem>
-            <MenuItem onClick={showOnLensFrens}>Show on LensFrens</MenuItem>
+            <FollowItem />
+            <ShowOnLensFrensItem />
         </Menu >
     )
 }
