@@ -1,4 +1,5 @@
 import { Divider, Menu, MenuItem, styled } from '@mui/material'
+import { useCallback, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { useAppStore } from '../../stores'
 
@@ -37,11 +38,19 @@ const ProfileMenu = () => {
     const profileMenuHandle = useAppStore((state) => state.profileMenuHandle)
     const setProfileMenu = useAppStore((state) => state.setProfileMenu)
 
-    if (!profileMenuPosition) return null
-
-    const onCloseProfileMenu = () => {
+    const onCloseProfileMenu = useCallback(() => {
         setProfileMenu(null, null)
-    }
+    }, [setProfileMenu])
+
+    // close profile menu on right-click
+    useEffect(() => {
+        document.addEventListener('contextmenu', onCloseProfileMenu)
+        return () => {
+            document.removeEventListener('contextmenu', onCloseProfileMenu)
+        }
+    }, [onCloseProfileMenu])
+
+    if (!profileMenuPosition) return null
 
     return (
         <Menu
