@@ -1,9 +1,12 @@
 import { Box, Divider, Drawer, IconButton, styled, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import CloseIcon from '@mui/icons-material/Close'
 import BubbleChartIcon from '@mui/icons-material/BubbleChart'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { useAppPersistStore, useAppStore } from '../../stores'
-import { NodeStyle } from '../../types'
+import { ColorMode, NodeStyle } from '../../types'
 
 const Heading = styled(Typography)(({ theme }) => ({
     margin: '20px 0 10px',
@@ -37,7 +40,7 @@ const SelectNodeStyleButtonGroup = () => {
 
 
     return (
-        <Box sx={{ pl: 2, pr: 2 }}>
+        <>
             <Heading gutterBottom id="settings-node-style">Node Style</Heading>
             <ToggleButtonGroup
                 exclusive
@@ -56,7 +59,44 @@ const SelectNodeStyleButtonGroup = () => {
                     Bubble
                 </IconToggleButton>
             </ToggleButtonGroup>
-        </Box>
+        </>
+    )
+}
+
+const SelectColorModeButtonGroup = () => {
+    const colorMode = useAppPersistStore((state) => state.colorMode)
+    const setColorMode = useAppPersistStore((state) => state.setColorMode)
+
+    const handleChangeColorMode = (event: React.MouseEvent<HTMLElement>, colorMode: ColorMode | null) => {
+        if (!colorMode) return
+        setColorMode(colorMode)
+    }
+
+    return (
+        <>
+            <Heading gutterBottom id="settings-color-mode">Color Mode</Heading>
+            <ToggleButtonGroup
+                exclusive
+                value={colorMode}
+                color="primary"
+                onChange={handleChangeColorMode}
+                aria-labelledby="settings-color-mode"
+                fullWidth
+            >
+                <IconToggleButton value={ColorMode.Light} aria-label="Light">
+                    <LightModeIcon fontSize="small" />
+                    Light
+                </IconToggleButton>
+                <IconToggleButton value={ColorMode.System} aria-label="System">
+                    <SettingsBrightnessIcon fontSize="small" />
+                    System
+                </IconToggleButton>
+                <IconToggleButton value={ColorMode.Dark} aria-label="Dark">
+                    <DarkModeOutlinedIcon fontSize="small" />
+                    Dark
+                </IconToggleButton>
+            </ToggleButtonGroup>
+        </>
     )
 }
 
@@ -84,7 +124,10 @@ const SettingsDrawer = () => {
 
             <Divider />
 
-            <SelectNodeStyleButtonGroup />
+            <Box sx={{ pl: 2, pr: 2 }}>
+                <SelectColorModeButtonGroup />
+                <SelectNodeStyleButtonGroup />
+            </Box>
         </Drawer>
     )
 }
