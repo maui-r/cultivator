@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import ForceGraph3D, { ForceGraphProps, NodeObject } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
 import { useAppPersistStore, useAppStore } from '../../stores'
@@ -66,9 +67,12 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
             break
     }
 
+    const backgroundColor = useMemo(() => { return 'rgba(0,0,0,0)' }, [])
+
     return <ForceGraph3D
         width={width}
         height={height}
+        backgroundColor={backgroundColor}
         enableNodeDrag={false}
         onNodeClick={(node: ProfileNodeObject) => addHandleToGraph(node.handle)}
         onNodeRightClick={onOpenProfileMenu}
