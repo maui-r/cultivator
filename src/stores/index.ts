@@ -1,7 +1,7 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { PopoverPosition } from '@mui/material'
-import { NodeStyle } from '../types'
+import { ColorMode, NodeStyle } from '../types'
 
 interface AppState {
     showSettings: boolean
@@ -20,19 +20,23 @@ export const useAppStore = create<AppState>((set) => ({
     setShowHelp: (showHelp) => set(() => ({ showHelp })),
     profileMenuPosition: null,
     profileMenuHandle: null,
-    setProfileMenu: (profileMenuPosition, profileMenuHandle) => set(() => ({ profileMenuPosition, profileMenuHandle }))
+    setProfileMenu: (profileMenuPosition, profileMenuHandle) => set(() => ({ profileMenuPosition, profileMenuHandle })),
 }))
 
 interface AppPersistState {
     nodeStyle: NodeStyle
     setNodeStyle: (nodeStyle: NodeStyle) => void
+    colorMode: ColorMode
+    setColorMode: (colorMode: ColorMode) => void
 }
 
 export const useAppPersistStore = create(
     persist<AppPersistState>(
         (set) => ({
             nodeStyle: NodeStyle.LensHandle,
-            setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle }))
+            setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle })),
+            colorMode: ColorMode.System,
+            setColorMode: (colorMode) => set(() => ({ colorMode })),
         }),
         { name: 'cultivator.store' }
     )

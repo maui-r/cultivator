@@ -10,23 +10,6 @@ import { useAccount, useConnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { useAppStore } from '../../stores'
 
-/*
-const GitHubButton = () => {
-    return (
-        < Tooltip title="GitHub repository" enterDelay={300} >
-            <IconButton
-                component="a"
-                color="inherit"
-                href="https://github.com/maui-r/cultivator"
-                target="_blank"
-            >
-                <GitHubIcon fontSize="small" />
-            </IconButton>
-        </Tooltip >
-    )
-}
-*/
-
 const SettingsButton = () => {
     const showSettings = useAppStore((state) => state.showSettings)
     const setShowSettings = useAppStore((state) => state.setShowSettings)
