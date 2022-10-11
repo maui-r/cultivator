@@ -40,13 +40,16 @@ const SelectHandle = ({ queriedHandles, fetchingHandle, setFetchingHandle, addHa
                                 label='Lens Handle'
                                 defaultValue='lensprotocol'
                                 autoFocus
+                                color='success'
                             />
                         </Grid>
                         <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
                             <LoadingButton
                                 loading={fetchingHandle}
                                 onClick={() => addHandleToGraph(handleInputRef?.current?.value)}
-                                variant='contained'>
+                                variant='contained'
+                                color='success'
+                            >
                                 Add
                             </LoadingButton>
                         </Grid>

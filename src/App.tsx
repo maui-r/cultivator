@@ -28,30 +28,14 @@ const themeComponents = {
 type Mode = 'light' | 'dark'
 const getThemePalette = (mode: Mode) => ({
   mode,
-  ...(mode === 'light'
-    ?
-    {
-      primary: {
-        main: '#1b3c63',
-        contrastText: '#fff',
-      },
-      secondary: {
-        main: '#e3cf1c',
-        contrastText: '#000',
-      }
-    }
-    :
-    {
-      primary: {
-        main: '#e3cf1c',
-        contrastText: '#000',
-      },
-      secondary: {
-        main: '#1b3c63',
-        contrastText: '#fff',
-      }
-    }
-  )
+  primary: {
+    main: '#1b3c63',
+    contrastText: '#fff',
+  },
+  secondary: {
+    main: '#e3cf1c',
+    contrastText: '#000',
+  }
 })
 
 const getMode = (colorMode: ColorMode, isSystemDark: boolean) => {
