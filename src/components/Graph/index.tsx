@@ -117,7 +117,7 @@ const Graph = ({ width, height }: Props) => {
             return
         }
         if (queriedHandles.includes(handle)) {
-            console.log(`handle "${handle}" has been queried, already`)
+            console.log(`handle '${handle}' has been queried, already`)
             setFetchingHandle(false)
             return
         }

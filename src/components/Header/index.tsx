@@ -15,9 +15,9 @@ const SettingsButton = () => {
     const setShowSettings = useAppStore((state) => state.setShowSettings)
 
     return (
-        <Tooltip title="Toggle settings drawer" enterDelay={300}>
-            <IconButton color="inherit" onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
-                <SettingsIcon fontSize="small" />
+        <Tooltip title='Toggle settings drawer' enterDelay={300}>
+            <IconButton color='inherit' onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
+                <SettingsIcon fontSize='small' />
             </IconButton>
         </Tooltip>
     )
@@ -31,9 +31,9 @@ const HelpButton = () => {
     }
 
     return (
-        <Tooltip title="Show help" enterDelay={300}>
-            <IconButton color="inherit" onClick={handleClick} sx={{ px: '8px' }}>
-                <HelpIcon fontSize="small" />
+        <Tooltip title='Show help' enterDelay={300}>
+            <IconButton color='inherit' onClick={handleClick} sx={{ px: '8px' }}>
+                <HelpIcon fontSize='small' />
             </IconButton>
         </Tooltip>
     )
@@ -48,9 +48,9 @@ const WalletButton = () => {
     if (isConnected) return null
 
     return (
-        <Tooltip title="Connect wallet" enterDelay={300}>
-            <IconButton color="inherit" onClick={() => connect()} sx={{ px: '8px' }}>
-                <AccountBalanceWalletIcon fontSize="small" />
+        <Tooltip title='Connect wallet' enterDelay={300}>
+            <IconButton color='inherit' onClick={() => connect()} sx={{ px: '8px' }}>
+                <AccountBalanceWalletIcon fontSize='small' />
             </IconButton>
         </Tooltip>
     )
@@ -58,14 +58,14 @@ const WalletButton = () => {
 
 const Header = () => {
     return (
-        <AppBar position="static">
-            <Toolbar variant="dense">
+        <AppBar position='static'>
+            <Toolbar variant='dense'>
 
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
                     Cultivator
                 </Typography>
 
-                <Stack direction="row" spacing={1.3}>
+                <Stack direction='row' spacing={1.3}>
                     <SettingsButton />
                     <WalletButton />
                     <HelpButton />

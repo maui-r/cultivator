@@ -41,21 +41,21 @@ const SelectNodeStyleButtonGroup = () => {
 
     return (
         <>
-            <Heading gutterBottom id="settings-node-style">Node Style</Heading>
+            <Heading gutterBottom id='settings-node-style'>Node Style</Heading>
             <ToggleButtonGroup
                 exclusive
                 value={nodeStyle}
                 onChange={handleNodeStyleChange}
-                aria-labelledby="settings-node-style"
-                color="success"
+                aria-labelledby='settings-node-style'
+                color='success'
                 fullWidth
             >
-                <IconToggleButton value={NodeStyle.LensHandle} aria-label="Lens Handle">
-                    <AlternateEmailIcon fontSize="small" />
+                <IconToggleButton value={NodeStyle.LensHandle} aria-label='Lens Handle'>
+                    <AlternateEmailIcon fontSize='small' />
                     Handle
                 </IconToggleButton>
-                <IconToggleButton value={NodeStyle.Bubble} aria-label="Bubble">
-                    <BubbleChartIcon fontSize="small" />
+                <IconToggleButton value={NodeStyle.Bubble} aria-label='Bubble'>
+                    <BubbleChartIcon fontSize='small' />
                     Bubble
                 </IconToggleButton>
             </ToggleButtonGroup>
@@ -74,25 +74,25 @@ const SelectColorModeButtonGroup = () => {
 
     return (
         <>
-            <Heading gutterBottom id="settings-color-mode">Color Mode</Heading>
+            <Heading gutterBottom id='settings-color-mode'>Color Mode</Heading>
             <ToggleButtonGroup
                 exclusive
                 value={colorMode}
                 onChange={handleChangeColorMode}
-                aria-labelledby="settings-color-mode"
-                color="success"
+                aria-labelledby='settings-color-mode'
+                color='success'
                 fullWidth
             >
-                <IconToggleButton value={ColorMode.Light} aria-label="Light">
-                    <LightModeIcon fontSize="small" />
+                <IconToggleButton value={ColorMode.Light} aria-label='Light'>
+                    <LightModeIcon fontSize='small' />
                     Light
                 </IconToggleButton>
-                <IconToggleButton value={ColorMode.System} aria-label="System">
-                    <SettingsBrightnessIcon fontSize="small" />
+                <IconToggleButton value={ColorMode.System} aria-label='System'>
+                    <SettingsBrightnessIcon fontSize='small' />
                     System
                 </IconToggleButton>
-                <IconToggleButton value={ColorMode.Dark} aria-label="Dark">
-                    <DarkModeOutlinedIcon fontSize="small" />
+                <IconToggleButton value={ColorMode.Dark} aria-label='Dark'>
+                    <DarkModeOutlinedIcon fontSize='small' />
                     Dark
                 </IconToggleButton>
             </ToggleButtonGroup>
@@ -116,9 +116,9 @@ const SettingsDrawer = () => {
             }}
         >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-                <Typography variant="body1" fontWeight="500">Settings</Typography>
-                <IconButton color="inherit" onClick={onClose} edge="end">
-                    <CloseIcon fontSize="small" />
+                <Typography variant='body1' fontWeight='500'>Settings</Typography>
+                <IconButton color='inherit' onClick={onClose} edge='end'>
+                    <CloseIcon fontSize='small' />
                 </IconButton>
             </Box>
 

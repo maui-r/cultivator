@@ -56,7 +56,7 @@ const ProfileMenu = () => {
         <Menu
             open={!!profileMenuPosition && !!profileMenuHandle}
             onClose={onCloseProfileMenu}
-            anchorReference="anchorPosition"
+            anchorReference='anchorPosition'
             anchorPosition={profileMenuPosition}
             anchorOrigin={{
                 vertical: 'top',
