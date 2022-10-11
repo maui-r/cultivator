@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useAppStore } from '../../stores'
 
-export default function AlertDialog() {
+export default function HelpDialog() {
     const showHelp = useAppStore((state) => state.showHelp)
     const setShowHelp = useAppStore((state) => state.setShowHelp)
 
@@ -22,10 +22,10 @@ export default function AlertDialog() {
             <DialogContent>
                 <DialogContentText>
                     <Typography gutterBottom>
-                        Left-click on profile: show profile's connections
+                        Left-click on profile: expand connections
                     </Typography>
                     <Typography gutterBottom>
-                        Right-click on profile: open profile menu
+                        Right-click on profile: open menu
                     </Typography>
                     <Typography gutterBottom>
                         Scroll: zoom
