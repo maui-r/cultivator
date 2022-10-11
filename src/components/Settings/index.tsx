@@ -45,9 +45,9 @@ const SelectNodeStyleButtonGroup = () => {
             <ToggleButtonGroup
                 exclusive
                 value={nodeStyle}
-                color="primary"
                 onChange={handleNodeStyleChange}
                 aria-labelledby="settings-node-style"
+                color="success"
                 fullWidth
             >
                 <IconToggleButton value={NodeStyle.LensHandle} aria-label="Lens Handle">
@@ -78,9 +78,9 @@ const SelectColorModeButtonGroup = () => {
             <ToggleButtonGroup
                 exclusive
                 value={colorMode}
-                color="primary"
                 onChange={handleChangeColorMode}
                 aria-labelledby="settings-color-mode"
+                color="success"
                 fullWidth
             >
                 <IconToggleButton value={ColorMode.Light} aria-label="Light">
@@ -118,7 +118,7 @@ const SettingsDrawer = () => {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
                 <Typography variant="body1" fontWeight="500">Settings</Typography>
                 <IconButton color="inherit" onClick={onClose} edge="end">
-                    <CloseIcon color="primary" fontSize="small" />
+                    <CloseIcon fontSize="small" />
                 </IconButton>
             </Box>
 

@@ -1,3 +1,4 @@
+import { useTheme } from '@mui/material'
 import { useMemo } from 'react'
 import ForceGraph3D, { ForceGraphProps, NodeObject } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
@@ -34,6 +35,7 @@ interface ProfileNodeObject extends NodeObject {
 const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }: Props) => {
     const setProfileMenu = useAppStore((state) => state.setProfileMenu)
     const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
+    const theme = useTheme()
 
     const onOpenProfileMenu = (node: ProfileNodeObject, event: MouseEvent) => {
         if (!node.handle) {
@@ -43,11 +45,16 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         setProfileMenu({ top: event.y, left: event.x }, node.handle)
     }
 
+    const queriedNodeColor = theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.secondary.main
     var graphProps: ForceGraphProps
     switch (nodeStyle) {
         case NodeStyle.Bubble:
             graphProps = {
                 nodeLabel: 'handle',
+                nodeColor: (node: ProfileNodeObject) => {
+                    const isQueried = node.handle && queriedHandles.includes(node.handle)
+                    return isQueried ? queriedNodeColor : theme.palette.text.primary
+                },
                 // default value
                 nodeThreeObject: () => { return false },
             }
@@ -57,8 +64,8 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
                 nodeThreeObject: (node: Node) => {
                     const sprite = new SpriteText(node.handle)
                     const isQueried = queriedHandles.includes(node.handle)
-                    sprite.color = isQueried ? '#e3cf1c' : '#fff'
-                    sprite.textHeight = 2
+                    sprite.color = isQueried ? queriedNodeColor : theme.palette.text.primary
+                    sprite.textHeight = isQueried ? 4 : 2
                     return sprite
                 },
                 // default value
@@ -68,11 +75,13 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
     }
 
     const backgroundColor = useMemo(() => { return 'rgba(0,0,0,0)' }, [])
+    const linkColor = useMemo(() => () => { return theme.palette.text.secondary }, [theme])
 
     return <ForceGraph3D
         width={width}
         height={height}
         backgroundColor={backgroundColor}
+        linkColor={linkColor}
         enableNodeDrag={false}
         onNodeClick={(node: ProfileNodeObject) => addHandleToGraph(node.handle)}
         onNodeRightClick={onOpenProfileMenu}
