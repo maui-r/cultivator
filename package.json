@@ -95,6 +95,9 @@
     "plugins": [
       "react-hooks"
     ],
+    "ignorePatterns": [
+      "src/lens/schema"
+    ],
     "rules": {
       "quotes": [
         "warn",
