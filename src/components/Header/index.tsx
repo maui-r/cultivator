@@ -5,12 +5,12 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { Button, Stack, Tooltip } from '@mui/material'
+import { Box, Button, Menu, MenuItem, Avatar as MuiAvatar, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
 import { POLYGON_CHAIN_ID } from '../../constants'
 import { useAppStore } from '../../stores'
-import { signIn } from '../../lens/auth'
+import { signIn, signOut } from '../../lens/auth'
 
 const SettingsButton = () => {
     const showSettings = useAppStore((state) => state.showSettings)
@@ -92,6 +92,55 @@ const SignInButton = () => {
     )
 }
 
+const Avatar = () => {
+    const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+    const [anchor, setAnchor] = useState<null | HTMLElement>(null)
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchor(event.currentTarget)
+    }
+
+    const handleCloseMenu = () => {
+        setAnchor(null)
+    }
+
+    const handleSignOut = () => {
+        setAnchor(null)
+        signOut()
+    }
+
+    if (!hasSignedIn) return null
+
+    return (
+        <Box>
+            <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+                    <MuiAvatar alt="" src="" sx={{ width: 36, height: 36 }} />
+                </IconButton>
+            </Tooltip>
+            <Menu
+                sx={{ mt: '45px' }}
+                keepMounted
+                open={Boolean(anchor)}
+                onClose={handleCloseMenu}
+                anchorEl={anchor}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <MenuItem onClick={handleSignOut}>
+                    <Typography textAlign="center">Sign Out</Typography>
+                </MenuItem>
+            </Menu>
+        </Box>
+    )
+}
+
 const Header = () => {
     return (
         <AppBar position='static'>
@@ -105,6 +154,7 @@ const Header = () => {
                     <SettingsButton />
                     <HelpButton />
                     <SignInButton />
+                    <Avatar />
                 </Stack>
 
             </Toolbar>
