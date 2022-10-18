@@ -113,7 +113,7 @@ const Avatar = () => {
 
     return (
         <Box>
-            <Tooltip title="Open settings">
+            <Tooltip title='Show user menu'>
                 <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
                     <MuiAvatar alt="" src="" sx={{ width: 36, height: 36 }} />
                 </IconButton>
