@@ -3,7 +3,6 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useAppStore } from '../../stores'
@@ -20,24 +19,21 @@ export default function HelpDialog() {
         <Dialog open={showHelp} onClose={handleClose}>
             <DialogTitle>Controls</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                    <Typography gutterBottom>
-                        Left-click on profile: expand connections
-                    </Typography>
-                    <Typography gutterBottom>
-                        Right-click on profile: open menu
-                    </Typography>
-                    <Typography gutterBottom>
-                        Scroll: zoom
-                    </Typography>
-                    <Typography gutterBottom>
-                        Left-click and drag: rotate
-                    </Typography>
-                    <Typography gutterBottom>
-                        Right-click and drag: pan
-                    </Typography>
-
-                </DialogContentText>
+                <Typography gutterBottom>
+                    Left-click on profile: expand connections
+                </Typography>
+                <Typography gutterBottom>
+                    Right-click on profile: open menu
+                </Typography>
+                <Typography gutterBottom>
+                    Scroll: zoom
+                </Typography>
+                <Typography gutterBottom>
+                    Left-click and drag: rotate
+                </Typography>
+                <Typography gutterBottom>
+                    Right-click and drag: pan
+                </Typography>
             </DialogContent>
             <DialogActions>
                 <Button color='success' onClick={handleClose}>Close</Button>
