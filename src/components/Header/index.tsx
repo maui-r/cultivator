@@ -1,14 +1,16 @@
+import { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
-import { Stack, Tooltip } from '@mui/material'
-import { useAccount, useConnect } from 'wagmi'
-import { InjectedConnector } from 'wagmi/connectors/injected'
+import { Button, Stack, Tooltip } from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
+import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
+import { POLYGON_CHAIN_ID } from '../../constants'
 import { useAppStore } from '../../stores'
+import { signIn } from '../../lens/auth'
 
 const SettingsButton = () => {
     const showSettings = useAppStore((state) => state.showSettings)
@@ -39,20 +41,54 @@ const HelpButton = () => {
     )
 }
 
-const WalletButton = () => {
+const SignInButton = () => {
+    const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+    const setShowConnectWallet = useAppStore((state) => state.setShowConnectWallet)
+    const [isSigningIn, setIsSigningIn] = useState(false)
     const { isConnected } = useAccount()
-    const { connect } = useConnect({
-        connector: new InjectedConnector(),
-    })
+    const { chain } = useNetwork()
+    const { isLoading, switchNetwork } = useSwitchNetwork()
 
-    if (isConnected) return null
+    const handleConnect = () => {
+        setShowConnectWallet(true)
+    }
+
+    const handleSignIn = async () => {
+        setIsSigningIn(true)
+        await signIn()
+        setIsSigningIn(false)
+    }
+
+    const handleSwitchNetwork = () => {
+        switchNetwork?.(POLYGON_CHAIN_ID)
+    }
+
+    if (isConnected && chain?.id !== POLYGON_CHAIN_ID) return (
+        <LoadingButton
+            color='inherit'
+            loading={isLoading}
+            onClick={handleSwitchNetwork}
+        >
+            Switch to Polygon
+        </LoadingButton>
+    )
+
+    if (hasSignedIn) return null
+
+    if (isConnected) return (
+        <LoadingButton
+            color='inherit'
+            loading={isSigningIn}
+            onClick={handleSignIn}
+        >
+            Sign In
+        </LoadingButton>
+    )
 
     return (
-        <Tooltip title='Connect wallet' enterDelay={300}>
-            <IconButton color='inherit' onClick={() => connect()} sx={{ px: '8px' }}>
-                <AccountBalanceWalletIcon fontSize='small' />
-            </IconButton>
-        </Tooltip>
+        <Button color='inherit' onClick={handleConnect}>
+            Connect
+        </Button>
     )
 }
 
@@ -67,8 +103,8 @@ const Header = () => {
 
                 <Stack direction='row' spacing={1.3}>
                     <SettingsButton />
-                    <WalletButton />
                     <HelpButton />
+                    <SignInButton />
                 </Stack>
 
             </Toolbar>

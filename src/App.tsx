@@ -3,15 +3,18 @@ import { styled } from '@mui/material/styles'
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material'
 import { RecoilRoot } from 'recoil'
 import { SnackbarProvider } from 'notistack'
-import { createClient, WagmiConfig } from 'wagmi'
-import { getDefaultProvider } from 'ethers'
+import { Provider as UrqlProvider } from 'urql'
+import { WagmiConfig } from 'wagmi'
+import wagmiClient from './wallets'
 import { ColorMode } from './types'
 import { useAppPersistStore } from './stores'
-import Help from './components/Dialog/Help'
-import Graph from './components/Graph'
 import Header from './components/Header'
 import ProfileMenu from './components/Menu/ProfileMenu'
+import Graph from './components/Graph'
 import SettingsDrawer from './components/Settings'
+import HelpDialog from './components/Dialog/Help'
+import ConnectWalletDialog from './components/Dialog/ConnectWallet'
+import lensClient from './lens/client'
 
 const themeComponents = {
   MuiCssBaseline: {
@@ -44,11 +47,6 @@ const getMode = (colorMode: ColorMode, isSystemDark: boolean) => {
   return isSystemDark ? 'dark' : 'light'
 }
 
-const wagmiClient = createClient({
-  autoConnect: true,
-  provider: getDefaultProvider(),
-})
-
 const Wrapper = styled('div')({
   display: 'flex',
   flexFlow: 'column',
@@ -66,10 +64,11 @@ const App = () => {
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
 
+  const mode = useMemo(() => getMode(colorMode, isSystemDark), [colorMode, isSystemDark])
   const theme = useMemo(() => createTheme({
-    palette: getThemePalette(getMode(colorMode, isSystemDark)),
+    palette: getThemePalette(mode),
     components: themeComponents,
-  }), [colorMode, isSystemDark])
+  }), [mode])
 
   const handleResize = () => {
     if (!mainRef.current) {
@@ -90,19 +89,23 @@ const App = () => {
       <RecoilRoot>
         <SnackbarProvider maxSnack={3}>
           <WagmiConfig client={wagmiClient}>
+            <UrqlProvider value={lensClient}>
 
-            <Wrapper>
-              <Header />
+              <Wrapper>
+                <Header />
 
-              <SettingsDrawer />
-              <Help />
+                <SettingsDrawer />
 
-              <Main ref={mainRef}>
-                <ProfileMenu />
-                <Graph width={width} height={height} />
-              </Main>
-            </Wrapper>
+                <HelpDialog />
+                <ConnectWalletDialog />
 
+                <Main ref={mainRef}>
+                  <ProfileMenu />
+                  <Graph width={width} height={height} />
+                </Main>
+              </Wrapper>
+
+            </UrqlProvider>
           </WagmiConfig>
         </SnackbarProvider>
       </RecoilRoot>

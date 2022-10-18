@@ -32,3 +32,6 @@ Builds the app for production to the `build` folder.
 
 #### `npm run cz`
 Creates a commit message with [commitizen](https://github.com/commitizen/cz-cli) cli.
+
+#### `npm run codegen`
+Generate types for GraphQL Queries and Mutations with [graphql-code-generator](https://www.the-guild.dev/graphql/codegen).
