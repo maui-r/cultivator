@@ -115,7 +115,7 @@ const Avatar = () => {
         <Box>
             <Tooltip title='Show user menu'>
                 <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
-                    <MuiAvatar alt="" src="" sx={{ width: 36, height: 36 }} />
+                    <MuiAvatar alt='' src='' sx={{ width: 36, height: 36 }} />
                 </IconButton>
             </Tooltip>
             <Menu
@@ -134,7 +134,7 @@ const Avatar = () => {
                 }}
             >
                 <MenuItem onClick={handleSignOut}>
-                    <Typography textAlign="center">Sign Out</Typography>
+                    <Typography textAlign='center'>Sign Out</Typography>
                 </MenuItem>
             </Menu>
         </Box>
