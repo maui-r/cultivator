@@ -1,6 +1,6 @@
-import { signMessage } from '@wagmi/core'
+import { getAccount, getNetwork, signMessage } from '@wagmi/core'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
-import { CHAIN_ID_KEY, JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY, POLYGON_CHAIN_ID, WALLET_ADDRESS_KEY } from '../constants'
+import { JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY, POLYGON_CHAIN_ID } from '../constants'
 import { useAppStore } from '../stores'
 import client from './client'
 import { graphql } from './schema'
@@ -44,10 +44,10 @@ export const setJwt = async (accessToken: string, refreshToken: string) => {
 }
 
 export const signIn = async () => {
-  const address = sessionStorage.getItem(WALLET_ADDRESS_KEY)
+  const { address } = getAccount()
   if (!address) return
-  const chainId = sessionStorage.getItem(CHAIN_ID_KEY)
-  if (!chainId || parseInt(chainId) !== POLYGON_CHAIN_ID) return
+  const { chain } = getNetwork()
+  if (chain?.id !== POLYGON_CHAIN_ID) return
 
   // Get challenge
   const challengeQueryResult = await client
