@@ -35,10 +35,12 @@ export const setJwt = async (accessToken: string, refreshToken: string) => {
     return
   }
 
+  // use milliseconds (like Date.now())
+  const expirationTimeInMilliseconds = expirationTime * 1000
   // Update local storage and state
   localStorage.setItem(JWT_ACCESS_TOKEN_KEY, accessToken)
   localStorage.setItem(JWT_REFRESH_TOKEN_KEY, refreshToken)
-  localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTime.toString())
+  localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTimeInMilliseconds.toString())
   // WARNING: zustand middleware that modify set or get are not applied
   useAppStore.setState({ hasSignedIn: true })
 }
