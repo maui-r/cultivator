@@ -1,10 +1,7 @@
 import { chain, configureChains, createClient } from 'wagmi'
 import { GetAccountResult, GetNetworkResult, watchAccount, watchNetwork } from '@wagmi/core'
 import { publicProvider } from 'wagmi/providers/public'
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
-import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { CHAIN_ID_KEY, WALLET_ADDRESS_KEY } from '../constants'
 
 const chains = [chain.polygon]
