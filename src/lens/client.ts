@@ -24,8 +24,8 @@ const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFu
 
     if (authState.refreshToken && authState.expirationTime && authState.expirationTime < Date.now()) {
         const refreshMutationResult = await mutate(RefreshQuery, { refreshToken: authState.refreshToken })
-        const accessToken = refreshMutationResult.data?.authenticate.accessToken
-        const refreshToken = refreshMutationResult.data?.authenticate.refreshToken
+        const accessToken = refreshMutationResult.data?.refresh.accessToken
+        const refreshToken = refreshMutationResult.data?.refresh.refreshToken
 
         if (!accessToken || !refreshToken) {
             await signOut()
