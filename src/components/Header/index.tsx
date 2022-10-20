@@ -105,7 +105,7 @@ const Avatar = () => {
     }
 
     const handleSignOut = () => {
-        setAnchor(null)
+        handleCloseMenu()
         signOut()
     }
 
