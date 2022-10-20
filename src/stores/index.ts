@@ -13,7 +13,8 @@ interface AppState {
     setShowConnectWallet: (showHelp: boolean) => void
     profileMenuPosition: PopoverPosition | null
     profileMenuHandle: string | null
-    setProfileMenu: (profileMenuPosition: PopoverPosition | null, profileMenuHandle: string | null) => void
+    profileMenuId: string | null
+    setProfileMenu: (profileMenuPosition: PopoverPosition | null, profileMenuHandle: string | null, profileMenuId: string | null) => void
     hasSignedIn: boolean
 }
 
@@ -26,7 +27,8 @@ export const useAppStore = create<AppState>((set) => ({
     setShowConnectWallet: (showConnectWallet) => set(() => ({ showConnectWallet })),
     profileMenuPosition: null,
     profileMenuHandle: null,
-    setProfileMenu: (profileMenuPosition, profileMenuHandle) => set(() => ({ profileMenuPosition, profileMenuHandle })),
+    profileMenuId: null,
+    setProfileMenu: (profileMenuPosition, profileMenuHandle, profileMenuId) => set(() => ({ profileMenuPosition, profileMenuHandle, profileMenuId })),
     hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
 }))
 
