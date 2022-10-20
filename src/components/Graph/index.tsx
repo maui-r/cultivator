@@ -26,7 +26,7 @@ type Follower = {
 
 type Node = {
     id: number,
-    handle: string,
+    profile: Profile,
 }
 
 type Link = {
@@ -47,14 +47,14 @@ const transformHandleData = (
     // Add profile
     nodes.push({
         id: parseInt(profile.id, 16),
-        handle: profile.handle,
+        profile,
     })
 
     // Add following
     following.forEach((f: Following) => {
         nodes.push({
             id: parseInt(f.profile.id, 16),
-            handle: f.profile.handle,
+            profile: f.profile,
         })
 
         links.push({
@@ -73,7 +73,7 @@ const transformHandleData = (
 
         nodes.push({
             id: parseInt(f.wallet.defaultProfile.id, 16),
-            handle: f.wallet.defaultProfile.handle,
+            profile: f.wallet.defaultProfile,
         })
 
         links.push({

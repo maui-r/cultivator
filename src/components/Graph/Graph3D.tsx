@@ -5,9 +5,14 @@ import SpriteText from 'three-spritetext'
 import { useAppPersistStore, useAppStore } from '../../stores'
 import { NodeStyle } from '../../types'
 
+interface Profile {
+    id: string
+    handle: string
+}
+
 type Node = {
     id: number,
-    handle: string,
+    profile: Profile,
 }
 
 type Link = {
@@ -29,7 +34,7 @@ interface Props {
 }
 
 interface ProfileNodeObject extends NodeObject {
-    handle?: string
+    profile?: Profile
 }
 
 const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }: Props) => {
@@ -38,11 +43,11 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
     const theme = useTheme()
 
     const onOpenProfileMenu = (node: ProfileNodeObject, event: MouseEvent) => {
-        if (!node.handle) {
+        if (!node.profile) {
             return
         }
 
-        setProfileMenu({ top: event.y, left: event.x }, node.handle)
+        setProfileMenu({ top: event.y, left: event.x }, node.profile.handle, node.profile.id)
     }
 
     const queriedNodeColor = theme.palette.mode === 'light' ? theme.palette.primary.main : theme.palette.secondary.main
@@ -52,7 +57,7 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
             graphProps = {
                 nodeLabel: 'handle',
                 nodeColor: (node: ProfileNodeObject) => {
-                    const isQueried = node.handle && queriedHandles.includes(node.handle)
+                    const isQueried = node.profile?.handle && queriedHandles.includes(node.profile?.handle)
                     return isQueried ? queriedNodeColor : theme.palette.text.primary
                 },
                 // default value
@@ -62,8 +67,8 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         case NodeStyle.LensHandle:
             graphProps = {
                 nodeThreeObject: (node: Node) => {
-                    const sprite = new SpriteText(node.handle)
-                    const isQueried = queriedHandles.includes(node.handle)
+                    const sprite = new SpriteText(node.profile.handle)
+                    const isQueried = queriedHandles.includes(node.profile.handle)
                     sprite.color = isQueried ? queriedNodeColor : theme.palette.text.primary
                     sprite.textHeight = isQueried ? 4 : 2
                     return sprite
@@ -83,7 +88,7 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         backgroundColor={backgroundColor}
         linkColor={linkColor}
         enableNodeDrag={false}
-        onNodeClick={(node: ProfileNodeObject) => addHandleToGraph(node.handle)}
+        onNodeClick={(node: ProfileNodeObject) => addHandleToGraph(node.profile?.handle)}
         onNodeRightClick={onOpenProfileMenu}
         showNavInfo={false}
         graphData={graphData}
