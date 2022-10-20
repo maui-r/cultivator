@@ -43,6 +43,7 @@ const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFu
         }
 
         await setJwt(accessToken, refreshToken)
+        return getAuthState()
     }
 
     // authState is invalid, clean up
