@@ -1,24 +1,25 @@
+import { useCallback, useEffect, useState } from 'react'
 import { Divider, Menu, MenuItem, styled } from '@mui/material'
-import { useCallback, useEffect } from 'react'
-import { useAccount } from 'wagmi'
+import { follow } from '../../lens/follow'
 import { useAppStore } from '../../stores'
 
 const MenuHeading = styled(MenuItem)({})
 
 const FollowItem = () => {
-    const { address } = useAccount()
-    const onFollow = () => {
-        // TODO
+    const profileMenuId = useAppStore((state) => state.profileMenuId)
+    const setProfileMenu = useAppStore((state) => state.setProfileMenu)
+    const [isHandlingFollow, setIsHandlingFollow] = useState<boolean>(false)
+
+    const handleFollow = async () => {
+        if (!profileMenuId) return // TODO: show error
+        setIsHandlingFollow(true)
+        await follow(profileMenuId)
+        setIsHandlingFollow(false)
+        setProfileMenu(null, null, null)
     }
 
-    // disabled if no wallet connected
-    if (!address) return (
-        <MenuItem disabled={true}>Follow</MenuItem>
-    )
-
-    return (
-        <MenuItem onClick={onFollow}>Follow</MenuItem>
-    )
+    if (isHandlingFollow) return <MenuItem disabled>loading...</MenuItem>
+    return <MenuItem onClick={handleFollow}>Follow</MenuItem>
 }
 
 const ShowOnLensFrensItem = () => {
@@ -39,7 +40,7 @@ const ProfileMenu = () => {
     const setProfileMenu = useAppStore((state) => state.setProfileMenu)
 
     const onCloseProfileMenu = useCallback(() => {
-        setProfileMenu(null, null)
+        setProfileMenu(null, null, null)
     }, [setProfileMenu])
 
     // close profile menu on right-click

@@ -25,6 +25,22 @@ const AuthenticateMutation = graphql(`
   }
 `)
 
+interface AuthState {
+  accessToken: string
+  refreshToken: string
+  expirationTime: number
+}
+
+export const getAuthState = (): AuthState | null => {
+  const accessToken = localStorage.getItem(JWT_ACCESS_TOKEN_KEY)
+  const refreshToken = localStorage.getItem(JWT_REFRESH_TOKEN_KEY)
+  const expirationTimeString = localStorage.getItem(JWT_EXPIRATION_TIME_KEY)
+  if (!accessToken || !refreshToken || !expirationTimeString) return null
+  const expirationTime = parseInt(expirationTimeString)
+
+  return { accessToken, refreshToken, expirationTime }
+}
+
 export const setJwt = async (accessToken: string, refreshToken: string) => {
   // Decode token to get expiration time
   const decodedAccessToken = jwtDecode<JwtPayload>(accessToken)
@@ -46,9 +62,14 @@ export const setJwt = async (accessToken: string, refreshToken: string) => {
 }
 
 export const signIn = async () => {
+  // check if user is already signed in
+  if (getAuthState()) return
+
   const { address } = getAccount()
+  // TODO: please connect wallet
   if (!address) return
   const { chain } = getNetwork()
+  // TODO: please switch chain
   if (chain?.id !== POLYGON_CHAIN_ID) return
 
   // Get challenge

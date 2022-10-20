@@ -2,8 +2,8 @@ import { DocumentNode } from 'graphql'
 import { makeOperation } from '@urql/core'
 import { authExchange } from '@urql/exchange-auth'
 import { cacheExchange, CombinedError, createClient, dedupExchange, fetchExchange, Operation, OperationContext, OperationResult, TypedDocumentNode } from 'urql'
-import { JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY, LENS_API_URL } from '../constants'
-import { setJwt, signOut } from './auth'
+import { LENS_API_URL } from '../constants'
+import { getAuthState, setJwt, signOut } from './auth'
 import { graphql } from './schema'
 
 interface MutateFunction<Data = any, Variables extends object = {}> {
@@ -18,16 +18,6 @@ const RefreshQuery = graphql(`
     }
   }
 `)
-
-const getAuthState = () => {
-    const accessToken = localStorage.getItem(JWT_ACCESS_TOKEN_KEY)
-    const refreshToken = localStorage.getItem(JWT_REFRESH_TOKEN_KEY)
-    const expirationTimeString = localStorage.getItem(JWT_EXPIRATION_TIME_KEY)
-    if (!accessToken || !refreshToken || !expirationTimeString) return null
-    const expirationTime = parseInt(expirationTimeString)
-
-    return { accessToken, refreshToken, expirationTime }
-}
 
 const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFunction }) => {
     if (!authState) return getAuthState()

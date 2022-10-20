@@ -1,0 +1,1 @@
+export { lensHubProxyAddress, lensHubProxyAbi } from './lensHubProxy'
