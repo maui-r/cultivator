@@ -26,7 +26,11 @@ const proxyActionStatus = async ({ proxyActionId }: { proxyActionId: string }) =
     .query(ProxyActionStatusRequest, { proxyActionId })
     .toPromise()
 
-  return result.data!.proxyActionStatus
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.proxyActionStatus
 }
 
 export const pollProxyActionResult = async (proxyActionId: string): Promise<ProxyActionStatusResult> => {
@@ -63,7 +67,9 @@ export const proxyActionFreeFollow = async ({ profileId }: { profileId: string }
     .mutation(ProxyActionFreeFollowMutation, { profileId })
     .toPromise()
 
-  console.log(result)
+  if (!result.data) {
+    throw new Error('No result data')
+  }
 
-  return result.data!.proxyAction
+  return result.data.proxyAction
 }
