@@ -13,7 +13,7 @@ const FollowItem = () => {
     const handleFollow = async () => {
         if (!profileMenuId) return // TODO: show error
         setIsHandlingFollow(true)
-        await follow(profileMenuId)
+        await follow({ profileId: profileMenuId })
         setIsHandlingFollow(false)
         setProfileMenu(null, null, null)
     }

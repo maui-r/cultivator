@@ -5,17 +5,14 @@ import { signIn } from './auth'
 import { utils } from 'ethers'
 import { POLYGON_CHAIN_ID } from '../constants'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../contracts'
+import { pollProxyActionResult, proxyActionFreeFollow } from './proxy'
+import { broadcast } from './broadcast'
+import { pollUntilIndexed } from './indexer'
+import { FollowRequest } from './schema/graphql'
 
 const CreateFollowTypedDataMutation = graphql(`
-  mutation CreateFollowTypedData($profileId: ProfileId!) {
-    createFollowTypedData(request:{
-      follow: [
-        {
-          profile: $profileId,
-          followModule: null
-        }
-      ]
-    }) {
+  mutation CreateFollowTypedData($request: FollowRequest!) {
+    createFollowTypedData(request: $request) {
       id
       expiresAt
       typedData {
@@ -42,30 +39,42 @@ const CreateFollowTypedDataMutation = graphql(`
   }
 `)
 
-
-const createFollowTypedData = async (profileId: string) => {
+const createFollowTypedData = async (request: FollowRequest) => {
   const result = await client
-    .mutation(CreateFollowTypedDataMutation, { profileId })
+    .mutation(CreateFollowTypedDataMutation, { request })
     .toPromise()
 
-  return result.data!.createFollowTypedData.typedData
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.createFollowTypedData
 }
 
-export const follow = async (profileId: string) => {
-  await signIn()
+const followProxy = async ({ profileId }: { profileId: string }) => {
+  const proxyActionFreeFollowResult = await proxyActionFreeFollow({ profileId })
+  const proxyActionResult = await pollProxyActionResult(proxyActionFreeFollowResult)
+  console.debug('follow tx hash:', proxyActionResult.txHash)
+}
 
-  const followTypedData = await createFollowTypedData(profileId)
-  // remove __typename fields
-  const { __typename: tmp0, ...domain } = followTypedData.domain
-  const { __typename: tmp1, ...types } = followTypedData.types
-  const { __typename: tmp2, ...value } = followTypedData.value
+const followBroadcast = async ({ followTypedData, signature }: { followTypedData: any, signature: string }) => {
+  const broadcastResult = await broadcast({ id: followTypedData.id, signature, })
+  if (broadcastResult.__typename === 'RelayError') {
+    throw new Error(broadcastResult.reason)
+  }
+  if (broadcastResult.__typename !== 'RelayerResult') {
+    throw new Error(`Unexpected broadcast result type: ${broadcastResult.__typename}`)
+  }
+  const indexedResult = await pollUntilIndexed({ txId: broadcastResult.txId })
+  console.debug('follow tx hash:', indexedResult.txReceipt?.transactionHash)
+}
 
-  // sign
-  const signature = await signTypedData({ domain, types, value })
+const followContract = async ({ signature, value }: { signature: string, value: any }) => {
   const { v, r, s } = utils.splitSignature(signature)
 
   const signer = await fetchSigner({ chainId: POLYGON_CHAIN_ID })
-  if (!signer) return // TODO: show error
+  if (!signer) return // TODO: show/catch error
+
   const lensHub = getContract({
     address: lensHubProxyAddress,
     abi: lensHubProxyAbi,
@@ -85,4 +94,45 @@ export const follow = async (profileId: string) => {
     },
   })
   console.debug('follow tx hash:', tx.hash)
+}
+
+export const follow = async ({ profileId }: { profileId: string }) => {
+  await signIn()
+
+  // TODO: check if already following?
+
+  try {
+    await followProxy({ profileId })
+    return
+  } catch {
+    console.log('proxy follow failed')
+  }
+
+  // TODO: construct request depending on follow module
+  const request = { follow: [{ profile: profileId }] }
+
+  const followTypedData = await createFollowTypedData(request)
+  // remove __typename fields
+  const { __typename: tmp0, ...domain } = followTypedData.typedData.domain
+  const { __typename: tmp1, ...types } = followTypedData.typedData.types
+  const { __typename: tmp2, ...value } = followTypedData.typedData.value
+
+  // ask user to sign typed data
+  const signature = await signTypedData({ domain, types, value })
+
+  try {
+    await followBroadcast({ followTypedData, signature })
+    return
+  } catch {
+    console.log('broadcast follow failed')
+  }
+
+  try {
+    await followContract({ value, signature })
+    return
+  } catch {
+    console.log('contract call follow failed')
+  }
+
+  // TODO: show error
 }
