@@ -20,5 +20,9 @@ export const broadcast = async ({ id, signature }: { id: string, signature: stri
     .mutation(BroadcastMutation, { id, signature })
     .toPromise()
 
-  return result.data!.broadcast
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.broadcast
 }
