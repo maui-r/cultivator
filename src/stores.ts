@@ -1,8 +1,8 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { PopoverPosition } from '@mui/material'
-import { ColorMode, NodeStyle } from '../types'
-import { JWT_ACCESS_TOKEN_KEY } from '../constants'
+import { ColorMode, NodeStyle } from './types'
+import { JWT_ACCESS_TOKEN_KEY } from './constants'
 
 interface AppState {
     showSettings: boolean
