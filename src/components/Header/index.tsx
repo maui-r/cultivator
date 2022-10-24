@@ -18,8 +18,8 @@ const SettingsButton = () => {
 
     return (
         <Tooltip title='Toggle settings drawer' enterDelay={300}>
-            <IconButton color='inherit' onClick={() => setShowSettings(!showSettings)} sx={{ px: '8px' }}>
-                <SettingsIcon fontSize='small' />
+            <IconButton color='inherit' onClick={() => setShowSettings(!showSettings)}>
+                <SettingsIcon />
             </IconButton>
         </Tooltip>
     )
@@ -34,8 +34,8 @@ const HelpButton = () => {
 
     return (
         <Tooltip title='Show help' enterDelay={300}>
-            <IconButton color='inherit' onClick={handleClick} sx={{ px: '8px' }}>
-                <HelpIcon fontSize='small' />
+            <IconButton color='inherit' onClick={handleClick}>
+                <HelpIcon />
             </IconButton>
         </Tooltip>
     )
@@ -114,7 +114,7 @@ const Avatar = () => {
     return (
         <Box>
             <Tooltip title='Show user menu'>
-                <IconButton onClick={handleOpenMenu} sx={{ p: 0 }}>
+                <IconButton onClick={handleOpenMenu}>
                     <MuiAvatar alt='' src='' sx={{ width: 36, height: 36 }} />
                 </IconButton>
             </Tooltip>
@@ -143,9 +143,8 @@ const Avatar = () => {
 
 const Header = () => {
     return (
-        <AppBar position='static'>
-            <Toolbar variant='dense'>
-
+        <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
+            <Toolbar>
                 <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
                     Cultivator
                 </Typography>

@@ -8,6 +8,15 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { useAppPersistStore, useAppStore } from '../../stores'
 import { ColorMode, NodeStyle } from '../../types'
 
+export const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}))
+
 const Heading = styled(Typography)(({ theme }) => ({
     margin: '20px 0 10px',
     color: theme.palette.grey[600],
@@ -112,15 +121,14 @@ const SettingsDrawer = () => {
             onClose={onClose}
             PaperProps={{
                 elevation: 0,
-                sx: { width: { xs: 310, sm: 360 }, borderRadius: '10px 0px 0px 10px' },
+                sx: { width: { xs: 310, sm: 360 } },
             }}
         >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-                <Typography variant='body1' fontWeight='500'>Settings</Typography>
-                <IconButton color='inherit' onClick={onClose} edge='end'>
-                    <CloseIcon fontSize='small' />
+            <DrawerHeader>
+                <IconButton onClick={onClose}>
+                    <CloseIcon />
                 </IconButton>
-            </Box>
+            </DrawerHeader>
 
             <Divider />
 
