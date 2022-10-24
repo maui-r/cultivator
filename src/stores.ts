@@ -1,34 +1,29 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { PopoverPosition } from '@mui/material'
 import { ColorMode, NodeStyle } from './types'
 import { JWT_ACCESS_TOKEN_KEY } from './constants'
 
 interface AppState {
+    selectedNodeId: number | null
+    selectNode: (nodeId: number) => void
     showSettings: boolean
     setShowSettings: (showSettings: boolean) => void
     showHelp: boolean
     setShowHelp: (showHelp: boolean) => void
     showConnectWallet: boolean
     setShowConnectWallet: (showHelp: boolean) => void
-    profileMenuPosition: PopoverPosition | null
-    profileMenuHandle: string | null
-    profileMenuId: string | null
-    setProfileMenu: (profileMenuPosition: PopoverPosition | null, profileMenuHandle: string | null, profileMenuId: string | null) => void
     hasSignedIn: boolean
 }
 
 export const useAppStore = create<AppState>((set) => ({
+    selectedNodeId: null,
+    selectNode: (selectedNodeId) => set(() => ({ selectedNodeId })),
     showSettings: false,
     setShowSettings: (showSettings) => set(() => ({ showSettings })),
     showHelp: false,
     setShowHelp: (showHelp) => set(() => ({ showHelp })),
     showConnectWallet: false,
     setShowConnectWallet: (showConnectWallet) => set(() => ({ showConnectWallet })),
-    profileMenuPosition: null,
-    profileMenuHandle: null,
-    profileMenuId: null,
-    setProfileMenu: (profileMenuPosition, profileMenuHandle, profileMenuId) => set(() => ({ profileMenuPosition, profileMenuHandle, profileMenuId })),
     hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
 }))
 
