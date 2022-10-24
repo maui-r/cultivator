@@ -1,10 +1,11 @@
 import { atom, useRecoilState } from 'recoil'
-import { getProfile, getRelations } from '../../lens'
 import { useCallback, useState } from 'react'
 import { useSnackbar } from 'notistack'
 import _ from 'lodash'
-import SelectHandle from '../Dialog/SelectHandle'
 import Graph3D from './Graph3D'
+import { hexToInt } from '../../helpers'
+import SelectHandle from '../Dialog/SelectHandle'
+import { getProfile, getRelations } from '../../lens'
 
 type Profile = {
     id: string,
@@ -46,20 +47,20 @@ const transformHandleData = (
 
     // Add profile
     nodes.push({
-        id: parseInt(profile.id, 16),
+        id: hexToInt(profile.id),
         profile,
     })
 
     // Add following
     following.forEach((f: Following) => {
         nodes.push({
-            id: parseInt(f.profile.id, 16),
+            id: hexToInt(f.profile.id),
             profile: f.profile,
         })
 
         links.push({
-            source: parseInt(profile.id, 16),
-            target: parseInt(f.profile.id, 16),
+            source: hexToInt(profile.id),
+            target: hexToInt(f.profile.id),
         })
     })
 
@@ -72,13 +73,13 @@ const transformHandleData = (
         }
 
         nodes.push({
-            id: parseInt(f.wallet.defaultProfile.id, 16),
+            id: hexToInt(f.wallet.defaultProfile.id),
             profile: f.wallet.defaultProfile,
         })
 
         links.push({
-            source: parseInt(f.wallet.defaultProfile.id, 16),
-            target: parseInt(profile.id, 16),
+            source: hexToInt(f.wallet.defaultProfile.id),
+            target: hexToInt(profile.id),
         })
     })
 

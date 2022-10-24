@@ -2,6 +2,7 @@ import { useTheme } from '@mui/material'
 import { useMemo } from 'react'
 import ForceGraph3D, { ForceGraphProps, NodeObject } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
+import { intToHex } from '../../helpers'
 import { useAppPersistStore, useAppStore } from '../../stores'
 import { NodeStyle } from '../../types'
 
@@ -40,6 +41,7 @@ interface ProfileNodeObject extends NodeObject {
 const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }: Props) => {
     const selectNode = useAppStore((state) => state.selectNode)
     const selectedNodeId = useAppStore((state) => state.selectedNodeId)
+    const selectedNodeIdStr = intToHex(selectedNodeId)
     const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
     const theme = useTheme()
 
@@ -54,7 +56,7 @@ const Graph3D = ({ width, height, addHandleToGraph, graphData, queriedHandles }:
         if (!node.profile) return theme.palette.text.primary
 
         // is selected?
-        if (selectedNodeId && parseInt(node.profile.id) === selectedNodeId) return selectedNodeColor
+        if (selectedNodeIdStr && node.profile.id === selectedNodeIdStr) return selectedNodeColor
 
         // is queried?
         if (node.profile.handle && queriedHandles.includes(node.profile.handle)) return queriedNodeColor
