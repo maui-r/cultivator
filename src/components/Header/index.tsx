@@ -145,7 +145,7 @@ const Header = () => {
     return (
         <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
             <Toolbar>
-                <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+                <Typography variant='h6' component='h1' sx={{ flexGrow: 1 }}>
                     Cultivator
                 </Typography>
 
