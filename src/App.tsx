@@ -11,9 +11,8 @@ import { useAppPersistStore } from './stores'
 import Header from './components/Header'
 import Graph from './components/Graph'
 import SettingsDrawer from './components/Settings'
-import HelpDialog from './components/Dialog/Help'
-import ConnectWalletDialog from './components/Dialog/ConnectWallet'
 import lensClient from './lens/client'
+import { Dialogs } from './components/Dialog'
 
 const themeComponents = {
   MuiCssBaseline: {
@@ -92,10 +91,8 @@ const App = () => {
 
               <Wrapper>
                 <Header />
+                <Dialogs />
                 <SettingsDrawer />
-
-                <HelpDialog />
-                <ConnectWalletDialog />
 
                 <Main ref={mainRef}>
                   <Graph width={width} height={height} />
