@@ -8,7 +8,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import { Box, Button, Menu, MenuItem, Avatar as MuiAvatar, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-import { POLYGON_CHAIN_ID } from '../../constants'
+import { APP_CHAIN_ID } from '../../constants'
 import { useAppStore } from '../../stores'
 import { signIn, signOut } from '../../lens/auth'
 
@@ -60,10 +60,10 @@ const SignInButton = () => {
     }
 
     const handleSwitchNetwork = () => {
-        switchNetwork?.(POLYGON_CHAIN_ID)
+        switchNetwork?.(APP_CHAIN_ID)
     }
 
-    if (isConnected && chain?.id !== POLYGON_CHAIN_ID) return (
+    if (isConnected && chain?.id !== APP_CHAIN_ID) return (
         <LoadingButton
             color='inherit'
             loading={isLoading}
