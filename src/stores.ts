@@ -11,7 +11,7 @@ interface AppState {
     showHelp: boolean
     setShowHelp: (showHelp: boolean) => void
     showConnectWallet: boolean
-    setShowConnectWallet: (showHelp: boolean) => void
+    setShowConnectWallet: (showConnectWallet: boolean) => void
     hasSignedIn: boolean
 }
 
