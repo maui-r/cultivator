@@ -11,7 +11,6 @@ import { useAppPersistStore } from './stores'
 import Header from './components/Header'
 import Graph from './components/Graph'
 import SettingsDrawer from './components/Settings'
-import NodeDetailsDrawer from './components/NodeDetails'
 import HelpDialog from './components/Dialog/Help'
 import ConnectWalletDialog from './components/Dialog/ConnectWallet'
 import lensClient from './lens/client'
@@ -93,7 +92,6 @@ const App = () => {
 
               <Wrapper>
                 <Header />
-                <NodeDetailsDrawer />
                 <SettingsDrawer />
 
                 <HelpDialog />
