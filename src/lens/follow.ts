@@ -3,7 +3,7 @@ import { graphql } from './schema'
 import client from './client'
 import { signIn } from './auth'
 import { utils } from 'ethers'
-import { POLYGON_CHAIN_ID } from '../constants'
+import { APP_CHAIN_ID } from '../constants'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../contracts'
 import { pollProxyActionResult, proxyActionFreeFollow } from './proxy'
 import { broadcast } from './broadcast'
@@ -72,7 +72,7 @@ const followBroadcast = async ({ followTypedData, signature }: { followTypedData
 const followContract = async ({ signature, value }: { signature: string, value: any }) => {
   const { v, r, s } = utils.splitSignature(signature)
 
-  const signer = await fetchSigner({ chainId: POLYGON_CHAIN_ID })
+  const signer = await fetchSigner({ chainId: APP_CHAIN_ID })
   if (!signer) return // TODO: show/catch error
 
   const lensHub = getContract({
