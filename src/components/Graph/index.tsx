@@ -6,6 +6,7 @@ import Graph3D from './Graph3D'
 import { hexToInt } from '../../helpers'
 import SelectHandle from '../Dialog/SelectHandle'
 import { getProfile, getRelations } from '../../lens'
+import NodeDetailsDrawer from '../NodeDetails'
 
 type Profile = {
     id: string,
@@ -150,6 +151,7 @@ const Graph = ({ width, height }: Props) => {
     return (
         <>
             <SelectHandle queriedHandles={queriedHandles} fetchingHandle={fetchingHandle} setFetchingHandle={setFetchingHandle} addHandleToGraph={addHandleToGraph} />
+            <NodeDetailsDrawer addHandleToGraph={addHandleToGraph} queriedHandles={queriedHandles} /> {/* TODO: move details drawer outside graph component */}
             <Graph3D width={width} height={height} addHandleToGraph={addHandleToGraph} graphData={graphData} queriedHandles={queriedHandles} />
         </>
     )

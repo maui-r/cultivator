@@ -15,3 +15,9 @@ export const intToHex = (int: number | null): string | null => {
 export const hexToInt = (hex: string): number => {
     return parseInt(hex, 16)
 }
+
+export const parseIpfs = (url: string | undefined): string | undefined => {
+    if (!url) return
+    if (!url.startsWith('ipfs://')) return url
+    return url.replace('ipfs://', 'https://ipfs.io/ipfs/')
+}
