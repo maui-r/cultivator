@@ -37,7 +37,8 @@ const ProfileQuery = graphql(`
 const ProfileDetails = ({ profileId, addHandleToGraph, queriedHandles }: { profileId: string, addHandleToGraph: Function, queriedHandles: string[] }) => {
   const [{ data, fetching, error }] = useQuery({
     query: ProfileQuery,
-    variables: { profileId }
+    variables: { profileId },
+    requestPolicy: 'cache-first',
   })
   const profile = data?.profile
   const isQueried = profile?.handle && queriedHandles.includes(profile.handle)
