@@ -1,7 +1,6 @@
 import { fetchSigner, getAccount, getContract, signTypedData } from '@wagmi/core'
 import { graphql } from './schema'
 import client from './client'
-import { signIn } from './auth'
 import { utils } from 'ethers'
 import { APP_CHAIN_ID } from '../constants'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../contracts'
@@ -97,7 +96,7 @@ const followContract = async ({ signature, value }: { signature: string, value: 
 }
 
 export const follow = async ({ profileId }: { profileId: string }) => {
-  await signIn()
+  //await signIn()
 
   // TODO: check if already following?
 

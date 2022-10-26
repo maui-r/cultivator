@@ -10,8 +10,8 @@ interface AppState {
     setShowSettings: (showSettings: boolean) => void
     showHelp: boolean
     setShowHelp: (showHelp: boolean) => void
-    showConnectWallet: boolean
-    setShowConnectWallet: (showConnectWallet: boolean) => void
+    showSignIn: boolean
+    setShowSignIn: (showSignIn: boolean) => void
     hasSignedIn: boolean
 }
 
@@ -22,8 +22,8 @@ export const useAppStore = create<AppState>((set) => ({
     setShowSettings: (showSettings) => set(() => ({ showSettings })),
     showHelp: false,
     setShowHelp: (showHelp) => set(() => ({ showHelp })),
-    showConnectWallet: false,
-    setShowConnectWallet: (showConnectWallet) => set(() => ({ showConnectWallet })),
+    showSignIn: false,
+    setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
     hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
 }))
 

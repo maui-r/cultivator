@@ -1,12 +1,12 @@
 import { useAppStore } from '../../stores'
-import ConnectWalletDialog from './ConnectWallet'
 import HelpDialog from './Help'
+import { SignInDialog } from './SignIn'
 
 export const Dialogs = () => {
     const showHelp = useAppStore((state) => state.showHelp)
-    const showConnectWallet = useAppStore((state) => state.showConnectWallet)
+    const showSignIn = useAppStore((state) => state.showSignIn)
 
     if (showHelp) return <HelpDialog />
-    if (showConnectWallet) return <ConnectWalletDialog />
+    if (showSignIn) return <SignInDialog />
     return null
 }
