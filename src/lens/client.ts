@@ -3,7 +3,7 @@ import { makeOperation } from '@urql/core'
 import { authExchange } from '@urql/exchange-auth'
 import { cacheExchange, CombinedError, createClient, dedupExchange, fetchExchange, Operation, OperationContext, OperationResult, TypedDocumentNode } from 'urql'
 import { LENS_API_URL } from '../constants'
-import { getAuthState, setJwt, signOut } from './auth'
+import { getAuthState, setAuthState, signOut } from './auth'
 import { graphql } from './schema'
 
 interface MutateFunction<Data = any, Variables extends object = {}> {
@@ -32,7 +32,7 @@ const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFu
             return null
         }
 
-        await setJwt(accessToken, refreshToken)
+        await setAuthState(accessToken, refreshToken)
         return getAuthState()
     }
 

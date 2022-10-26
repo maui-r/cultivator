@@ -5,12 +5,10 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { Box, Button, Menu, MenuItem, Avatar as MuiAvatar, Stack, Tooltip } from '@mui/material'
+import { Box, Menu, MenuItem, Avatar as MuiAvatar, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-import { APP_CHAIN_ID } from '../../constants'
 import { useAppStore } from '../../stores'
-import { signIn, signOut } from '../../lens/auth'
+import { signOut } from '../../lens/auth'
 
 const SettingsButton = () => {
     const showSettings = useAppStore((state) => state.showSettings)
@@ -42,58 +40,21 @@ const HelpButton = () => {
 }
 
 const SignInButton = () => {
-    const hasSignedIn = useAppStore((state) => state.hasSignedIn)
-    const setShowConnectWallet = useAppStore((state) => state.setShowConnectWallet)
-    const [isSigningIn, setIsSigningIn] = useState(false)
-    const { isConnected } = useAccount()
-    const { chain } = useNetwork()
-    const { isLoading, switchNetwork } = useSwitchNetwork()
+    const showSignIn = useAppStore((state) => state.showSignIn)
+    const setShowSignIn = useAppStore((state) => state.setShowSignIn)
 
-    const handleConnect = () => {
-        setShowConnectWallet(true)
-    }
-
-    const handleSignIn = async () => {
-        setIsSigningIn(true)
-        await signIn()
-        setIsSigningIn(false)
-    }
-
-    const handleSwitchNetwork = () => {
-        switchNetwork?.(APP_CHAIN_ID)
-    }
-
-    if (isConnected && chain?.id !== APP_CHAIN_ID) return (
+    return (
         <LoadingButton
             color='inherit'
-            loading={isLoading}
-            onClick={handleSwitchNetwork}
-        >
-            Switch to Polygon
-        </LoadingButton>
-    )
-
-    if (hasSignedIn) return null
-
-    if (isConnected) return (
-        <LoadingButton
-            color='inherit'
-            loading={isSigningIn}
-            onClick={handleSignIn}
+            loading={showSignIn}
+            onClick={() => setShowSignIn(true)}
         >
             Sign In
         </LoadingButton>
     )
-
-    return (
-        <Button color='inherit' onClick={handleConnect}>
-            Connect
-        </Button>
-    )
 }
 
 const Avatar = () => {
-    const hasSignedIn = useAppStore((state) => state.hasSignedIn)
     const [anchor, setAnchor] = useState<null | HTMLElement>(null)
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -108,8 +69,6 @@ const Avatar = () => {
         handleCloseMenu()
         signOut()
     }
-
-    if (!hasSignedIn) return null
 
     return (
         <Box>
@@ -142,6 +101,8 @@ const Avatar = () => {
 }
 
 const Header = () => {
+    const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+
     return (
         <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
             <Toolbar>
@@ -152,8 +113,7 @@ const Header = () => {
                 <Stack direction='row' spacing={1.3}>
                     <SettingsButton />
                     <HelpButton />
-                    <SignInButton />
-                    <Avatar />
+                    {hasSignedIn ? <Avatar /> : <SignInButton />}
                 </Stack>
 
             </Toolbar>
