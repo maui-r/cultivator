@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSnackbar } from 'notistack'
 import { useAccount, useConnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi'
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -28,12 +29,21 @@ const AuthenticateMutation = graphql(`
   }
 `)
 
+const ErrorContentText = () => {
+    return (
+        <DialogContentText color='error' sx={{ pt: 1 }}>
+            There was an error! Please try again.
+        </DialogContentText>
+    )
+}
+
 export const SignInDialog = () => {
     const setShowSignIn = useAppStore((state) => state.setShowSignIn)
     const hasSignedIn = useAppStore((state) => state.hasSignedIn)
     const [isSigningIn, setIsSigningIn] = useState<boolean>(false)
     const [signMessageError, setSignMessageError] = useState<Error | undefined>()
 
+    const { enqueueSnackbar } = useSnackbar()
     const { chain } = useNetwork()
     const { address, isConnected, isConnecting } = useAccount()
     const { error: connectError, connect, connectors, isLoading: isLoadingConnect, pendingConnector } = useConnect()
@@ -95,8 +105,11 @@ export const SignInDialog = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasSignedIn, chain, isConnected])
 
-    // TODO: show an error to the user?
-    if (error) console.error(error)
+    useEffect(() => {
+        if (!error) return
+        enqueueSnackbar('Something went wrong...', { variant: 'error' })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [error])
 
     // Connect wallet
     if (!isConnected) return (
@@ -106,6 +119,7 @@ export const SignInDialog = () => {
                 <DialogContentText>
                     Choose one of the providers to connect your wallet
                 </DialogContentText>
+                {error && <ErrorContentText />}
             </DialogContent>
             <DialogActions>
                 {connectors.map((connector: any) => (
@@ -131,6 +145,7 @@ export const SignInDialog = () => {
                 <DialogContentText>
                     Please switch to Polygon Mainnet
                 </DialogContentText>
+                {error && <ErrorContentText />}
             </DialogContent>
             <DialogActions>
                 <LoadingButton loading={isLoading} onClick={() => switchNetwork?.(APP_CHAIN_ID)}>Switch Network</LoadingButton>
@@ -147,6 +162,7 @@ export const SignInDialog = () => {
                 <DialogContentText>
                     You will be asked to sign a message to verify your ownership of the wallet
                 </DialogContentText>
+                {error && <ErrorContentText />}
             </DialogContent>
             <DialogActions>
                 <LoadingButton loading={isLoading} onClick={handleSignIn}>Sign In</LoadingButton>
