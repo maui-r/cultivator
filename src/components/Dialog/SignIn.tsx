@@ -5,7 +5,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { graphql } from '../../lens/schema'
-import { APP_CHAIN_ID } from '../../constants'
+import { APP_CHAIN_ID, APP_CHAIN_NAME } from '../../constants'
 import client from '../../lens/client'
 import { setAuthState, signOut } from '../../lens/auth'
 
@@ -148,7 +148,7 @@ export const SignInDialog = () => {
             <DialogTitle>Sign In with Lens</DialogTitle>
             <DialogContent dividers>
                 <DialogContentText>
-                    Please switch to Polygon Mainnet
+                    Please switch to {APP_CHAIN_NAME}
                 </DialogContentText>
                 {error && <ErrorContentText />}
             </DialogContent>
