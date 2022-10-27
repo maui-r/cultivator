@@ -57,6 +57,11 @@ export const SignInDialog = () => {
         try {
             setIsSigningIn(true)
 
+            if (!address) {
+                await signOut()
+                return
+            }
+
             // Get challenge
             const challengeQueryResult = await client
                 .query(ChallengeQuery, { address })
@@ -85,7 +90,7 @@ export const SignInDialog = () => {
                 return
             }
 
-            await setAuthState(accessToken, refreshToken)
+            await setAuthState({ address, accessToken, refreshToken })
             setShowSignIn(false)
         } finally {
             setIsSigningIn(false)
@@ -112,7 +117,7 @@ export const SignInDialog = () => {
     }, [error])
 
     // Connect wallet
-    if (!isConnected) return (
+    if (!isConnected || !address) return (
         <Dialog open={true} onClose={handleClose}>
             <DialogTitle>Sign In with Lens</DialogTitle>
             <DialogContent dividers>

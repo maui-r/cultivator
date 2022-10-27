@@ -1,24 +1,26 @@
 import jwtDecode, { JwtPayload } from 'jwt-decode'
-import { JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../constants'
+import { JWT_ACCESS_TOKEN_KEY, JWT_ADDRESS_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../constants'
 import { useAppStore } from '../stores'
 
 interface AuthState {
+  address: string
   accessToken: string
   refreshToken: string
   expirationTime: number
 }
 
 export const getAuthState = (): AuthState | null => {
+  const address = localStorage.getItem(JWT_ADDRESS_KEY)
   const accessToken = localStorage.getItem(JWT_ACCESS_TOKEN_KEY)
   const refreshToken = localStorage.getItem(JWT_REFRESH_TOKEN_KEY)
   const expirationTimeString = localStorage.getItem(JWT_EXPIRATION_TIME_KEY)
-  if (!accessToken || !refreshToken || !expirationTimeString) return null
+  if (!address || !accessToken || !refreshToken || !expirationTimeString) return null
   const expirationTime = parseInt(expirationTimeString)
 
-  return { accessToken, refreshToken, expirationTime }
+  return { address, accessToken, refreshToken, expirationTime }
 }
 
-export const setAuthState = async (accessToken: string, refreshToken: string) => {
+export const setAuthState = async ({ address, accessToken, refreshToken }: { address: string, accessToken: string, refreshToken: string }) => {
   try {
     // Decode token to get expiration time
     const decodedAccessToken = jwtDecode<JwtPayload>(accessToken)
@@ -32,6 +34,7 @@ export const setAuthState = async (accessToken: string, refreshToken: string) =>
     // Use milliseconds (like Date.now())
     const expirationTimeInMilliseconds = expirationTime * 1000
     // Update local storage and zustand
+    localStorage.setItem(JWT_ADDRESS_KEY, address)
     localStorage.setItem(JWT_ACCESS_TOKEN_KEY, accessToken)
     localStorage.setItem(JWT_REFRESH_TOKEN_KEY, refreshToken)
     localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTimeInMilliseconds.toString())
@@ -42,6 +45,7 @@ export const setAuthState = async (accessToken: string, refreshToken: string) =>
 
 export const signOut = async () => {
   try {
+    localStorage.removeItem(JWT_ADDRESS_KEY)
     localStorage.removeItem(JWT_ACCESS_TOKEN_KEY)
     localStorage.removeItem(JWT_REFRESH_TOKEN_KEY)
     localStorage.removeItem(JWT_EXPIRATION_TIME_KEY)
