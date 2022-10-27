@@ -32,7 +32,7 @@ const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFu
             return null
         }
 
-        await setAuthState(accessToken, refreshToken)
+        await setAuthState({ address: authState.address, accessToken, refreshToken })
         return getAuthState()
     }
 
