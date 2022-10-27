@@ -20,6 +20,7 @@ import Loading from './Loading'
 const ProfileQuery = graphql(`
   query Profile($profileId: ProfileId!) {
     profile(request: { profileId: $profileId }) {
+      id
       name
       handle
       bio
