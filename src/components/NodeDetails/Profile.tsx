@@ -95,7 +95,6 @@ const prepareFollowModuleParams = ({ followModule, followerProfileId }: { follow
 }
 
 const FollowButton = ({ profileId, followModule }: { profileId: string, followModule: Partial<FollowModule> | null | undefined }) => {
-  const showSignIn = useAppStore((state) => state.showSignIn)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
   const hasSignedIn = useAppStore((state) => state.hasSignedIn)
   const currentProfile = useAppStore((state) => state.currentProfile)
@@ -112,7 +111,7 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
     chainId: APP_CHAIN_ID,
   })
 
-  const isLoading = showSignIn || followInProgress || isSignTypedDataLoading || isWriteLoading
+  const isLoading = followInProgress || isSignTypedDataLoading || isWriteLoading
   const error = signTypedDataError || writeError
 
   const handleFollow = async () => {
