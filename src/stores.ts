@@ -1,6 +1,6 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { ColorMode, NodeStyle } from './types'
+import { ColorMode, CurrentProfile, NodeStyle } from './types'
 import { JWT_ACCESS_TOKEN_KEY } from './constants'
 
 interface AppState {
@@ -13,6 +13,7 @@ interface AppState {
     showSignIn: boolean
     setShowSignIn: (showSignIn: boolean) => void
     hasSignedIn: boolean
+    currentProfile: CurrentProfile | null
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -25,6 +26,7 @@ export const useAppStore = create<AppState>((set) => ({
     showSignIn: false,
     setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
     hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
+    currentProfile: null
 }))
 
 interface AppPersistState {

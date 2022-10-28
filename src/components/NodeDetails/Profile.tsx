@@ -8,8 +8,9 @@ import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useAppStore } from '../../stores'
-import { graphql } from '../../lens/schema'
 import { parseIpfs } from '../../helpers'
+import { graphql } from '../../lens/schema'
+import { FollowModule, FollowModuleRedeemParams } from '../../lens/schema/graphql'
 import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY } from '../../constants'
 import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
@@ -41,14 +42,63 @@ const ProfileQuery = graphql(`
         totalFollowing
       }
       isFollowedByMe
+      followModule {
+        ... on UnknownFollowModuleSettings {
+         type
+        }
+        ... on RevertFollowModuleSettings {
+         type
+        }
+        ... on ProfileFollowModuleSettings {
+         type
+        }
+        ... on FeeFollowModuleSettings {
+          type
+          amount {
+            asset {
+              symbol
+              name
+              decimals
+              address
+            }
+            value
+          }
+        }
+      }
     }
   }
 `)
 
-const FollowButton = ({ profileId }: { profileId: string }) => {
+const prepareFollowModuleParams = ({ followModule, followerProfileId }: { followModule: Partial<FollowModule> | null | undefined, followerProfileId: string | null }): FollowModuleRedeemParams | null => {
+  if (followModule?.__typename === 'FeeFollowModuleSettings') {
+    if (!followModule?.amount) throw new Error('Missing properties of followModule')
+    return {
+      feeFollowModule: {
+        amount: {
+          currency: followModule.amount.asset.address,
+          value: followModule.amount.value
+        }
+      }
+    }
+  }
+
+  if (followModule?.__typename === 'ProfileFollowModuleSettings') {
+    if (!followerProfileId) throw new Error('Missing followerProfileId')
+    return {
+      profileFollowModule: {
+        profileId: followerProfileId
+      }
+    }
+  }
+
+  return null
+}
+
+const FollowButton = ({ profileId, followModule }: { profileId: string, followModule: Partial<FollowModule> | null | undefined }) => {
   const showSignIn = useAppStore((state) => state.showSignIn)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
   const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+  const currentProfile = useAppStore((state) => state.currentProfile)
   const [followInProgress, setFollowInProgress] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
   const { address } = useAccount()
@@ -81,7 +131,6 @@ const FollowButton = ({ profileId }: { profileId: string }) => {
             variant: 'error',
           }
         )
-        setFollowInProgress(false)
         return
       }
 
@@ -93,20 +142,36 @@ const FollowButton = ({ profileId }: { profileId: string }) => {
             variant: 'error',
           }
         )
-        setFollowInProgress(false)
         return
       }
 
-      try {
-        const txHashProxy = await followProxy({ profileId })
-        handleFollowSuccess(txHashProxy)
+      if (followModule?.__typename === 'UnknownFollowModuleSettings') {
+        enqueueSnackbar('Unknown Follow Module not supported', { variant: 'error' })
         return
-      } catch {
-        console.log('proxy follow failed')
       }
 
-      // TODO: construct request depending on follow module
-      const request = { follow: [{ profile: profileId }] }
+      if (followModule?.__typename === 'RevertFollowModuleSettings') {
+        enqueueSnackbar('This profile can\'t be followed', { variant: 'error' })
+        return
+      }
+
+      if (followModule?.__typename === 'ProfileFollowModuleSettings' && !currentProfile?.id) {
+        enqueueSnackbar('A profile is required to follow this profile', { variant: 'error' })
+        return
+      }
+
+      if (!followModule) {
+        try {
+          const txHashProxy = await followProxy({ profileId })
+          handleFollowSuccess(txHashProxy)
+          return
+        } catch {
+          console.log('proxy follow failed')
+        }
+      }
+
+      const followModuleParams = prepareFollowModuleParams({ followModule, followerProfileId: currentProfile?.id })
+      const request = { follow: [{ profile: profileId, followModule: followModuleParams }] }
 
       const followTypedData = await createFollowTypedData(request)
       // Remove __typename fields
@@ -162,6 +227,7 @@ const FollowButton = ({ profileId }: { profileId: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
+
   return (
     <LoadingButton onClick={handleFollow} loading={isLoading} variant='contained' startIcon={<PersonAddIcon />} sx={{ m: 1 }}>Follow</LoadingButton>
   )
@@ -212,7 +278,7 @@ const ProfileDetails = ({ profileId, addHandleToGraph, queriedHandles }: { profi
       <Box sx={{ textAlign: 'center' }}>
         <Avatar src={getProfilePictureUrl(profile)} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} />}
+        {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1} direction='row'>
