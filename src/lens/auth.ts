@@ -1,6 +1,8 @@
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { JWT_ACCESS_TOKEN_KEY, JWT_ADDRESS_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../constants'
 import { useAppStore } from '../stores'
+import client from './client'
+import { graphql } from './schema'
 
 interface AuthState {
   address: string
@@ -40,6 +42,7 @@ export const setAuthState = async ({ address, accessToken, refreshToken }: { add
     localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTimeInMilliseconds.toString())
     // WARNING: zustand middleware that modify set or get are not applied
     useAppStore.setState({ hasSignedIn: true })
+    await updateCurrentProfileState(address)
   } catch { }
 }
 
@@ -51,5 +54,41 @@ export const signOut = async () => {
     localStorage.removeItem(JWT_EXPIRATION_TIME_KEY)
     // WARNING: zustand middleware that modify set or get are not applied
     useAppStore.setState({ hasSignedIn: false })
+    await updateCurrentProfileState(null)
   } catch { }
+}
+
+const DefaultProfileQuery = graphql(`
+  query DefaultProfile($ethereumAddress: EthereumAddress!) {
+    defaultProfile(request: { ethereumAddress: $ethereumAddress}) {
+      id
+      handle
+    }
+  }
+`)
+
+const getDefaultProfile = async (ethereumAddress: string) => {
+  const result = await client
+    .query(DefaultProfileQuery, { ethereumAddress })
+    .toPromise()
+
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.defaultProfile
+}
+
+const updateCurrentProfileState = async (address: string | null) => {
+  if (!address || !useAppStore.getState().hasSignedIn) {
+    useAppStore.setState({ currentProfile: null })
+    return
+  }
+
+  try {
+    const currentProfile = await getDefaultProfile(address)
+    useAppStore.setState({ currentProfile })
+  } catch {
+    useAppStore.setState({ currentProfile: null })
+  }
 }
