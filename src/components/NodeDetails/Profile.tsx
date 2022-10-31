@@ -260,14 +260,15 @@ const AddFollowingButton = ({ profileId }: { profileId: string }) => {
 
 const AddFollowersButton = ({ profileId }: { profileId: string }) => {
   const { enqueueSnackbar } = useSnackbar()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const isQuerying = useAppStore((state) => state.isQuerying)
+  const setIsQuerying = useAppStore((state) => state.setIsQuerying)
   const addNodes = useNodeStore((state) => state.addNodes)
   const nodes = useNodeStore((state) => state.nodes)
   const node = nodes[profileId]
 
   const handleAddFollowers = async () => {
     if (!node) return
-    setIsLoading(true)
+    setIsQuerying(true)
     try {
       console.debug('- add followers of', profileId)
       let requestCount = 0
@@ -318,19 +319,19 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
         }
       } while (requestCount < REQUEST_LIMIT)
     } finally {
-      setIsLoading(false)
+      setIsQuerying(false)
     }
   }
 
   if (!node.followersPageInfo) return (
     <Tooltip title='Add to graph'>
-      <LoadingButton variant='outlined' size='small' loading={isLoading} onClick={handleAddFollowers}>Add</LoadingButton>
+      <LoadingButton variant='outlined' size='small' loading={isQuerying} onClick={handleAddFollowers}>Add</LoadingButton>
     </Tooltip>
   )
 
   if (node.followersPageInfo.next <= node.followersPageInfo.total) return (
     <Tooltip title='Add to graph'>
-      <LoadingButton variant='outlined' size='small' loading={isLoading} onClick={handleAddFollowers}>Add more</LoadingButton>
+      <LoadingButton variant='outlined' size='small' loading={isQuerying} onClick={handleAddFollowers}>Add more</LoadingButton>
     </Tooltip>
   )
 
