@@ -1,4 +1,5 @@
-import { REQUEST_DELAY } from '../constants'
+import { FOLLOWING_LIMIT, REQUEST_DELAY } from '../constants'
+import { TooManyFollowingException } from '../errors'
 import { parseOffset, sleep } from '../helpers'
 import { Profile } from '../types'
 import client from './client'
@@ -130,7 +131,11 @@ export const getProfileNode = async (handleSource: string) => {
     total = result.pageInfo.totalCount ?? 0
     nextOffset = parseOffset(result.pageInfo.next)
     result.items.forEach((item: { profile: { id: string } }) => { following.push(item.profile.id) })
-  } while (nextOffset < total)
+  } while (nextOffset < total && total <= FOLLOWING_LIMIT)
+
+  if (total > FOLLOWING_LIMIT) {
+    throw new TooManyFollowingException()
+  }
 
   const profile = { id, handle, ownedBy, following, followingPageInfo: { next: nextOffset, total } }
 

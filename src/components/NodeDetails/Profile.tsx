@@ -18,6 +18,7 @@ import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
 import Loading from './Loading'
 import { fetchNextFollower, getProfileNode } from '../../lens/profile'
+import { TooManyFollowingException } from '../../errors'
 
 const ProfileQuery = graphql(`
   query Profile($profileId: ProfileId!) {
@@ -258,6 +259,7 @@ const AddFollowingButton = ({ profileId }: { profileId: string }) => {
 }
 
 const AddFollowersButton = ({ profileId }: { profileId: string }) => {
+  const { enqueueSnackbar } = useSnackbar()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const addNodes = useNodeStore((state) => state.addNodes)
   const nodes = useNodeStore((state) => state.nodes)
@@ -298,15 +300,22 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
         }
 
         // Fetch follower's following
-        console.debug('-- fetch followers following')
+        try {
+          console.debug('-- fetch followers following')
 
-        // TODO: modify getProfileNode function
-        //   we could pass a profileMin object and save one request
-        const { profile: follower, requestCount: rc } = await getProfileNode(followerMin.handle)
-        requestCount += rc
-
-        addNodes([updatedProfile, follower])
-        console.debug('- request count:', requestCount)
+          // TODO: modify getProfileNode function
+          //   we could pass a profileMin object and save one request
+          const { profile: follower, requestCount: rc } = await getProfileNode(followerMin.handle)
+          requestCount += rc
+          addNodes([updatedProfile, follower])
+          console.debug('- request count:', requestCount)
+        } catch (error) {
+          if (error instanceof TooManyFollowingException) {
+            enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
+            continue
+          }
+          throw error
+        }
       } while (requestCount < REQUEST_LIMIT)
     } finally {
       setIsLoading(false)
