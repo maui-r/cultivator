@@ -4,6 +4,7 @@ export const APP_CHAIN_NAME = process.env.REACT_APP_CHAIN_NAME ?? 'Polygon Mainn
 
 export const REQUEST_DELAY = 1000
 export const REQUEST_LIMIT = 50
+export const FOLLOWING_LIMIT = 500
 
 // local storage keys
 export const JWT_ADDRESS_KEY = 'jwtAddress' // Address of the authenticated wallet

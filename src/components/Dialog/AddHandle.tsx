@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useSnackbar } from 'notistack'
 import { useAppStore, useNodeStore } from '../../stores'
 import { getProfileNode } from '../../lens/profile'
+import { TooManyFollowingException } from '../../errors'
 
 export const AddHandleDialog = () => {
     const addNodes = useNodeStore((state) => state.addNodes)
@@ -26,7 +27,12 @@ export const AddHandleDialog = () => {
                 addNodes([profile])
                 selectNode(profile.id)
                 return
-            } catch {
+            } catch (error) {
+                if (error instanceof TooManyFollowingException) {
+                    enqueueSnackbar(`${handle} is following too many profiles`, { variant: 'error' })
+                    return
+                }
+
                 if (!handle.endsWith('.lens')) {
                     // try again with '.lens' appended
                     try {
@@ -35,7 +41,12 @@ export const AddHandleDialog = () => {
                         addNodes([profile])
                         selectNode(profile.id)
                         return
-                    } catch { }
+                    } catch (error) {
+                        if (error instanceof TooManyFollowingException) {
+                            enqueueSnackbar(`${handle} is following too many profiles`, { variant: 'error' })
+                            return
+                        }
+                    }
                 }
                 enqueueSnackbar(`Handle not found: ${handle}`, { variant: 'error' })
             }
