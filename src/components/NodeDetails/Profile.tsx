@@ -269,10 +269,12 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
     if (!node) return
     setIsQuerying(true)
     try {
+      if (node.followersPageInfo && node.followersPageInfo.next === node.followersPageInfo.total) return
       console.debug('- add followers of', profileId)
       let requestCount = 0
       let followerMin
       let updatedProfile = node
+      let isLast
       do {
         do {
           // Fetch follower
@@ -282,9 +284,10 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
           requestCount++
           followerMin = result.follower
           updatedProfile = result.updatedProfile
+          isLast = result.isLast
           console.debug('--- got follower:', result.follower)
           // followerMin is null if the follower doesn't have a default profile set up
-        } while (!followerMin && requestCount < REQUEST_LIMIT)
+        } while (!isLast && !followerMin && requestCount < REQUEST_LIMIT)
 
         if (!followerMin) {
           addNodes([updatedProfile])
@@ -329,7 +332,7 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
     </Tooltip>
   )
 
-  if (node.followersPageInfo.next <= node.followersPageInfo.total) return (
+  if (node.followersPageInfo.next < node.followersPageInfo.total) return (
     <Tooltip title='Add to graph'>
       <LoadingButton variant='outlined' size='small' loading={isQuerying} onClick={handleAddFollowers}>Add more</LoadingButton>
     </Tooltip>
