@@ -373,7 +373,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
         {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
-      <Stack spacing={1} sx={{ m: 2 }}>
+      <Stack spacing={1}>
         <Card variant='outlined' sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', p: 1 }}>
           <Box>
             <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowers}</Typography>
