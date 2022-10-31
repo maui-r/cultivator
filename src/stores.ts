@@ -15,6 +15,8 @@ interface AppState {
     setShowSignIn: (showSignIn: boolean) => void
     hasSignedIn: boolean
     currentProfile: CurrentProfile | null
+    isQuerying: boolean
+    setIsQuerying: (isQuerying: boolean) => void
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -27,7 +29,9 @@ export const useAppStore = create<AppState>((set) => ({
     showSignIn: false,
     setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
     hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
-    currentProfile: null
+    currentProfile: null,
+    isQuerying: false,
+    setIsQuerying: (isQuerying) => set(() => ({ isQuerying })),
 }))
 
 interface AppPersistState {

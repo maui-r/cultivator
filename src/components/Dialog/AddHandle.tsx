@@ -1,6 +1,6 @@
 import { Backdrop, Box, Grid, Paper, TextField, Typography } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useSnackbar } from 'notistack'
 import { useAppStore, useNodeStore } from '../../stores'
 import { getProfileNode } from '../../lens/profile'
@@ -9,14 +9,15 @@ import { TooManyFollowingException } from '../../errors'
 export const AddHandleDialog = () => {
     const addNodes = useNodeStore((state) => state.addNodes)
     const selectNode = useAppStore((state) => state.selectNode)
+    const isQuerying = useAppStore((state) => state.isQuerying)
+    const setIsQuerying = useAppStore((state) => state.setIsQuerying)
     const handleInputRef = useRef<HTMLInputElement>()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { enqueueSnackbar } = useSnackbar()
 
     const handleAdd = async () => {
-        if (isLoading) return
+        if (isQuerying) return
         try {
-            setIsLoading(true)
+            setIsQuerying(true)
             const handle = handleInputRef?.current?.value
             if (!handle) {
                 enqueueSnackbar('Please enter a non-empty handle', { variant: 'error' })
@@ -51,7 +52,7 @@ export const AddHandleDialog = () => {
                 enqueueSnackbar(`Handle not found: ${handle}`, { variant: 'error' })
             }
         } finally {
-            setIsLoading(false)
+            setIsQuerying(false)
         }
     }
 
@@ -89,7 +90,7 @@ export const AddHandleDialog = () => {
                         </Grid>
                         <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
                             <LoadingButton
-                                loading={isLoading}
+                                loading={isQuerying}
                                 onClick={handleAdd}
                                 variant='contained'
                                 color='success'
