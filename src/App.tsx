@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { styled } from '@mui/material/styles'
-import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material'
-import { RecoilRoot } from 'recoil'
+import { createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
 import { Provider as UrqlProvider } from 'urql'
 import { WagmiConfig } from 'wagmi'
@@ -9,10 +8,11 @@ import wagmiClient from './wallets'
 import { ColorMode } from './types'
 import { useAppPersistStore } from './stores'
 import Header from './components/Header'
-import Graph from './components/Graph'
 import SettingsDrawer from './components/Settings'
 import lensClient from './lens/client'
 import { Dialogs } from './components/Dialog'
+import { Graph3D } from './components/Graph'
+import { NodeDetails } from './components/NodeDetails'
 
 const themeComponents = {
   MuiCssBaseline: {
@@ -48,19 +48,16 @@ const getMode = (colorMode: ColorMode, isSystemDark: boolean) => {
 const Wrapper = styled('div')({
   display: 'flex',
   flexFlow: 'column',
-  height: '100vh'
+  height: '100vh',
 })
 
-const Main = styled('main')({
-  flex: '1 1 auto'
+const Content = styled(Grid)({
+  flex: '1 1 auto',
 })
 
 const App = () => {
   const colorMode = useAppPersistStore((state) => state.colorMode)
   const isSystemDark: boolean = useMediaQuery('(prefers-color-scheme: dark)')
-  const mainRef = useRef<HTMLElement>(null)
-  const [width, setWidth] = useState<number>(0)
-  const [height, setHeight] = useState<number>(0)
 
   const mode = useMemo(() => getMode(colorMode, isSystemDark), [colorMode, isSystemDark])
   const theme = useMemo(() => createTheme({
@@ -68,41 +65,28 @@ const App = () => {
     components: themeComponents,
   }), [mode])
 
-  const handleResize = () => {
-    if (!mainRef.current) {
-      return
-    }
-    setWidth(mainRef.current.clientWidth)
-    setHeight(mainRef.current.clientHeight)
-  }
-
-  useEffect(() => {
-    handleResize()
-    window.addEventListener('resize', handleResize)
-  }, [])
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RecoilRoot>
-        <SnackbarProvider maxSnack={3}>
-          <WagmiConfig client={wagmiClient}>
-            <UrqlProvider value={lensClient}>
+      <SnackbarProvider maxSnack={3}>
+        <WagmiConfig client={wagmiClient}>
+          <UrqlProvider value={lensClient}>
 
-              <Wrapper>
-                <Header />
-                <Dialogs />
-                <SettingsDrawer />
+            <Wrapper>
+              <Header />
+              <Dialogs />
+              <SettingsDrawer />
 
-                <Main ref={mainRef}>
-                  <Graph width={width} height={height} />
-                </Main>
-              </Wrapper>
+              <Content container>
+                <NodeDetails />
+                <Graph3D />
+              </Content>
 
-            </UrqlProvider>
-          </WagmiConfig>
-        </SnackbarProvider>
-      </RecoilRoot>
+            </Wrapper>
+
+          </UrqlProvider>
+        </WagmiConfig>
+      </SnackbarProvider>
     </ThemeProvider>
   )
 }

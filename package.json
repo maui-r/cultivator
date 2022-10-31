@@ -1,7 +1,6 @@
 {
   "name": "cultivator",
   "dependencies": {
-    "@apollo/client": "^3.7.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@fontsource/roboto": "^4.5.8",
@@ -17,9 +16,9 @@
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "@urql/exchange-auth": "^1.0.0",
-    "@wagmi/core": "^0.6.4",
     "ethers": "5.7.1",
     "graphql": "^16.6.0",
+    "immer": "^9.0.16",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "notistack": "^2.0.8",
@@ -27,7 +26,6 @@
     "react-dom": "^18.2.0",
     "react-force-graph-3d": "^1.21.13",
     "react-scripts": "5.0.1",
-    "recoil": "^0.7.6",
     "three-spritetext": "^1.6.5",
     "urql": "^3.0.3",
     "wagmi": "^0.7.5",
