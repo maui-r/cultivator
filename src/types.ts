@@ -1,4 +1,4 @@
-import { Profile } from './lens/schema/graphql'
+import { Profile as LensProfile } from './lens/schema/graphql'
 
 export enum NodeStyle {
     Bubble = 'Bubble',
@@ -11,4 +11,25 @@ export enum ColorMode {
     Dark = 'Dark',
 }
 
-export type CurrentProfile = Pick<Profile, 'id' | 'handle'>
+export type CurrentProfile = Pick<LensProfile, 'id' | 'handle'>
+
+export type QueryPageInfo = {
+    next: number,
+    total: number,
+}
+
+export type Profile = {
+    id: string,
+    handle: string,
+    ownedBy: string,
+    following: Array<Node['id']>,
+    followingPageInfo?: QueryPageInfo,
+    followersPageInfo?: QueryPageInfo,
+}
+
+export type Node = Profile
+
+export type Link = {
+    source: string,
+    target: string,
+}

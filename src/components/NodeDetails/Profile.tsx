@@ -7,16 +7,17 @@ import { Avatar, Box, Button, Card, Stack, Tooltip, Typography } from '@mui/mate
 import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
-import { useAppStore } from '../../stores'
-import { parseIpfs } from '../../helpers'
+import { useAppStore, useNodeStore } from '../../stores'
+import { parseIpfs, sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
 import { FollowModule, FollowModuleRedeemParams } from '../../lens/schema/graphql'
-import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY } from '../../constants'
+import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
 import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
 import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
 import Loading from './Loading'
+import { fetchNextFollower, getProfileNode } from '../../lens/profile'
 
 const ProfileQuery = graphql(`
   query Profile($profileId: ProfileId!) {
@@ -238,14 +239,102 @@ const UnfollowButton = ({ profileId }: { profileId: string }) => {
   )
 }
 
-const ProfileDetails = ({ profileId, addHandleToGraph, queriedHandles }: { profileId: string, addHandleToGraph: Function, queriedHandles: string[] }) => {
+const AddFollowingButton = ({ profileId }: { profileId: string }) => {
+  const disabled = true
+
+  const handleAddFollowing = () => {
+    // TODO
+  }
+
+  if (disabled) return (
+    <Button variant='outlined' size='small' onClick={handleAddFollowing} disabled={true}>Add</Button>
+  )
+
+  return (
+    <Tooltip title='Add to graph'>
+      <Button variant='outlined' size='small' onClick={handleAddFollowing}>Add</Button>
+    </Tooltip>
+  )
+}
+
+const AddFollowersButton = ({ profileId }: { profileId: string }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const addNodes = useNodeStore((state) => state.addNodes)
+  const nodes = useNodeStore((state) => state.nodes)
+  const node = nodes[profileId]
+
+  const handleAddFollowers = async () => {
+    if (!node) return
+    setIsLoading(true)
+    try {
+      console.debug('- add followers of', profileId)
+      let requestCount = 0
+      let followerMin
+      let updatedProfile = node
+      do {
+        do {
+          // Fetch follower
+          console.debug('-- fetch next follower')
+          await sleep(REQUEST_DELAY)
+          const result = await fetchNextFollower(updatedProfile)
+          requestCount++
+          followerMin = result.follower
+          updatedProfile = result.updatedProfile
+          console.debug('--- got follower:', result.follower)
+          // followerMin is null if the follower doesn't have a default profile set up
+        } while (!followerMin && requestCount < REQUEST_LIMIT)
+
+        if (!followerMin) {
+          addNodes([updatedProfile])
+          console.debug('-- no next follower')
+          return
+        }
+
+        if (nodes[followerMin.id]) {
+          // Follower is already present
+          addNodes([updatedProfile])
+          console.debug('-- follower already present')
+          continue
+        }
+
+        // Fetch follower's following
+        console.debug('-- fetch followers following')
+
+        // TODO: modify getProfileNode function
+        //   we could pass a profileMin object and save one request
+        const { profile: follower, requestCount: rc } = await getProfileNode(followerMin.handle)
+        requestCount += rc
+
+        addNodes([updatedProfile, follower])
+        console.debug('- request count:', requestCount)
+      } while (requestCount < REQUEST_LIMIT)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (!node.followersPageInfo) return (
+    <Tooltip title='Add to graph'>
+      <LoadingButton variant='outlined' size='small' loading={isLoading} onClick={handleAddFollowers}>Add</LoadingButton>
+    </Tooltip>
+  )
+
+  if (node.followersPageInfo.next <= node.followersPageInfo.total) return (
+    <Tooltip title='Add to graph'>
+      <LoadingButton variant='outlined' size='small' loading={isLoading} onClick={handleAddFollowers}>Add more</LoadingButton>
+    </Tooltip>
+  )
+
+  return <Button variant='outlined' size='small' disabled={true}>Add</Button>
+}
+
+const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const [{ data, fetching, error }] = useQuery({
     query: ProfileQuery,
     variables: { profileId },
     requestPolicy: 'cache-first',
   })
   const profile = data?.profile
-  const isQueried = profile?.handle && queriedHandles.includes(profile.handle)
 
   // TODO: use proper type for profile
   const getProfilePictureUrl = (profile: any) => {
@@ -258,12 +347,6 @@ const ProfileDetails = ({ profileId, addHandleToGraph, queriedHandles }: { profi
     if (profile.picture.__typename === 'NftImage') {
       return parseIpfs(profile.picture.uri)
     }
-  }
-
-  const handleAdd = () => {
-    if (!profile) return
-    if (isQueried) return
-    addHandleToGraph(profile.handle)
   }
 
   if (fetching) return <Loading />
@@ -280,24 +363,20 @@ const ProfileDetails = ({ profileId, addHandleToGraph, queriedHandles }: { profi
         {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
-      <Stack spacing={1} direction='row'>
+      <Stack spacing={1} sx={{ m: 2 }}>
         <Card variant='outlined' sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', p: 1 }}>
           <Box>
             <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowers}</Typography>
             <Typography sx={{ fontWeight: 300 }}>Followers</Typography>
           </Box>
-          <Tooltip title='Add to graph'>
-            <Button variant='outlined' size='small' onClick={handleAdd} disabled={isQueried}>Add</Button>
-          </Tooltip>
+          <AddFollowersButton profileId={profileId} />
         </Card>
         <Card variant='outlined' sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', p: 1 }}>
           <Box>
             <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowing}</Typography>
             <Typography sx={{ fontWeight: 300 }}>Following</Typography>
           </Box>
-          <Tooltip title='Add to graph'>
-            <Button variant='outlined' size='small' onClick={handleAdd} disabled={isQueried}>Add</Button>
-          </Tooltip>
+          <AddFollowingButton profileId={profileId} />
         </Card>
       </Stack>
     </Box>

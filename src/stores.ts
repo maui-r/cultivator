@@ -1,11 +1,12 @@
+import produce from 'immer'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
-import { ColorMode, CurrentProfile, NodeStyle } from './types'
 import { JWT_ACCESS_TOKEN_KEY } from './constants'
+import { ColorMode, CurrentProfile, Node, NodeStyle } from './types'
 
 interface AppState {
-    selectedNodeId: number | null
-    selectNode: (nodeId: number) => void
+    selectedNodeId: string | null
+    selectNode: (nodeId: string) => void
     showSettings: boolean
     setShowSettings: (showSettings: boolean) => void
     showHelp: boolean
@@ -47,3 +48,25 @@ export const useAppPersistStore = create(
         { name: 'cultivator.store' }
     )
 )
+
+interface NodeState {
+    nodes: { [key: Node['id']]: Node }
+    addNodes: (newNodes: Node[], skipExisting?: boolean) => void
+}
+
+export const useNodeStore = create<NodeState>((set) => ({
+    nodes: {},
+    addNodes: (newNodes, skipExisting = false) => set(produce(draft => {
+        newNodes.forEach((newNode: Node) => {
+            const node = draft.nodes[newNode.id]
+            if (skipExisting && node) return
+            if (node) {
+                // Merge existing node with new node
+                draft.nodes[node.id] = { ...draft.nodes[node.id], ...newNode }
+            } else {
+                // Add new node
+                draft.nodes[newNode.id] = newNode
+            }
+        })
+    }))
+}))

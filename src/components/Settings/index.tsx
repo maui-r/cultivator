@@ -116,7 +116,7 @@ const SettingsDrawer = () => {
 
     return (
         <Drawer
-            anchor='right'
+            anchor='left'
             open={showSettings}
             onClose={onClose}
             PaperProps={{
