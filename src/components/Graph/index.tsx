@@ -84,6 +84,7 @@ export const Graph3D = () => {
                 height={height}
                 backgroundColor={backgroundColor}
                 linkColor={linkColor}
+                linkOpacity={0.7}
                 enableNodeDrag={false}
                 onNodeClick={handleNodeClick}
                 showNavInfo={false}
