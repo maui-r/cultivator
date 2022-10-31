@@ -259,7 +259,6 @@ const AddFollowingButton = ({ profileId }: { profileId: string }) => {
 }
 
 const AddFollowersButton = ({ profileId }: { profileId: string }) => {
-  const { enqueueSnackbar } = useSnackbar()
   const isQuerying = useAppStore((state) => state.isQuerying)
   const setIsQuerying = useAppStore((state) => state.setIsQuerying)
   const addNodes = useNodeStore((state) => state.addNodes)
@@ -312,7 +311,8 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
           console.debug('- request count:', requestCount)
         } catch (error) {
           if (error instanceof TooManyFollowingException) {
-            enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
+            console.log('Skipping', followerMin.handle)
+            //enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
             continue
           }
           throw error
