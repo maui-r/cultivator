@@ -53,9 +53,12 @@ const ProfileWithFollowersQuery = graphql(`
 
 export const fetchNextFollower = async (profile: Profile) => {
   const cursorOffset = profile.followersPageInfo?.next ?? 0
+  if (profile.followersPageInfo && cursorOffset >= profile.followersPageInfo.total) {
+    throw new Error('No more followers')
+  }
+
   // eslint-disable-next-line no-useless-escape
   const cursor = `{\"offset\":${cursorOffset}}`
-
   const result = await client
     .query(ProfileWithFollowersQuery, { profileId: profile.id, limit: 1, cursor })
     .toPromise()
@@ -78,7 +81,9 @@ export const fetchNextFollower = async (profile: Profile) => {
     }
   }
 
-  return { follower, updatedProfile }
+  const isLast = updatedProfile.followersPageInfo!.next === updatedProfile.followersPageInfo!.total
+
+  return { follower, updatedProfile, isLast }
 }
 
 const FollowingIdsQuery = graphql(`
