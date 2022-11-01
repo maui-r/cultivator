@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react'
-import { utils } from 'ethers'
+//import { useEffect, useState } from 'react'
+//import { utils } from 'ethers'
 import { useQuery } from 'urql'
-import { useSnackbar } from 'notistack'
-import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
+//import { useSnackbar } from 'notistack'
+//import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
 import { Avatar, Box, Button, Card, Stack, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
+//import PersonAddIcon from '@mui/icons-material/PersonAdd'
+//import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useAppStore, useNodeStore } from '../../stores'
 import { parseIpfs, sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
-import { FollowModule, FollowModuleRedeemParams } from '../../lens/schema/graphql'
-import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
-import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
-import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
-import { signOut } from '../../lens/auth'
+//import { FollowModule, FollowModuleRedeemParams } from '../../lens/schema/graphql'
+//import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
+import { REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
+//import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
+//import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
+//import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
 import Loading from './Loading'
 import { fetchNextFollower, getProfileNode } from '../../lens/profile'
@@ -71,6 +72,7 @@ const ProfileQuery = graphql(`
   }
 `)
 
+/*
 const prepareFollowModuleParams = ({ followModule, followerProfileId }: { followModule: Partial<FollowModule> | null | undefined, followerProfileId: string | null }): FollowModuleRedeemParams | null => {
   if (followModule?.__typename === 'FeeFollowModuleSettings') {
     if (!followModule?.amount) throw new Error('Missing properties of followModule')
@@ -257,6 +259,7 @@ const AddFollowingButton = ({ profileId }: { profileId: string }) => {
     </Tooltip>
   )
 }
+*/
 
 const AddFollowersButton = ({ profileId }: { profileId: string }) => {
   const isQuerying = useAppStore((state) => state.isQuerying)
@@ -373,7 +376,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <Avatar src={getProfilePictureUrl(profile)} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />}
+        {/* {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />} */}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>
@@ -389,7 +392,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
             <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowing}</Typography>
             <Typography sx={{ fontWeight: 300 }}>Following</Typography>
           </Box>
-          <AddFollowingButton profileId={profileId} />
+          {/* <AddFollowingButton profileId={profileId} /> */}
         </Card>
       </Stack>
     </Box>
