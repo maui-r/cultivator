@@ -10,6 +10,8 @@ export const Graph3D = () => {
     const ref = useRef<HTMLDivElement>(null)
     const [width, setWidth] = useState<number>(0)
     const [height, setHeight] = useState<number>(0)
+    // TODO: use custom equality function to make sure graph doesn't re-render
+    //   when only pageInfo has been updated
     const nodes = useNodeStore((state) => state.nodes)
     const selectedNodeId = useAppStore((state) => state.selectedNodeId)
     const selectNode = useAppStore((state) => state.selectNode)
