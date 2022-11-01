@@ -20,12 +20,6 @@ export default function HelpDialog() {
             <DialogTitle>Controls</DialogTitle>
             <DialogContent>
                 <Typography gutterBottom>
-                    Left-click on profile: expand connections
-                </Typography>
-                <Typography gutterBottom>
-                    Right-click on profile: open menu
-                </Typography>
-                <Typography gutterBottom>
                     Scroll: zoom
                 </Typography>
                 <Typography gutterBottom>
@@ -33,6 +27,9 @@ export default function HelpDialog() {
                 </Typography>
                 <Typography gutterBottom>
                     Right-click and drag: pan
+                </Typography>
+                <Typography gutterBottom>
+                    Left-click on node: select
                 </Typography>
             </DialogContent>
             <DialogActions>
