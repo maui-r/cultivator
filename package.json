@@ -72,7 +72,7 @@
               "label": "Changelog"
             },
             {
-              "path": "build",
+              "path": "build.zip",
               "label": "Build"
             }
           ]
