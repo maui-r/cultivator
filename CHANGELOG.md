@@ -1,3 +1,38 @@
+# [1.2.0](https://github.com/maui-r/cultivator/compare/v1.1.0...v1.2.0) (2022-11-01)
+
+
+### Bug Fixes
+
+* avoid disabled button as tooltip child ([14fdc8d](https://github.com/maui-r/cultivator/commit/14fdc8dfd173928adee26b0241bb0dd85c0ad898))
+* avoid querying when follower list exhausted ([9700846](https://github.com/maui-r/cultivator/commit/9700846653a12e10ec2adfc86fffd6717ee3a9f4))
+* convert jwt expiration time to milliseconds ([f4ea659](https://github.com/maui-r/cultivator/commit/f4ea6598dc3888a35775c9c866cf8705dda6b28d))
+* remove <p> wrapper around <p> elements ([0b99dd2](https://github.com/maui-r/cultivator/commit/0b99dd26ea884f0cbf1e1e412d742513c824c16d))
+* return auth state after refreshing expired token ([dc3fbe2](https://github.com/maui-r/cultivator/commit/dc3fbe200ab97097729d625c9ceedaebac9cdad3))
+* use correct property when refreshing token ([4f4780a](https://github.com/maui-r/cultivator/commit/4f4780ad5d2d947fe8ba7330dcc4fe6bccb9b613))
+
+
+### Features
+
+* add avatar with menu ([9d7b1a7](https://github.com/maui-r/cultivator/commit/9d7b1a7ec82b8a727eb927bef4dac10a938e0c75))
+* add connect wallet button ([b270f43](https://github.com/maui-r/cultivator/commit/b270f43640c2dfb93221da1d562a8a4d07dfadb0))
+* add follow on lens functionality ([c169559](https://github.com/maui-r/cultivator/commit/c1695593728e56d97397923d15a01d70178fd515))
+* add help dialog ([c75601e](https://github.com/maui-r/cultivator/commit/c75601e8ae4667cb0f7bdbce939cb98791302e42))
+* add sign in functionality ([a02d030](https://github.com/maui-r/cultivator/commit/a02d030c3e0a4d3be199c3201d0c363b4a8b8362))
+* add support for follow modules ([323778d](https://github.com/maui-r/cultivator/commit/323778d054817241701bca004daaea628408c2ab))
+* close profile menu on right-click ([7e444dd](https://github.com/maui-r/cultivator/commit/7e444dda1a5bb8dcc8b982938cc51fe335f28a26))
+* disable follow button when no wallet is connected ([b482c1c](https://github.com/maui-r/cultivator/commit/b482c1cef354ff5475ef2e58425146c474ed8569))
+* make color mode changeable ([00b08e8](https://github.com/maui-r/cultivator/commit/00b08e8eda8c76efecb3af67d4e0e84953d1a7b4))
+* open profile menu on right-click ([73316f7](https://github.com/maui-r/cultivator/commit/73316f7aef0dbf1011aad5d5dee792a0e5e8c288))
+* show all follow connections between profiles ([6ef96c6](https://github.com/maui-r/cultivator/commit/6ef96c6dfbfa91cf1c93b4836068e9d9b56882a7))
+* show info about selected node in sidebar ([b9b494e](https://github.com/maui-r/cultivator/commit/b9b494e9bb96e21ced033f118a9c211669cf0f20))
+* show selected profile in sidebar ([36f537e](https://github.com/maui-r/cultivator/commit/36f537edf9a9d7290bd47285a88199f3004cfcfc))
+* use proxy and broadcast for follow ([b5c5bab](https://github.com/maui-r/cultivator/commit/b5c5bab0788d4caedfefb04c8fdc57ef9e748e83))
+
+
+### Performance Improvements
+
+* use cache for profile details ([ddf516c](https://github.com/maui-r/cultivator/commit/ddf516cfdc083b0fed7dc447c3fe226834497021))
+
 # [1.1.0](https://github.com/maui-r/cultivator/compare/v1.0.0...v1.1.0) (2022-09-30)
 
 
