@@ -31,6 +31,8 @@ jobs:
       #  run:
       - name: Build
         run: npm run build
+      - name: Zip build files
+        run: zip -r build.zip build
 
       # Release
       - name: Release
