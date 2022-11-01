@@ -83,7 +83,7 @@ export const AddHandleDialog = () => {
                                 fullWidth
                                 id='handle'
                                 label='Lens Handle'
-                                defaultValue='lensprotocol'
+                                defaultValue='cultivator'
                                 autoFocus
                                 color='success'
                             />
