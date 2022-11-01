@@ -329,19 +329,21 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
     }
   }
 
+  if (isQuerying) return <LoadingButton variant='outlined' size='small' loading={true}>Add</LoadingButton>
+
   if (!node.followersPageInfo) return (
     <Tooltip title='Add to graph'>
-      <LoadingButton variant='outlined' size='small' loading={isQuerying} onClick={handleAddFollowers}>Add</LoadingButton>
+      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add</Button>
     </Tooltip>
   )
 
   if (node.followersPageInfo.next < node.followersPageInfo.total) return (
     <Tooltip title='Add to graph'>
-      <LoadingButton variant='outlined' size='small' loading={isQuerying} onClick={handleAddFollowers}>Add more</LoadingButton>
+      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add more</Button>
     </Tooltip>
   )
 
-  return <Button variant='outlined' size='small' disabled={true}>Add</Button>
+  return null
 }
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
