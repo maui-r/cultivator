@@ -86,6 +86,7 @@ export const AddHandleDialog = () => {
                                 defaultValue='cultivator'
                                 autoFocus
                                 color='success'
+                                disabled={isQuerying}
                             />
                         </Grid>
                         <Grid item xs={12} sm={2} alignItems='center' sx={{ display: 'flex' }}>
