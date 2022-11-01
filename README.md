@@ -2,12 +2,6 @@
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-## Theme Colors
-- Primary: `#1b3c63`
-- Secondary: `#e3cf1c`
-
-[Open in Material Color Tool](https://material.io/resources/color/#!/?view.left=0&view.right=1&primary.color=1B3C63&secondary.color=E3CF1C)
-
 ## Development
 
 ### Available Scripts

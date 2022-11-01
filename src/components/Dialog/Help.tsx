@@ -33,7 +33,7 @@ export default function HelpDialog() {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button color='success' onClick={handleClose}>Close</Button>
+                <Button onClick={handleClose}>Close</Button>
             </DialogActions>
         </Dialog>
     )

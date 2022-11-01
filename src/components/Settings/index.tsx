@@ -56,7 +56,6 @@ const SelectNodeStyleButtonGroup = () => {
                 value={nodeStyle}
                 onChange={handleNodeStyleChange}
                 aria-labelledby='settings-node-style'
-                color='success'
                 fullWidth
             >
                 <IconToggleButton value={NodeStyle.LensHandle} aria-label='Lens Handle'>
@@ -89,7 +88,6 @@ const SelectColorModeButtonGroup = () => {
                 value={colorMode}
                 onChange={handleChangeColorMode}
                 aria-labelledby='settings-color-mode'
-                color='success'
                 fullWidth
             >
                 <IconToggleButton value={ColorMode.Light} aria-label='Light'>
