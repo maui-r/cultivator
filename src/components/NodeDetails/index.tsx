@@ -12,7 +12,7 @@ export const NodeDetails = () => {
         ?
         <Profile profileId={selectedNodeId} />
         :
-        <p>Click a node to show info</p>
+        <p>Click on a node to show info</p>
     }
   </Grid>
 }
