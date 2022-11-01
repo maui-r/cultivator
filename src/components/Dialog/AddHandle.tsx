@@ -85,7 +85,6 @@ export const AddHandleDialog = () => {
                                 label='Lens Handle'
                                 defaultValue='cultivator'
                                 autoFocus
-                                color='success'
                                 disabled={isQuerying}
                             />
                         </Grid>
@@ -94,7 +93,6 @@ export const AddHandleDialog = () => {
                                 loading={isQuerying}
                                 onClick={handleAdd}
                                 variant='contained'
-                                color='success'
                             >
                                 Add
                             </LoadingButton>
