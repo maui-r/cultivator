@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/maui-r/cultivator/compare/v1.2.0...v1.2.1) (2022-11-01)
+
+
+### Bug Fixes
+
+* switch to theme colors with higher contrast ([9fcc797](https://github.com/maui-r/cultivator/commit/9fcc7976539be005b286a615440b6b6009e996bb))
+
 # [1.2.0](https://github.com/maui-r/cultivator/compare/v1.1.0...v1.2.0) (2022-11-01)
 
 
