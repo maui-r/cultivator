@@ -5,7 +5,7 @@ const config: CodegenConfig = {
     schema: 'https://api.lens.dev/',
     documents: ['src/**/*.tsx', 'src/**/*.ts'],
     generates: {
-        'src/lens/schema': {
+        'src/lens/schema/': {
             preset: 'client',
             plugins: []
         }
