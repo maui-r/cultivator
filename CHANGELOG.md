@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/maui-r/cultivator/compare/v1.2.1...v1.3.0) (2022-11-02)
+
+
+### Features
+
+* add more profile stats ([0204f09](https://github.com/maui-r/cultivator/commit/0204f09fa721429b4ec9e07cf516b6e458230721))
+
 ## [1.2.1](https://github.com/maui-r/cultivator/compare/v1.2.0...v1.2.1) (2022-11-01)
 
 
