@@ -3,7 +3,7 @@
 import { useQuery } from 'urql'
 //import { useSnackbar } from 'notistack'
 //import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
-import { Avatar, Box, Button, Card, Stack, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 //import PersonAddIcon from '@mui/icons-material/PersonAdd'
 //import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
@@ -20,6 +20,17 @@ import ErrorComponent from './Error'
 import Loading from './Loading'
 import { fetchNextFollower, getProfileNode } from '../../lens/profile'
 import { TooManyFollowingException } from '../../errors'
+
+const ProfileStatCard = styled(Card)(({ theme }) => ({
+  display: 'flex',
+  flexGrow: 1,
+  justifyContent: 'space-between',
+  alignItems: 'flex-end',
+  flexWrap: 'wrap',
+  padding: theme.spacing(1),
+}))
+const ProfileStatValue = styled(Typography)({ fontWeight: 700 })
+const ProfileStatName = styled(Typography)({ fontWeight: 300 })
 
 const ProfileQuery = graphql(`
   query Profile($profileId: ProfileId!) {
@@ -43,6 +54,10 @@ const ProfileQuery = graphql(`
       stats {
         totalFollowers
         totalFollowing
+        totalPosts
+        totalComments
+        totalMirrors
+        totalCollects
       }
       isFollowedByMe
       followModule {
@@ -382,20 +397,44 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>
-        <Card variant='outlined' sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', p: 1 }}>
+        <ProfileStatCard variant='outlined'>
           <Box>
-            <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowers}</Typography>
-            <Typography sx={{ fontWeight: 300 }}>Followers</Typography>
+            <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
+            <ProfileStatName>Followers</ProfileStatName>
           </Box>
           <AddFollowersButton profileId={profileId} />
-        </Card>
-        <Card variant='outlined' sx={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', p: 1 }}>
+        </ProfileStatCard>
+        <ProfileStatCard variant='outlined'>
           <Box>
-            <Typography sx={{ fontWeight: 700 }}>{profile.stats.totalFollowing}</Typography>
-            <Typography sx={{ fontWeight: 300 }}>Following</Typography>
+            <ProfileStatValue>{profile.stats.totalFollowing}</ProfileStatValue>
+            <ProfileStatName>Following</ProfileStatName>
           </Box>
           {/* <AddFollowingButton profileId={profileId} /> */}
-        </Card>
+        </ProfileStatCard>
+        <ProfileStatCard variant='outlined'>
+          <Box>
+            <ProfileStatValue>{profile.stats.totalPosts}</ProfileStatValue>
+            <ProfileStatName>Posts</ProfileStatName>
+          </Box>
+        </ProfileStatCard>
+        <ProfileStatCard variant='outlined'>
+          <Box>
+            <ProfileStatValue>{profile.stats.totalComments}</ProfileStatValue>
+            <ProfileStatName>Comments</ProfileStatName>
+          </Box>
+        </ProfileStatCard>
+        <ProfileStatCard variant='outlined'>
+          <Box>
+            <ProfileStatValue>{profile.stats.totalMirrors}</ProfileStatValue>
+            <ProfileStatName>Mirrors</ProfileStatName>
+          </Box>
+        </ProfileStatCard>
+        <ProfileStatCard variant='outlined'>
+          <Box>
+            <ProfileStatValue>{profile.stats.totalCollects}</ProfileStatValue>
+            <ProfileStatName>Collects</ProfileStatName>
+          </Box>
+        </ProfileStatCard>
       </Stack>
     </Box>
   )
