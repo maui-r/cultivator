@@ -2,6 +2,8 @@ export const LENS_API_URL = process.env.REACT_APP_LENS_API_URL ?? 'https://api.l
 export const APP_CHAIN_ID = process.env.REACT_APP_CHAIN_ID ? parseInt(process.env.REACT_APP_CHAIN_ID) : 137
 export const APP_CHAIN_NAME = process.env.REACT_APP_CHAIN_NAME ?? 'Polygon Mainnet'
 
+export const ALCHEMY_API_KEY = process.env.REACT_APP_ALCHEMY_API_KEY
+
 export const REQUEST_DELAY = 1000
 export const REQUEST_LIMIT = 50
 export const FOLLOWING_LIMIT = 1000
