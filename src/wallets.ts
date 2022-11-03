@@ -1,9 +1,10 @@
 import { chain, configureChains, createClient } from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { ALCHEMY_API_KEY } from './constants'
 
 const chains = [chain.polygon]
-const providers = [publicProvider()]
+const providers = [alchemyProvider({ apiKey: ALCHEMY_API_KEY })]
 const { provider, webSocketProvider } = configureChains(chains, providers)
 const wagmiClient = createClient({
     autoConnect: true,
