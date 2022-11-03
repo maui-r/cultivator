@@ -1,6 +1,7 @@
 export const LENS_API_URL = process.env.REACT_APP_LENS_API_URL ?? 'https://api.lens.dev/'
 export const APP_CHAIN_ID = process.env.REACT_APP_CHAIN_ID ? parseInt(process.env.REACT_APP_CHAIN_ID) : 137
 export const APP_CHAIN_NAME = process.env.REACT_APP_CHAIN_NAME ?? 'Polygon Mainnet'
+export const IS_MAINNET = APP_CHAIN_ID === 137
 
 export const ALCHEMY_API_KEY = process.env.REACT_APP_ALCHEMY_API_KEY
 
