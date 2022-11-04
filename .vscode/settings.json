@@ -21,5 +21,7 @@
     ],
     // Workaround to avoid automatic expansion of node_modules folder
     // https://github.com/microsoft/vscode/issues/87956
-    "explorer.autoReveal": false
+    "explorer.autoReveal": false,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
 }
