@@ -1,7 +1,6 @@
 import { graphql } from './schema'
 import client from './client'
 import { proxyActionFreeFollow } from './proxy'
-import { broadcast } from './broadcast'
 import { FollowRequest } from './schema/graphql'
 
 const CreateFollowTypedDataMutation = graphql(`
@@ -48,15 +47,4 @@ export const createFollowTypedData = async (request: FollowRequest) => {
 export const followProxy = async ({ profileId }: { profileId: string }) => {
   const proxyActionId = await proxyActionFreeFollow({ profileId })
   return proxyActionId
-}
-
-export const followBroadcast = async ({ followTypedData, signature }: { followTypedData: any, signature: string }) => {
-  const broadcastResult = await broadcast({ id: followTypedData.id, signature, })
-  if (broadcastResult.__typename === 'RelayError') {
-    throw new Error(broadcastResult.reason)
-  }
-  if (broadcastResult.__typename !== 'RelayerResult') {
-    throw new Error(`Unexpected broadcast result type: ${broadcastResult.__typename}`)
-  }
-  return broadcastResult.txId
 }

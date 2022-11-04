@@ -15,7 +15,7 @@ const BroadcastMutation = graphql(`
   }
 `)
 
-export const broadcast = async ({ id, signature }: { id: string, signature: string }) => {
+const broadcast = async ({ id, signature }: { id: string, signature: string }) => {
   const result = await client
     .mutation(BroadcastMutation, { id, signature })
     .toPromise()
@@ -25,4 +25,15 @@ export const broadcast = async ({ id, signature }: { id: string, signature: stri
   }
 
   return result.data.broadcast
+}
+
+export const broadcastTypedData = async ({ typedData, signature }: { typedData: { id: string }, signature: string }) => {
+  const broadcastResult = await broadcast({ id: typedData.id, signature, })
+  if (broadcastResult.__typename === 'RelayError') {
+    throw new Error(broadcastResult.reason)
+  }
+  if (broadcastResult.__typename !== 'RelayerResult') {
+    throw new Error(`Unexpected broadcast result type: ${broadcastResult.__typename}`)
+  }
+  return broadcastResult.txId
 }
