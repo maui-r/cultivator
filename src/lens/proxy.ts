@@ -21,7 +21,7 @@ const ProxyActionStatusRequest = graphql(`
   }
 `)
 
-const proxyActionStatus = async ({ proxyActionId }: { proxyActionId: string }) => {
+export const getProxyActionStatus = async ({ proxyActionId }: { proxyActionId: string }) => {
   const result = await client
     .query(ProxyActionStatusRequest, { proxyActionId })
     .toPromise()
@@ -35,7 +35,7 @@ const proxyActionStatus = async ({ proxyActionId }: { proxyActionId: string }) =
 
 export const pollProxyActionResult = async (proxyActionId: string): Promise<ProxyActionStatusResult> => {
   while (true) {
-    const statusResult = await proxyActionStatus({ proxyActionId })
+    const statusResult = await getProxyActionStatus({ proxyActionId })
     if (statusResult.__typename === 'ProxyActionStatusResult') {
       if (statusResult.status === ProxyActionStatusTypes.Complete) {
         // proxy action completed
