@@ -2,7 +2,7 @@ import produce from 'immer'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { JWT_ACCESS_TOKEN_KEY } from './constants'
-import { ColorMode, CurrentProfile, Node, NodeStyle } from './types'
+import { ColorMode, CurrentProfile, Node, NodeStyle, OptimisticTransaction } from './types'
 
 interface AppState {
     selectedNodeId: string | null
@@ -73,4 +73,16 @@ export const useNodeStore = create<NodeState>((set) => ({
             }
         })
     }))
+}))
+
+interface OptimisticCacheState {
+    transactions: { [key: Node['id']]: OptimisticTransaction }
+    addTransaction: (nodeId: string, transaction: OptimisticTransaction) => void
+    removeTransaction: (nodeId: string) => void
+}
+
+export const useOptimisticCache = create<OptimisticCacheState>((set) => ({
+    transactions: {},
+    addTransaction: (nodeId: string, transaction: OptimisticTransaction) => set(produce(draft => { draft.transactions[nodeId] = transaction })),
+    removeTransaction: (nodeId) => set(produce(draft => { delete draft.transactions[nodeId] }))
 }))

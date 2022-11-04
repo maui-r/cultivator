@@ -33,3 +33,21 @@ export type Link = {
     source: string,
     target: string,
 }
+
+// optimistic cache
+export enum OptimisticAction {
+    follow = 'follow',
+    unfollow = 'unfollow',
+}
+
+export type OptimisticTransaction = {
+    action: OptimisticAction
+    proxyActionId?: string
+    txId?: string
+    txHash?: string
+}
+export enum OptimisticTransactionStatus {
+    pending = 'pending',
+    error = 'error',
+    success = 'success',
+}

@@ -1,25 +1,26 @@
-//import { useEffect, useState } from 'react'
-//import { utils } from 'ethers'
+import { useEffect, useState } from 'react'
+import { utils } from 'ethers'
 import { useQuery } from 'urql'
-//import { useSnackbar } from 'notistack'
-//import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
+import { useSnackbar } from 'notistack'
+import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
 import { Avatar, Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
-//import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
 //import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
-import { useAppStore, useNodeStore } from '../../stores'
-import { parseIpfs, sleep } from '../../helpers'
+import { useAppStore, useNodeStore, useOptimisticCache } from '../../stores'
+import { getProfilePictureUrl, sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
-//import { FollowModule, FollowModuleRedeemParams } from '../../lens/schema/graphql'
-//import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
-import { REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
-//import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
-//import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
-//import { signOut } from '../../lens/auth'
+import { FollowModule, FollowModuleRedeemParams, Profile } from '../../lens/schema/graphql'
+import { APP_CHAIN_ID, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
+import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
+import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
+import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
 import Loading from './Loading'
 import { fetchNextFollower, getProfileNode } from '../../lens/profile'
 import { TooManyFollowingException } from '../../errors'
+import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
+import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -87,7 +88,6 @@ const ProfileQuery = graphql(`
   }
 `)
 
-/*
 const prepareFollowModuleParams = ({ followModule, followerProfileId }: { followModule: Partial<FollowModule> | null | undefined, followerProfileId: string | null }): FollowModuleRedeemParams | null => {
   if (followModule?.__typename === 'FeeFollowModuleSettings') {
     if (!followModule?.amount) throw new Error('Missing properties of followModule')
@@ -113,7 +113,10 @@ const prepareFollowModuleParams = ({ followModule, followerProfileId }: { follow
   return null
 }
 
-const FollowButton = ({ profileId, followModule }: { profileId: string, followModule: Partial<FollowModule> | null | undefined }) => {
+const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModule?: Partial<FollowModule> | null } }) => {
+  const transactions = useOptimisticCache((state) => state.transactions)
+  const addTransaction = useOptimisticCache((state) => state.addTransaction)
+  const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
   const hasSignedIn = useAppStore((state) => state.hasSignedIn)
   const currentProfile = useAppStore((state) => state.currentProfile)
@@ -143,7 +146,7 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
 
       if (!hasSignedIn) {
         enqueueSnackbar(
-          'You need to be signed in to follow',
+          'Not authenticated',
           {
             action: () => <Button color='inherit' variant='outlined' size='small' onClick={() => setShowSignIn(true)}>Sign In</Button>,
             variant: 'error',
@@ -152,9 +155,43 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
         return
       }
 
+      if (transactions[profile.id]) {
+        const status = await getOptimisticTransactionStatus(transactions[profile.id])
+        if (status === OptimisticTransactionStatus.pending) {
+          enqueueSnackbar('Please wait a moment and try again', { variant: 'error' })
+          return
+        }
+        removeTransaction(profile.id)
+      }
+
+      if (profile.followModule?.__typename === 'UnknownFollowModuleSettings') {
+        enqueueSnackbar('Unknown Follow Module not supported', { variant: 'error' })
+        return
+      }
+
+      if (profile.followModule?.__typename === 'RevertFollowModuleSettings') {
+        enqueueSnackbar('This profile can\'t be followed', { variant: 'error' })
+        return
+      }
+
+      if (profile.followModule?.__typename === 'ProfileFollowModuleSettings' && !currentProfile?.id) {
+        enqueueSnackbar('A profile is required to follow this profile', { variant: 'error' })
+        return
+      }
+
+      if (!profile.followModule) {
+        try {
+          const proxyActionId = await followProxy({ profileId: profile.id })
+          addTransaction(profile.id, { action: OptimisticAction.follow, proxyActionId })
+          return
+        } catch {
+          console.log('proxy follow failed')
+        }
+      }
+
       if (chain?.id !== APP_CHAIN_ID) {
         enqueueSnackbar(
-          `You need to be on ${APP_CHAIN_NAME} to follow`,
+          'Wrong chain',
           {
             action: () => <Button color='inherit' variant='outlined' size='small' onClick={() => setShowSignIn(true)}>Switch Network</Button>,
             variant: 'error',
@@ -163,33 +200,8 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
         return
       }
 
-      if (followModule?.__typename === 'UnknownFollowModuleSettings') {
-        enqueueSnackbar('Unknown Follow Module not supported', { variant: 'error' })
-        return
-      }
-
-      if (followModule?.__typename === 'RevertFollowModuleSettings') {
-        enqueueSnackbar('This profile can\'t be followed', { variant: 'error' })
-        return
-      }
-
-      if (followModule?.__typename === 'ProfileFollowModuleSettings' && !currentProfile?.id) {
-        enqueueSnackbar('A profile is required to follow this profile', { variant: 'error' })
-        return
-      }
-
-      if (!followModule) {
-        try {
-          const txHashProxy = await followProxy({ profileId })
-          handleFollowSuccess(txHashProxy)
-          return
-        } catch {
-          console.log('proxy follow failed')
-        }
-      }
-
-      const followModuleParams = prepareFollowModuleParams({ followModule, followerProfileId: currentProfile?.id })
-      const request = { follow: [{ profile: profileId, followModule: followModuleParams }] }
+      const followModuleParams = prepareFollowModuleParams({ followModule: profile.followModule, followerProfileId: currentProfile?.id })
+      const request = { follow: [{ profile: profile.id, followModule: followModuleParams }] }
 
       const followTypedData = await createFollowTypedData(request)
       // Remove __typename fields
@@ -201,8 +213,8 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
       const signature = await signTypedDataAsync({ domain, types, value })
 
       try {
-        const txHashBroadcast = await followBroadcast({ followTypedData, signature })
-        handleFollowSuccess(txHashBroadcast)
+        const txId = await followBroadcast({ followTypedData, signature })
+        addTransaction(profile.id, { action: OptimisticAction.follow, txId })
         return
       } catch {
         console.log('broadcast follow failed')
@@ -219,7 +231,7 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
             sig: { v, r, s, deadline: value.deadline, },
           }]
         })
-        handleFollowSuccess(tx.hash)
+        addTransaction(profile.id, { action: OptimisticAction.follow, txHash: tx.hash })
         return
       } catch {
         console.log('contract call follow failed')
@@ -233,24 +245,18 @@ const FollowButton = ({ profileId, followModule }: { profileId: string, followMo
     }
   }
 
-  const handleFollowSuccess = (txHash: string | undefined) => {
-    if (!txHash) throw new Error('txHash is undefined')
-    console.debug('follow tx hash:', txHash)
-    enqueueSnackbar('Successfully followed profile', { variant: 'success' })
-  }
-
   useEffect(() => {
     if (!error) return
     enqueueSnackbar('Something went wrong...', { variant: 'error' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 
-
   return (
     <LoadingButton onClick={handleFollow} loading={isLoading} variant='contained' startIcon={<PersonAddIcon />} sx={{ m: 1 }}>Follow</LoadingButton>
   )
 }
 
+/*
 const UnfollowButton = ({ profileId }: { profileId: string }) => {
   return (
     <LoadingButton variant='contained' startIcon={<PersonRemoveIcon />} sx={{ m: 1 }}>Unfollow</LoadingButton>
@@ -362,29 +368,18 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
 }
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
+  const transactions = useOptimisticCache((state) => state.transactions)
   const [{ data, fetching, error }] = useQuery({
     query: ProfileQuery,
     variables: { profileId },
-    requestPolicy: 'cache-first',
+    requestPolicy: 'cache-and-network',
   })
+  if (error) console.log(error.message)
   const profile = data?.profile
-
-  // TODO: use proper type for profile
-  const getProfilePictureUrl = (profile: any) => {
-    if (!profile?.picture?.__typename) return
-
-    if (profile.picture?.__typename === 'MediaSet') {
-      return parseIpfs(profile.picture.original.url)
-    }
-
-    if (profile.picture.__typename === 'NftImage') {
-      return parseIpfs(profile.picture.uri)
-    }
-  }
+  const isFollowing = transactions[profile?.id]?.action === OptimisticAction.follow || profile?.isFollowedByMe
 
   if (fetching) return <Loading />
   if (error || !profile) {
-    if (error) console.log(error.message)
     return <ErrorComponent />
   }
 
@@ -393,7 +388,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <Avatar src={getProfilePictureUrl(profile)} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {/* {profile.isFollowedByMe ? <UnfollowButton profileId={profileId} /> : <FollowButton profileId={profileId} followModule={profile?.followModule} />} */}
+        {isFollowing ? <Button>Unfollow</Button> : <FollowButton profile={profile} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>
