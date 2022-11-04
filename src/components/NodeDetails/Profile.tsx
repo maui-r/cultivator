@@ -6,13 +6,13 @@ import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagm
 import { Avatar, Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-//import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useAppStore, useNodeStore, useOptimisticCache } from '../../stores'
 import { getProfilePictureUrl, sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
 import { FollowModule, FollowModuleRedeemParams, Profile } from '../../lens/schema/graphql'
 import { APP_CHAIN_ID, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
-import { createFollowTypedData, followBroadcast, followProxy } from '../../lens/follow'
+import { createFollowTypedData, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
 import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
@@ -21,6 +21,8 @@ import { fetchNextFollower, getProfileNode } from '../../lens/profile'
 import { TooManyFollowingException } from '../../errors'
 import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
 import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
+import { broadcastTypedData } from '../../lens/broadcast'
+import { createUnfollowTypedData } from '../../lens/unfollow'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -113,7 +115,7 @@ const prepareFollowModuleParams = ({ followModule, followerProfileId }: { follow
   return null
 }
 
-const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModule?: Partial<FollowModule> | null } }) => {
+const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'> & { followModule?: Partial<FollowModule> | null }, refetchProfile: Function }) => {
   const transactions = useOptimisticCache((state) => state.transactions)
   const addTransaction = useOptimisticCache((state) => state.addTransaction)
   const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
@@ -161,6 +163,7 @@ const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModu
           enqueueSnackbar('Please wait a moment and try again', { variant: 'error' })
           return
         }
+        refetchProfile()
         removeTransaction(profile.id)
       }
 
@@ -203,17 +206,17 @@ const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModu
       const followModuleParams = prepareFollowModuleParams({ followModule: profile.followModule, followerProfileId: currentProfile?.id })
       const request = { follow: [{ profile: profile.id, followModule: followModuleParams }] }
 
-      const followTypedData = await createFollowTypedData(request)
+      const typedData = await createFollowTypedData(request)
       // Remove __typename fields
-      const { __typename: tmp0, ...domain } = followTypedData.typedData.domain
-      const { __typename: tmp1, ...types } = followTypedData.typedData.types
-      const { __typename: tmp2, ...value } = followTypedData.typedData.value
+      const { __typename: tmp0, ...domain } = typedData.typedData.domain
+      const { __typename: tmp1, ...types } = typedData.typedData.types
+      const { __typename: tmp2, ...value } = typedData.typedData.value
 
       // Ask user to sign typed data
       const signature = await signTypedDataAsync({ domain, types, value })
 
       try {
-        const txId = await followBroadcast({ followTypedData, signature })
+        const txId = await broadcastTypedData({ typedData, signature })
         addTransaction(profile.id, { action: OptimisticAction.follow, txId })
         return
       } catch {
@@ -239,7 +242,7 @@ const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModu
 
       throw new Error('None of the follow tactics succeeded')
     } catch {
-      enqueueSnackbar('Follow profile failed', { variant: 'error' })
+      enqueueSnackbar('Follow failed', { variant: 'error' })
     } finally {
       setFollowInProgress(false)
     }
@@ -256,33 +259,121 @@ const FollowButton = ({ profile }: { profile: Pick<Profile, 'id'> & { followModu
   )
 }
 
-/*
-const UnfollowButton = ({ profileId }: { profileId: string }) => {
-  return (
-    <LoadingButton variant='contained' startIcon={<PersonRemoveIcon />} sx={{ m: 1 }}>Unfollow</LoadingButton>
-  )
-}
+const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'>, refetchProfile: Function }) => {
+  const transactions = useOptimisticCache((state) => state.transactions)
+  const addTransaction = useOptimisticCache((state) => state.addTransaction)
+  const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
+  const setShowSignIn = useAppStore((state) => state.setShowSignIn)
+  const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+  const [unfollowInProgress, setUnfollowInProgress] = useState<boolean>(false)
+  const { enqueueSnackbar } = useSnackbar()
+  const { address } = useAccount()
+  const { chain } = useNetwork()
+  const { signTypedDataAsync, error: signTypedDataError, isLoading: isSignTypedDataLoading } = useSignTypedData()
+  const { writeAsync, error: writeError, isLoading: isWriteLoading } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    address: lensHubProxyAddress,
+    abi: lensHubProxyAbi,
+    functionName: 'burnWithSig',
+    chainId: APP_CHAIN_ID,
+  })
 
-const AddFollowingButton = ({ profileId }: { profileId: string }) => {
-  const disabled = true
+  const isLoading = unfollowInProgress || isSignTypedDataLoading || isWriteLoading
+  const error = signTypedDataError || writeError
 
-  const handleAddFollowing = () => {
-    // TODO
+  const handleUnfollow = async () => {
+    try {
+      setUnfollowInProgress(true)
+
+      if (!address || address !== localStorage.getItem(JWT_ADDRESS_KEY)) {
+        await signOut()
+      }
+
+      if (!hasSignedIn) {
+        enqueueSnackbar(
+          'Not authenticated',
+          {
+            action: () => <Button color='inherit' variant='outlined' size='small' onClick={() => setShowSignIn(true)}>Sign In</Button>,
+            variant: 'error',
+          }
+        )
+        return
+      }
+
+      if (transactions[profile.id]) {
+        const status = await getOptimisticTransactionStatus(transactions[profile.id])
+        if (status === OptimisticTransactionStatus.pending) {
+          enqueueSnackbar('Please wait a moment and try again', { variant: 'error' })
+          return
+        }
+        refetchProfile()
+        removeTransaction(profile.id)
+      }
+
+      if (chain?.id !== APP_CHAIN_ID) {
+        enqueueSnackbar(
+          'Wrong chain',
+          {
+            action: () => <Button color='inherit' variant='outlined' size='small' onClick={() => setShowSignIn(true)}>Switch Network</Button>,
+            variant: 'error',
+          }
+        )
+        return
+      }
+
+      const request = { profile: profile.id }
+      const typedData = await createUnfollowTypedData(request)
+      // Remove __typename fields
+      const { __typename: tmp0, ...domain } = typedData.typedData.domain
+      const { __typename: tmp1, ...types } = typedData.typedData.types
+      const { __typename: tmp2, ...value } = typedData.typedData.value
+
+      // Ask user to sign typed data
+      const signature = await signTypedDataAsync({ domain, types, value })
+
+      try {
+        const txId = await broadcastTypedData({ typedData, signature })
+        addTransaction(profile.id, { action: OptimisticAction.unfollow, txId })
+        return
+      } catch {
+        console.log('broadcast unfollow failed')
+      }
+
+      try {
+        if (!writeAsync) throw new Error('writeAsync is undefined')
+        const { v, r, s } = utils.splitSignature(signature)
+        const tx = await writeAsync({
+          recklesslySetUnpreparedArgs: [{
+            tokenId: value.tokenId,
+            sig: { v, r, s, deadline: value.deadline, },
+          }]
+        })
+        addTransaction(profile.id, { action: OptimisticAction.unfollow, txHash: tx.hash })
+        return
+      } catch {
+        console.log('contract call unfollow failed')
+      }
+
+      throw new Error('None of the unfollow tactics succeeded')
+    } catch {
+      enqueueSnackbar('Unfollow failed', { variant: 'error' })
+    } finally {
+      setUnfollowInProgress(false)
+    }
   }
 
-  if (disabled) return (
-    <Button variant='outlined' size='small' onClick={handleAddFollowing} disabled={true}>Add</Button>
-  )
+  useEffect(() => {
+    if (!error) return
+    enqueueSnackbar('Something went wrong...', { variant: 'error' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error])
 
   return (
-    <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowing}>Add</Button>
-    </Tooltip>
+    <LoadingButton onClick={handleUnfollow} loading={isLoading} variant='contained' startIcon={<PersonRemoveIcon />} sx={{ m: 1 }}>Unfollow</LoadingButton>
   )
 }
-*/
 
-const AddFollowersButton = ({ profileId }: { profileId: string }) => {
+const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
   const isQuerying = useAppStore((state) => state.isQuerying)
   const setIsQuerying = useAppStore((state) => state.setIsQuerying)
   const addNodes = useNodeStore((state) => state.addNodes)
@@ -369,14 +460,16 @@ const AddFollowersButton = ({ profileId }: { profileId: string }) => {
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const transactions = useOptimisticCache((state) => state.transactions)
-  const [{ data, fetching, error }] = useQuery({
+  const [{ data, fetching, error }, refetchProfile] = useQuery({
     query: ProfileQuery,
     variables: { profileId },
     requestPolicy: 'cache-and-network',
   })
   if (error) console.log(error.message)
   const profile = data?.profile
-  const isFollowing = transactions[profile?.id]?.action === OptimisticAction.follow || profile?.isFollowedByMe
+  const isOptimisticFollowInProgress = transactions[profile?.id]?.action === OptimisticAction.follow
+  const isOptimisticUnfollowInProgress = transactions[profile?.id]?.action === OptimisticAction.unfollow
+  const isFollowing = isOptimisticFollowInProgress || (profile?.isFollowedByMe && !isOptimisticUnfollowInProgress)
 
   if (fetching) return <Loading />
   if (error || !profile) {
@@ -388,7 +481,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <Avatar src={getProfilePictureUrl(profile)} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {isFollowing ? <Button>Unfollow</Button> : <FollowButton profile={profile} />}
+        {isFollowing ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} /> : <FollowButton profile={profile} refetchProfile={refetchProfile} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>
@@ -397,7 +490,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
             <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
             <ProfileStatName>Followers</ProfileStatName>
           </Box>
-          <AddFollowersButton profileId={profileId} />
+          <QueryFollowersButton profileId={profileId} />
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
           <Box>
