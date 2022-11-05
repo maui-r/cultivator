@@ -1,7 +1,7 @@
 import { DocumentNode } from 'graphql'
 import { makeOperation } from '@urql/core'
 import { authExchange } from '@urql/exchange-auth'
-import { cacheExchange, CombinedError, createClient, dedupExchange, fetchExchange, Operation, OperationContext, OperationResult, TypedDocumentNode } from 'urql'
+import { cacheExchange, Client, CombinedError, createClient, dedupExchange, fetchExchange, Operation, OperationContext, OperationResult, TypedDocumentNode } from 'urql'
 import { LENS_API_URL } from '../constants'
 import { getAuthState, setAuthState, signOut } from './auth'
 import { graphql } from './schema'
@@ -71,24 +71,43 @@ const willAuthError = ({ authState }: { authState: any }) => {
   return false
 }
 
-const client = createClient({
-  url: LENS_API_URL,
-  requestPolicy: 'network-only',
-  exchanges: [
-    dedupExchange,
-    cacheExchange,
-    // authExchange is an asynchronous exchange
-    // it must be placed in front of all fetchExchanges
-    // but after all other synchronous exchanges
-    authExchange({
-      addAuthToOperation,
-      didAuthError,
-      willAuthError,
-      getAuth,
-    }),
-    fetchExchange,
-  ],
-})
-console.debug('urql client instantiated')
+class ApiClientSingleton {
+  private _client: Client
 
-export default client
+  private getClientInstance() {
+    console.debug('urql client instantiated')
+    return createClient({
+      url: LENS_API_URL,
+      requestPolicy: 'network-only',
+      exchanges: [
+        dedupExchange,
+        cacheExchange,
+        // authExchange is an asynchronous exchange
+        // it must be placed in front of all fetchExchanges
+        // but after all other synchronous exchanges
+        authExchange({
+          addAuthToOperation,
+          didAuthError,
+          willAuthError,
+          getAuth,
+        }),
+        fetchExchange,
+      ],
+    })
+  }
+
+  constructor() {
+    this._client = this.getClientInstance()
+  }
+
+  get client() {
+    return this._client
+  }
+
+  public reset() {
+    this._client = this.getClientInstance()
+  }
+}
+
+const api = new ApiClientSingleton()
+export default api

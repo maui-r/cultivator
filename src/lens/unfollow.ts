@@ -1,5 +1,5 @@
 import { graphql } from './schema'
-import client from './client'
+import api from './client'
 import { UnfollowRequest } from './schema/graphql'
 
 const CreateUnfollowTypedDataMutation = graphql(`
@@ -31,7 +31,7 @@ const CreateUnfollowTypedDataMutation = graphql(`
 `)
 
 export const createUnfollowTypedData = async (request: UnfollowRequest) => {
-  const result = await client
+  const result = await api.client
     .mutation(CreateUnfollowTypedDataMutation, { request })
     .toPromise()
 

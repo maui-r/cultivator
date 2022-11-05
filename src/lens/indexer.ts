@@ -1,5 +1,5 @@
 import { sleep } from '../helpers'
-import client from './client'
+import api from './client'
 import { graphql } from './schema'
 import { HasTxHashBeenIndexedRequest } from './schema/graphql'
 
@@ -24,7 +24,7 @@ const HasTxBeenIndexedRequest = graphql(`
 `)
 
 export const hasTxBeenIndexed = async (input: HasTxHashBeenIndexedRequest) => {
-  const result = await client
+  const result = await api.client
     .query(HasTxBeenIndexedRequest, input)
     .toPromise()
 
