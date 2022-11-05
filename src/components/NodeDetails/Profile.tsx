@@ -471,11 +471,16 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const isOptimisticUnfollowInProgress = transactions[profile?.id]?.action === OptimisticAction.unfollow
   const isFollowing = isOptimisticFollowInProgress || (profile?.isFollowedByMe && !isOptimisticUnfollowInProgress)
 
-  if (fetching) return <Loading />
-  if (error || !profile) {
-    return <ErrorComponent />
-  }
+  // Refetch profile data when profile is switched
+  const currentProfile = useAppStore((state) => state.currentProfile)
+  useEffect(() => {
+    console.debug(`Profile switched to ${currentProfile} -> refetching profile data`)
+    refetchProfile()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProfile])
 
+  if (fetching) return <Loading />
+  if (error || !profile) return <ErrorComponent />
   return (
     <Box sx={{ p: 1 }}>
       <Box sx={{ textAlign: 'center' }}>
