@@ -184,8 +184,8 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
 
       if (!profile.followModule) {
         try {
-          const proxyActionId = await followProxy({ profileId: profile.id })
-          addTransaction(profile.id, { action: OptimisticAction.follow, proxyActionId })
+          await followProxy({ profileId: profile.id })
+          refetchProfile()
           return
         } catch {
           console.log('proxy follow failed')
