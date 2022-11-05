@@ -429,7 +429,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
           console.debug('- request count:', requestCount)
         } catch (error) {
           if (error instanceof TooManyFollowingException) {
-            console.log('Skipping', followerMin.handle)
+            console.debug('Skipping', followerMin.handle)
             //enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
             continue
           }

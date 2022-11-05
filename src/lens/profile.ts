@@ -19,6 +19,8 @@ export const getProfileMin = async (handle: string) => {
   const result = await client
     .query(ProfileMinQuery, { handle })
     .toPromise()
+  console.debug('getProfileMinResult')
+  console.debug(result)
 
   if (!result.data?.profile) {
     throw new Error('No result data')
