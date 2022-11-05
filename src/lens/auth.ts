@@ -43,7 +43,7 @@ export const setAuthState = async ({ address, accessToken, refreshToken }: { add
     // WARNING: zustand middleware that modify set or get are not applied
     useAppStore.setState({ hasSignedIn: true })
     await updateCurrentProfileState(address)
-  } catch { }
+  } catch (error) { console.log(error) }
 }
 
 export const signOut = async () => {
@@ -55,7 +55,7 @@ export const signOut = async () => {
     // WARNING: zustand middleware that modify set or get are not applied
     useAppStore.setState({ hasSignedIn: false })
     await updateCurrentProfileState(null)
-  } catch { }
+  } catch (error) { console.log(error) }
 }
 
 const DefaultProfileQuery = graphql(`
