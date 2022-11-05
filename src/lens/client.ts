@@ -7,7 +7,7 @@ import { getAuthState, setAuthState, signOut } from './auth'
 import { graphql } from './schema'
 
 interface MutateFunction<Data = any, Variables extends object = {}> {
-    (query: DocumentNode | TypedDocumentNode<Data, Variables> | string, variables?: Variables, context?: Partial<OperationContext>): Promise<OperationResult<Data>>
+  (query: DocumentNode | TypedDocumentNode<Data, Variables> | string, variables?: Variables, context?: Partial<OperationContext>): Promise<OperationResult<Data>>
 }
 
 const RefreshQuery = graphql(`
@@ -20,74 +20,74 @@ const RefreshQuery = graphql(`
 `)
 
 const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFunction }) => {
-    if (!authState) return getAuthState()
+  if (!authState) return getAuthState()
 
-    if (authState.refreshToken && authState.expirationTime && authState.expirationTime < Date.now()) {
-        const refreshMutationResult = await mutate(RefreshQuery, { refreshToken: authState.refreshToken })
-        const accessToken = refreshMutationResult.data?.refresh.accessToken
-        const refreshToken = refreshMutationResult.data?.refresh.refreshToken
+  if (authState.refreshToken && authState.expirationTime && authState.expirationTime < Date.now()) {
+    const refreshMutationResult = await mutate(RefreshQuery, { refreshToken: authState.refreshToken })
+    const accessToken = refreshMutationResult.data?.refresh.accessToken
+    const refreshToken = refreshMutationResult.data?.refresh.refreshToken
 
-        if (!accessToken || !refreshToken) {
-            await signOut()
-            return null
-        }
-
-        await setAuthState({ address: authState.address, accessToken, refreshToken })
-        return getAuthState()
+    if (!accessToken || !refreshToken) {
+      await signOut()
+      return null
     }
 
-    // authState is invalid, clean up
-    await signOut()
-    return null
+    await setAuthState({ address: authState.address, accessToken, refreshToken })
+    return getAuthState()
+  }
+
+  // authState is invalid, clean up
+  await signOut()
+  return null
 }
 
 const addAuthToOperation = ({ authState, operation }: { authState: any, operation: Operation }) => {
-    if (!authState || !authState.accessToken) return operation
+  if (!authState || !authState.accessToken) return operation
 
-    const fetchOptions =
-        typeof operation.context.fetchOptions === 'function'
-            ? operation.context.fetchOptions()
-            : operation.context.fetchOptions || {}
+  const fetchOptions =
+    typeof operation.context.fetchOptions === 'function'
+      ? operation.context.fetchOptions()
+      : operation.context.fetchOptions || {}
 
-    // return operation with access token in headers
-    return makeOperation(operation.kind, operation, {
-        ...operation.context,
-        fetchOptions: {
-            ...fetchOptions,
-            headers: {
-                ...fetchOptions.headers,
-                'x-access-token': `Bearer ${authState.accessToken}`,
-            },
-        },
-    })
+  // return operation with access token in headers
+  return makeOperation(operation.kind, operation, {
+    ...operation.context,
+    fetchOptions: {
+      ...fetchOptions,
+      headers: {
+        ...fetchOptions.headers,
+        'x-access-token': `Bearer ${authState.accessToken}`,
+      },
+    },
+  })
 }
 
 const didAuthError = ({ error }: { error: CombinedError }) => {
-    return error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')
+  return error.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')
 }
 
 const willAuthError = ({ authState }: { authState: any }) => {
-    if (authState?.expirationTime && authState.expirationTime < Date.now()) return true
-    return false
+  if (authState?.expirationTime && authState.expirationTime < Date.now()) return true
+  return false
 }
 
 const client = createClient({
-    url: LENS_API_URL,
-    requestPolicy: 'network-only',
-    exchanges: [
-        dedupExchange,
-        cacheExchange,
-        // authExchange is an asynchronous exchange
-        // it must be placed in front of all fetchExchanges
-        // but after all other synchronous exchanges
-        authExchange({
-            addAuthToOperation,
-            didAuthError,
-            willAuthError,
-            getAuth,
-        }),
-        fetchExchange,
-    ],
+  url: LENS_API_URL,
+  requestPolicy: 'network-only',
+  exchanges: [
+    dedupExchange,
+    cacheExchange,
+    // authExchange is an asynchronous exchange
+    // it must be placed in front of all fetchExchanges
+    // but after all other synchronous exchanges
+    authExchange({
+      addAuthToOperation,
+      didAuthError,
+      willAuthError,
+      getAuth,
+    }),
+    fetchExchange,
+  ],
 })
 console.debug('urql client instantiated')
 
