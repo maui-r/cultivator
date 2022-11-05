@@ -82,6 +82,7 @@ const App = () => {
   const currentProfile = useAppStore((state) => state.currentProfile)
   const clearOptimisticCache = useOptimisticCache((state) => state.clearOptimisticCache)
   useEffect(() => {
+    console.debug(`Profile switched to ${currentProfile} -> clearing cache`)
     clearOptimisticCache()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProfile])
