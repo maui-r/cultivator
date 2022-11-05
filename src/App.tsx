@@ -79,13 +79,13 @@ const App = () => {
   }), [mode])
 
   // Clear cache when profile is switched
-  const currentProfile = useAppStore((state) => state.currentProfile)
+  const currentProfileId = useAppStore((state) => state.currentProfileId)
   const clearOptimisticCache = useOptimisticCache((state) => state.clearOptimisticCache)
   useEffect(() => {
-    console.debug(`Profile switched to ${currentProfile} -> clearing cache`)
+    console.debug(`Profile switched to ${currentProfileId} -> clearing cache`)
     clearOptimisticCache()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProfile])
+  }, [currentProfileId])
 
   return (
     <ThemeProvider theme={theme}>

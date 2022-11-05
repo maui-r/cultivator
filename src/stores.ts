@@ -2,7 +2,7 @@ import produce from 'immer'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { JWT_ACCESS_TOKEN_KEY } from './constants'
-import { ColorMode, CurrentProfile, Node, NodeStyle, OptimisticTransaction } from './types'
+import { ColorMode, Node, NodeStyle, OptimisticTransaction } from './types'
 
 interface AppState {
   selectedNodeId: string | null
@@ -14,7 +14,7 @@ interface AppState {
   showSignIn: boolean
   setShowSignIn: (showSignIn: boolean) => void
   hasSignedIn: boolean
-  currentProfile: CurrentProfile | null
+  currentProfileId: string | null
   isQuerying: boolean
   setIsQuerying: (isQuerying: boolean) => void
 }
@@ -29,7 +29,7 @@ export const useAppStore = create<AppState>((set) => ({
   showSignIn: false,
   setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
   hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
-  currentProfile: null,
+  currentProfileId: null,
   isQuerying: false,
   setIsQuerying: (isQuerying) => set(() => ({ isQuerying })),
 }))

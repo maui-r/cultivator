@@ -1,5 +1,6 @@
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { JWT_ACCESS_TOKEN_KEY, JWT_ADDRESS_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../constants'
+import { sortProfiles } from '../helpers'
 import { useAppStore } from '../stores'
 import client from './client'
 import { graphql } from './schema'
@@ -58,37 +59,43 @@ export const signOut = async () => {
   } catch (error) { console.log(error) }
 }
 
-const DefaultProfileQuery = graphql(`
-  query DefaultProfile($ethereumAddress: EthereumAddress!) {
-    defaultProfile(request: { ethereumAddress: $ethereumAddress}) {
-      id
-      handle
+const ProfilesOwnedByAddressQuery = graphql(`
+  query ProfilesOwnedByAddress($ethereumAddress: EthereumAddress!) {
+    profiles(request: { ownedBy: [$ethereumAddress]}) {
+      items {
+        id
+        isDefault
+      }
     }
   }
 `)
 
-const getDefaultProfile = async (ethereumAddress: string) => {
+const getProfilesOwnedByAddress = async (ethereumAddress: string): Promise<{ id: string, isDefault: boolean }[]> => {
   const result = await client
-    .query(DefaultProfileQuery, { ethereumAddress })
+    .query(ProfilesOwnedByAddressQuery, { ethereumAddress })
     .toPromise()
 
   if (!result.data) {
     throw new Error('No result data')
   }
 
-  return result.data.defaultProfile
+  return result.data.profiles.items
 }
 
 const updateCurrentProfileState = async (address: string | null) => {
   if (!address || !useAppStore.getState().hasSignedIn) {
-    useAppStore.setState({ currentProfile: null })
+    useAppStore.setState({ currentProfileId: null })
     return
   }
 
   try {
-    const currentProfile = await getDefaultProfile(address)
-    useAppStore.setState({ currentProfile })
+    const profiles = await getProfilesOwnedByAddress(address)
+    if (profiles.length === 0) {
+      useAppStore.setState({ currentProfileId: null })
+      return
+    }
+    useAppStore.setState({ currentProfileId: sortProfiles(profiles)[0].id })
   } catch {
-    useAppStore.setState({ currentProfile: null })
+    useAppStore.setState({ currentProfileId: null })
   }
 }

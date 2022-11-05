@@ -121,7 +121,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
   const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
   const hasSignedIn = useAppStore((state) => state.hasSignedIn)
-  const currentProfile = useAppStore((state) => state.currentProfile)
+  const currentProfileId = useAppStore((state) => state.currentProfileId)
   const [followInProgress, setFollowInProgress] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
   const { address } = useAccount()
@@ -177,7 +177,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
         return
       }
 
-      if (profile.followModule?.__typename === 'ProfileFollowModuleSettings' && !currentProfile?.id) {
+      if (profile.followModule?.__typename === 'ProfileFollowModuleSettings' && !currentProfileId) {
         enqueueSnackbar('A profile is required to follow this profile', { variant: 'error' })
         return
       }
@@ -203,7 +203,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
         return
       }
 
-      const followModuleParams = prepareFollowModuleParams({ followModule: profile.followModule, followerProfileId: currentProfile?.id })
+      const followModuleParams = prepareFollowModuleParams({ followModule: profile.followModule, followerProfileId: currentProfileId })
       const request = { follow: [{ profile: profile.id, followModule: followModuleParams }] }
 
       const typedData = await createFollowTypedData(request)
@@ -472,12 +472,12 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const isFollowing = isOptimisticFollowInProgress || (profile?.isFollowedByMe && !isOptimisticUnfollowInProgress)
 
   // Refetch profile data when profile is switched
-  const currentProfile = useAppStore((state) => state.currentProfile)
+  const currentProfileId = useAppStore((state) => state.currentProfileId)
   useEffect(() => {
-    console.debug(`Profile switched to ${currentProfile} -> refetching profile data`)
+    console.debug(`Profile switched to ${currentProfileId} -> refetching profile data`)
     refetchProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProfile])
+  }, [currentProfileId])
 
   if (fetching) return <Loading />
   if (error || !profile) return <ErrorComponent />
