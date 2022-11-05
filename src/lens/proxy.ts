@@ -1,4 +1,4 @@
-import client from './client'
+import api from './client'
 import { graphql } from './schema'
 import { sleep } from '../helpers'
 import { ProxyActionStatusResult, ProxyActionStatusTypes } from './schema/graphql'
@@ -22,7 +22,7 @@ const ProxyActionStatusRequest = graphql(`
 `)
 
 export const getProxyActionStatus = async ({ proxyActionId }: { proxyActionId: string }) => {
-  const result = await client
+  const result = await api.client
     .query(ProxyActionStatusRequest, { proxyActionId })
     .toPromise()
 
@@ -63,7 +63,7 @@ const ProxyActionFreeFollowMutation = graphql(`
 `)
 
 export const proxyActionFreeFollow = async ({ profileId }: { profileId: string }): Promise<string> => {
-  const result = await client
+  const result = await api.client
     .mutation(ProxyActionFreeFollowMutation, { profileId })
     .toPromise()
 

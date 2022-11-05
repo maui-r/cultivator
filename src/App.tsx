@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { styled } from '@mui/material/styles'
 import { createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
@@ -9,7 +9,7 @@ import { ColorMode } from './types'
 import { useAppPersistStore, useAppStore, useOptimisticCache } from './stores'
 import Header from './components/Header'
 import SettingsDrawer from './components/Settings'
-import lensClient from './lens/client'
+import api from './lens/client'
 import { Dialogs } from './components/Dialog'
 import { Graph3D } from './components/Graph'
 import { NodeDetails } from './components/NodeDetails'
@@ -80,10 +80,13 @@ const App = () => {
 
   // Clear cache when profile is switched
   const currentProfileId = useAppStore((state) => state.currentProfileId)
+  console.log('profile:', currentProfileId)
   const clearOptimisticCache = useOptimisticCache((state) => state.clearOptimisticCache)
-  useEffect(() => {
+  const lensClient = useMemo(() => {
     console.debug(`Profile switched to ${currentProfileId} -> clearing cache`)
+    api.reset()
     clearOptimisticCache()
+    return api.client
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentProfileId])
 

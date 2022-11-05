@@ -393,48 +393,48 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
       do {
         do {
           // Fetch follower
-          console.debug('-- fetch next follower')
           await sleep(REQUEST_DELAY)
           const result = await fetchNextFollower(updatedProfile)
           requestCount++
           followerMin = result.follower
           updatedProfile = result.updatedProfile
           isLast = result.isLast
-          console.debug('--- got follower:', result.follower)
+          console.debug('-- follower:', result.follower?.id, result.follower?.handle)
           // followerMin is null if the follower doesn't have a default profile set up
         } while (!isLast && !followerMin && requestCount < REQUEST_LIMIT)
 
         if (!followerMin) {
           addNodes([updatedProfile])
-          console.debug('-- no next follower')
+          console.debug('--> no follower')
           return
         }
 
         if (nodes[followerMin.id]) {
           // Follower is already present
           addNodes([updatedProfile])
-          console.debug('-- follower already present')
+          console.debug('--> follower already on the graph')
           continue
         }
 
         // Fetch follower's following
         try {
-          console.debug('-- fetch followers following')
+          console.debug('--> add', followerMin.id, 'to the graph')
 
           // TODO: modify getProfileNode function
           //   we could pass a profileMin object and save one request
           const { profile: follower, requestCount: rc } = await getProfileNode(followerMin.handle)
           requestCount += rc
           addNodes([updatedProfile, follower])
-          console.debug('- request count:', requestCount)
         } catch (error) {
           if (error instanceof TooManyFollowingException) {
-            console.debug('Skipping', followerMin.handle)
+            addNodes([updatedProfile])
+            console.debug('--> skip', followerMin.handle, '(following too many profiles)')
             //enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
             continue
           }
           throw error
         }
+        console.debug('- request count:', requestCount)
       } while (requestCount < REQUEST_LIMIT)
     } finally {
       setIsQuerying(false)

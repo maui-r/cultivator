@@ -2,7 +2,7 @@ import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { JWT_ACCESS_TOKEN_KEY, JWT_ADDRESS_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../constants'
 import { sortProfiles } from '../helpers'
 import { useAppStore } from '../stores'
-import client from './client'
+import api from './client'
 import { graphql } from './schema'
 
 interface AuthState {
@@ -71,7 +71,7 @@ const ProfilesOwnedByAddressQuery = graphql(`
 `)
 
 const getProfilesOwnedByAddress = async (ethereumAddress: string): Promise<{ id: string, isDefault: boolean }[]> => {
-  const result = await client
+  const result = await api.client
     .query(ProfilesOwnedByAddressQuery, { ethereumAddress })
     .toPromise()
 

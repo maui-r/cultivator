@@ -6,7 +6,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { graphql } from '../../lens/schema'
 import { APP_CHAIN_ID, APP_CHAIN_NAME } from '../../constants'
-import client from '../../lens/client'
+import api from '../../lens/client'
 import { setAuthState, signOut } from '../../lens/auth'
 
 const ChallengeQuery = graphql(`
@@ -63,7 +63,7 @@ export const SignInDialog = () => {
       }
 
       // Get challenge
-      const challengeQueryResult = await client
+      const challengeQueryResult = await api.client
         .query(ChallengeQuery, { address })
         .toPromise()
       const challenge = challengeQueryResult.data?.challenge.text
@@ -78,7 +78,7 @@ export const SignInDialog = () => {
       const signature = await signMessageAsync({ message: challenge })
 
       // Get JWT tokens
-      const authMutationResult = await client
+      const authMutationResult = await api.client
         .mutation(AuthenticateMutation, { address, signature })
         .toPromise()
       const accessToken = authMutationResult.data?.authenticate.accessToken

@@ -1,4 +1,4 @@
-import client from './client'
+import api from './client'
 import { graphql } from './schema'
 
 const BroadcastMutation = graphql(`
@@ -16,7 +16,7 @@ const BroadcastMutation = graphql(`
 `)
 
 const broadcast = async ({ id, signature }: { id: string, signature: string }) => {
-  const result = await client
+  const result = await api.client
     .mutation(BroadcastMutation, { id, signature })
     .toPromise()
 

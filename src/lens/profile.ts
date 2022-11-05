@@ -2,7 +2,7 @@ import { FOLLOWING_LIMIT, REQUEST_DELAY } from '../constants'
 import { TooManyFollowingException } from '../errors'
 import { parseOffset, sleep } from '../helpers'
 import { Profile } from '../types'
-import client from './client'
+import api from './client'
 import { graphql } from './schema'
 
 const ProfileMinQuery = graphql(`
@@ -16,11 +16,9 @@ const ProfileMinQuery = graphql(`
 `)
 
 export const getProfileMin = async (handle: string) => {
-  const result = await client
+  const result = await api.client
     .query(ProfileMinQuery, { handle })
     .toPromise()
-  console.debug('getProfileMinResult')
-  console.debug(result)
 
   if (!result.data?.profile) {
     throw new Error('No result data')
@@ -61,7 +59,7 @@ export const fetchNextFollower = async (profile: Profile) => {
 
   // eslint-disable-next-line no-useless-escape
   const cursor = `{\"offset\":${cursorOffset}}`
-  const result = await client
+  const result = await api.client
     .query(ProfileWithFollowersQuery, { profileId: profile.id, limit: 1, cursor })
     .toPromise()
 
@@ -111,7 +109,7 @@ const FollowingIdsQuery = graphql(`
 export const getFollowingIds = async ({ address, cursorOffset = 0 }: { address: string, cursorOffset: number }) => {
   // eslint-disable-next-line no-useless-escape
   const cursor = `{\"offset\":${cursorOffset}}`
-  const result = await client
+  const result = await api.client
     .query(FollowingIdsQuery, { address, cursor })
     .toPromise()
 

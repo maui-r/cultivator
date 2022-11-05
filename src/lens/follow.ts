@@ -1,5 +1,5 @@
 import { graphql } from './schema'
-import client from './client'
+import api from './client'
 import { proxyActionFreeFollow } from './proxy'
 import { FollowRequest } from './schema/graphql'
 
@@ -33,7 +33,7 @@ const CreateFollowTypedDataMutation = graphql(`
 `)
 
 export const createFollowTypedData = async (request: FollowRequest) => {
-  const result = await client
+  const result = await api.client
     .mutation(CreateFollowTypedDataMutation, { request })
     .toPromise()
 
