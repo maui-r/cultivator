@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { styled } from '@mui/material/styles'
 import { createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
@@ -6,7 +6,7 @@ import { Provider as UrqlProvider } from 'urql'
 import { WagmiConfig } from 'wagmi'
 import wagmiClient from './wallets'
 import { ColorMode } from './types'
-import { useAppPersistStore } from './stores'
+import { useAppPersistStore, useAppStore, useOptimisticCache } from './stores'
 import Header from './components/Header'
 import SettingsDrawer from './components/Settings'
 import lensClient from './lens/client'
@@ -69,14 +69,22 @@ const Content = styled(Grid)({
 })
 
 const App = () => {
+  // Get theme
   const colorMode = useAppPersistStore((state) => state.colorMode)
   const isSystemDark: boolean = useMediaQuery('(prefers-color-scheme: dark)')
-
   const mode = useMemo(() => getMode(colorMode, isSystemDark), [colorMode, isSystemDark])
   const theme = useMemo(() => createTheme({
     palette: getThemePalette(mode),
     components: themeComponents,
   }), [mode])
+
+  // Clear cache when profile is switched
+  const currentProfile = useAppStore((state) => state.currentProfile)
+  const clearOptimisticCache = useOptimisticCache((state) => state.clearOptimisticCache)
+  useEffect(() => {
+    clearOptimisticCache()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentProfile])
 
   return (
     <ThemeProvider theme={theme}>
