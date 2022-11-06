@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/maui-r/cultivator/compare/v1.4.0...v1.5.0) (2022-11-06)
+
+
+### Features
+
+* show picture of current profile ([4d7da75](https://github.com/maui-r/cultivator/commit/4d7da75b4afef2fca74f3717b99ec0fe5499b293))
+
 # [1.4.0](https://github.com/maui-r/cultivator/compare/v1.3.0...v1.4.0) (2022-11-06)
 
 
