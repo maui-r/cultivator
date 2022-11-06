@@ -5,12 +5,15 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { Box, Menu, MenuItem, Avatar as MuiAvatar, Stack, Tooltip } from '@mui/material'
+import { Box, Button, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { signOut } from '../../lens/auth'
 import { JWT_ADDRESS_KEY } from '../../constants'
 import { useAccount } from 'wagmi'
+import { ProfilePicture } from '../Shared/ProfilePicture'
+import { useQuery } from 'urql'
+import { graphql } from '../../lens/schema'
 
 const SettingsButton = () => {
   const showSettings = useAppStore((state) => state.showSettings)
@@ -56,7 +59,40 @@ const SignInButton = () => {
   )
 }
 
-const Avatar = () => {
+const ProfilePictureQuery = graphql(`
+  query ProfilePicture($profileId: ProfileId!) {
+    profile(request: { profileId: $profileId }) {
+      picture {
+        ... on NftImage {
+          uri
+        }
+        ... on MediaSet {
+          original {
+            url
+            mimeType
+          }
+        }
+        __typename
+      }
+    }
+  }
+`)
+
+const CurrentProfilePicture = ({ profileId }: { profileId: string }) => {
+  const [{ data, fetching, error }] = useQuery({
+    query: ProfilePictureQuery,
+    variables: { profileId },
+    requestPolicy: 'cache-and-network',
+  })
+  if (error) console.log(error.message)
+  const profile = data?.profile
+
+  if (fetching || error || !profile) return null
+  return <ProfilePicture profile={profile} sx={{ width: 36, height: 36 }} />
+}
+
+const CurrentProfileMenu = () => {
+  const currentProfileId = useAppStore((state) => state.currentProfileId)
   const [anchor, setAnchor] = useState<null | HTMLElement>(null)
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -75,9 +111,13 @@ const Avatar = () => {
   return (
     <Box>
       <Tooltip title='Show user menu'>
-        <IconButton onClick={handleOpenMenu}>
-          <MuiAvatar alt='' src='' sx={{ width: 36, height: 36 }} />
-        </IconButton>
+        {currentProfileId ?
+          <IconButton onClick={handleOpenMenu}>
+            <CurrentProfilePicture profileId={currentProfileId} />
+          </IconButton>
+          :
+          <Button onClick={handleOpenMenu}>No Profile</Button>
+        }
       </Tooltip>
       <Menu
         sx={{ mt: '45px' }}
@@ -129,7 +169,7 @@ const Header = () => {
         <Stack direction='row' spacing={1.3}>
           <SettingsButton />
           <HelpButton />
-          {currentAddress ? <Avatar /> : <SignInButton />}
+          {currentAddress ? <CurrentProfileMenu /> : <SignInButton />}
         </Stack>
 
       </Toolbar>
