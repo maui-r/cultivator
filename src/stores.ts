@@ -1,7 +1,8 @@
 import produce from 'immer'
-import create from 'zustand'
+import create, { StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { JWT_ACCESS_TOKEN_KEY } from './constants'
+import { CURRENT_PROFILE_ID_KEY, JWT_ADDRESS_KEY } from './constants'
+import { signOut } from './lens/auth'
 import { ColorMode, Node, NodeStyle, OptimisticTransaction } from './types'
 
 interface AppState {
@@ -13,13 +14,15 @@ interface AppState {
   setShowHelp: (showHelp: boolean) => void
   showSignIn: boolean
   setShowSignIn: (showSignIn: boolean) => void
-  hasSignedIn: boolean
+  currentAddress: string | null
+  setCurrentAddress: (address: string) => void
   currentProfileId: string | null
+  setCurrentProfileId: (currentProfileId: string | null) => void
   isQuerying: boolean
   setIsQuerying: (isQuerying: boolean) => void
 }
 
-export const useAppStore = create<AppState>((set) => ({
+const appStore: StateCreator<AppState, [], []> = (set) => ({
   selectedNodeId: null,
   selectNode: (selectedNodeId) => set(() => ({ selectedNodeId })),
   showSettings: false,
@@ -28,11 +31,31 @@ export const useAppStore = create<AppState>((set) => ({
   setShowHelp: (showHelp) => set(() => ({ showHelp })),
   showSignIn: false,
   setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
-  hasSignedIn: localStorage.getItem(JWT_ACCESS_TOKEN_KEY) ? true : false,
-  currentProfileId: null,
+  currentAddress: localStorage.getItem(JWT_ADDRESS_KEY),
+  setCurrentAddress: (currentAddress) => set(() => {
+    if (!currentAddress) {
+      signOut()
+    } else {
+      localStorage.setItem(JWT_ADDRESS_KEY, currentAddress)
+    }
+    return { currentAddress }
+  }),
+  currentProfileId: localStorage.getItem(CURRENT_PROFILE_ID_KEY),
+  setCurrentProfileId: (currentProfileId) => set(() => {
+    if (!currentProfileId) {
+      signOut()
+    } else {
+      localStorage.setItem(CURRENT_PROFILE_ID_KEY, currentProfileId)
+    }
+    return { currentProfileId }
+  }),
   isQuerying: false,
   setIsQuerying: (isQuerying) => set(() => ({ isQuerying })),
-}))
+})
+//if (process.env.NODE_ENV === 'development') {
+//  appStore = devtools(appStore)
+//}
+export const useAppStore = create<AppState>(appStore)
 
 interface AppPersistState {
   nodeStyle: NodeStyle

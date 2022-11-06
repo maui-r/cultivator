@@ -10,6 +10,7 @@ export const REQUEST_LIMIT = 50
 export const FOLLOWING_LIMIT = 1000
 
 // local storage keys
+export const CURRENT_PROFILE_ID_KEY = 'profileId'
 export const JWT_ADDRESS_KEY = 'jwtAddress' // Address of the authenticated wallet
 export const JWT_ACCESS_TOKEN_KEY = 'jwtAccessToken'
 export const JWT_REFRESH_TOKEN_KEY = 'jwtRefreshToken'

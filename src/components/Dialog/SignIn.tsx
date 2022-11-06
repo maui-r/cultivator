@@ -5,9 +5,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { graphql } from '../../lens/schema'
-import { APP_CHAIN_ID, APP_CHAIN_NAME } from '../../constants'
+import { APP_CHAIN_ID, APP_CHAIN_NAME, JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY } from '../../constants'
 import api from '../../lens/client'
-import { setAuthState, signOut } from '../../lens/auth'
+import { getExpirationTime } from '../../lens/auth'
+import { getProfilesOwnedByAddress } from '../../lens/profile'
+import { sortProfiles } from '../../helpers'
 
 const ChallengeQuery = graphql(`
   query Challenge($address: EthereumAddress!) {
@@ -38,8 +40,10 @@ const ErrorContentText = () => {
 }
 
 export const SignInDialog = () => {
+  const currentAddress = useAppStore((state) => state.currentAddress)
+  const setCurrentAddress = useAppStore((state) => state.setCurrentAddress)
+  const setCurrentProfileId = useAppStore((state) => state.setCurrentProfileId)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
-  const hasSignedIn = useAppStore((state) => state.hasSignedIn)
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false)
   const [signMessageError, setSignMessageError] = useState<Error | undefined>()
 
@@ -58,7 +62,6 @@ export const SignInDialog = () => {
       setIsSigningIn(true)
 
       if (!address) {
-        await signOut()
         return
       }
 
@@ -70,7 +73,6 @@ export const SignInDialog = () => {
 
       if (!challenge) {
         console.log('Unable to retrieve challenge')
-        setIsSigningIn(false)
         return
       }
 
@@ -83,14 +85,23 @@ export const SignInDialog = () => {
         .toPromise()
       const accessToken = authMutationResult.data?.authenticate.accessToken
       const refreshToken = authMutationResult.data?.authenticate.refreshToken
+      const expirationTime = getExpirationTime(accessToken)
 
-      if (!accessToken || !refreshToken) {
-        await signOut()
-        setIsSigningIn(false)
+      if (!accessToken || !refreshToken || !expirationTime) {
         return
       }
 
-      await setAuthState({ address, accessToken, refreshToken })
+      // Update local storage
+      localStorage.setItem(JWT_ACCESS_TOKEN_KEY, accessToken)
+      localStorage.setItem(JWT_REFRESH_TOKEN_KEY, refreshToken)
+      localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTime.toString())
+
+      const profiles = await getProfilesOwnedByAddress(address)
+      if (profiles.length > 0) {
+        const currentProfile = sortProfiles(profiles)[0].id
+        setCurrentProfileId(currentProfile)
+      }
+      setCurrentAddress(address)
       setShowSignIn(false)
     } finally {
       setIsSigningIn(false)
@@ -100,15 +111,6 @@ export const SignInDialog = () => {
   const handleClose = () => {
     setShowSignIn(false)
   }
-
-  // Disable this dialog if already signed in
-  useEffect(() => {
-    if (!hasSignedIn) return
-    if (chain?.id !== APP_CHAIN_ID) return
-    if (!isConnected) return
-    setShowSignIn(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasSignedIn, chain, isConnected])
 
   useEffect(() => {
     if (!error) return
@@ -160,7 +162,7 @@ export const SignInDialog = () => {
   )
 
   // Sign in
-  if (!hasSignedIn) return (
+  if (!currentAddress) return (
     <Dialog open={true} onClose={handleClose}>
       <DialogTitle>Sign In with Lens</DialogTitle>
       <DialogContent dividers>

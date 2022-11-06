@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { styled } from '@mui/material/styles'
 import { createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
@@ -78,17 +78,24 @@ const App = () => {
     components: themeComponents,
   }), [mode])
 
-  // Clear cache when profile is switched
+  const currentAddress = useAppStore((state) => state.currentAddress)
   const currentProfileId = useAppStore((state) => state.currentProfileId)
-  console.log('profile:', currentProfileId)
   const clearOptimisticCache = useOptimisticCache((state) => state.clearOptimisticCache)
+
+  // Reset urql instance when profile or address change
   const lensClient = useMemo(() => {
-    console.debug(`Profile switched to ${currentProfileId} -> clearing cache`)
-    api.reset()
-    clearOptimisticCache()
-    return api.client
+    return api.reset()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProfileId])
+  }, [currentAddress, currentProfileId])
+
+  useEffect(() => {
+    clearOptimisticCache()
+    console.debug('-------------------------')
+    console.debug('address:', currentAddress)
+    console.debug('profile id:', currentProfileId)
+    console.debug('-------------------------')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAddress, currentProfileId])
 
   return (
     <ThemeProvider theme={theme}>
