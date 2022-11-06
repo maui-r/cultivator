@@ -492,7 +492,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
             <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
             <ProfileStatName>Followers</ProfileStatName>
           </Box>
-          <QueryFollowersButton profileId={profileId} />
+          {profile.stats.totalFollowers ? <QueryFollowersButton profileId={profileId} /> : null}
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
           <Box>
