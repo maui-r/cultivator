@@ -3,12 +3,12 @@ import { utils } from 'ethers'
 import { useQuery } from 'urql'
 import { useSnackbar } from 'notistack'
 import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
-import { Avatar, Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useAppStore, useNodeStore, useOptimisticCache } from '../../stores'
-import { getProfilePictureUrl, sleep } from '../../helpers'
+import { sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
 import { FollowModule, FollowModuleRedeemParams, Profile } from '../../lens/schema/graphql'
 import { APP_CHAIN_ID, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
@@ -22,6 +22,7 @@ import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
 import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
 import { broadcastTypedData } from '../../lens/broadcast'
 import { createUnfollowTypedData } from '../../lens/unfollow'
+import { ProfilePicture } from '../Shared/ProfilePicture'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -470,7 +471,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const currentProfileId = useAppStore((state) => state.currentProfileId)
   const currentAddress = useAppStore((state) => state.currentAddress)
   useEffect(() => {
-    console.debug('refetch profile')
+    console.debug('refetch selected profile')
     refetchProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAddress, currentProfileId])
@@ -481,7 +482,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   return (
     <Box sx={{ p: 1 }}>
       <Box sx={{ textAlign: 'center' }}>
-        <Avatar src={getProfilePictureUrl(profile)} sx={{ margin: 'auto', width: 80, height: 80 }} />
+        <ProfilePicture profile={profile} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
         {isFollowing ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} /> : <FollowButton profile={profile} refetchProfile={refetchProfile} />}
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
