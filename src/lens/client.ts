@@ -2,8 +2,8 @@ import { DocumentNode } from 'graphql'
 import { makeOperation } from '@urql/core'
 import { authExchange } from '@urql/exchange-auth'
 import { cacheExchange, Client, CombinedError, createClient, dedupExchange, fetchExchange, Operation, OperationContext, OperationResult, TypedDocumentNode } from 'urql'
-import { LENS_API_URL } from '../constants'
-import { getAuthState, setAuthState, signOut } from './auth'
+import { JWT_ACCESS_TOKEN_KEY, JWT_EXPIRATION_TIME_KEY, JWT_REFRESH_TOKEN_KEY, LENS_API_URL } from '../constants'
+import { getExpirationTime, signOut } from './auth'
 import { graphql } from './schema'
 
 interface MutateFunction<Data = any, Variables extends object = {}> {
@@ -20,25 +20,33 @@ const RefreshQuery = graphql(`
 `)
 
 const getAuth = async ({ authState, mutate }: { authState: any, mutate: MutateFunction }) => {
-  if (!authState) return getAuthState()
+  if (!authState) {
+    const accessToken = localStorage.getItem(JWT_ACCESS_TOKEN_KEY)
+    const refreshToken = localStorage.getItem(JWT_REFRESH_TOKEN_KEY)
+    const expirationTimeString = localStorage.getItem(JWT_EXPIRATION_TIME_KEY)
+    if (!accessToken || !refreshToken || !expirationTimeString) return null
+    const expirationTime = parseInt(expirationTimeString)
+    return { accessToken, refreshToken, expirationTime }
+  }
 
   if (authState.refreshToken && authState.expirationTime && authState.expirationTime < Date.now()) {
     const refreshMutationResult = await mutate(RefreshQuery, { refreshToken: authState.refreshToken })
     const accessToken = refreshMutationResult.data?.refresh.accessToken
     const refreshToken = refreshMutationResult.data?.refresh.refreshToken
+    const expirationTime = getExpirationTime(accessToken)
+    if (accessToken && refreshToken && expirationTime) {
+      // Update local storage
+      localStorage.setItem(JWT_ACCESS_TOKEN_KEY, accessToken)
+      localStorage.setItem(JWT_REFRESH_TOKEN_KEY, refreshToken)
+      localStorage.setItem(JWT_EXPIRATION_TIME_KEY, expirationTime.toString())
 
-    if (!accessToken || !refreshToken) {
-      await signOut()
-      return null
+      return { accessToken, refreshToken, expirationTime }
     }
 
-    await setAuthState({ address: authState.address, accessToken, refreshToken })
-    return getAuthState()
+    // authState is invalid, clean up
+    signOut()
+    return null
   }
-
-  // authState is invalid, clean up
-  await signOut()
-  return null
 }
 
 const addAuthToOperation = ({ authState, operation }: { authState: any, operation: Operation }) => {
@@ -106,6 +114,7 @@ class ApiClientSingleton {
 
   public reset() {
     this._client = this.getClientInstance()
+    return this._client
   }
 }
 

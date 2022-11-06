@@ -11,10 +11,9 @@ import { useAppStore, useNodeStore, useOptimisticCache } from '../../stores'
 import { getProfilePictureUrl, sleep } from '../../helpers'
 import { graphql } from '../../lens/schema'
 import { FollowModule, FollowModuleRedeemParams, Profile } from '../../lens/schema/graphql'
-import { APP_CHAIN_ID, JWT_ADDRESS_KEY, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
+import { APP_CHAIN_ID, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
 import { createFollowTypedData, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
-import { signOut } from '../../lens/auth'
 import ErrorComponent from './Error'
 import Loading from './Loading'
 import { fetchNextFollower, getProfileNode } from '../../lens/profile'
@@ -120,7 +119,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
   const addTransaction = useOptimisticCache((state) => state.addTransaction)
   const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
-  const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+  const currentAddress = useAppStore((state) => state.currentAddress)
   const currentProfileId = useAppStore((state) => state.currentProfileId)
   const [followInProgress, setFollowInProgress] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -142,11 +141,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
     try {
       setFollowInProgress(true)
 
-      if (!address || address !== localStorage.getItem(JWT_ADDRESS_KEY)) {
-        await signOut()
-      }
-
-      if (!hasSignedIn) {
+      if (!currentAddress) {
         enqueueSnackbar(
           'Not authenticated',
           {
@@ -184,7 +179,8 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
 
       if (!profile.followModule) {
         try {
-          await followProxy({ profileId: profile.id })
+          const proxyActionId = await followProxy({ profileId: profile.id })
+          console.debug('follow proxy action id:', proxyActionId)
           refetchProfile()
           return
         } catch {
@@ -217,6 +213,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
 
       try {
         const txId = await broadcastTypedData({ typedData, signature })
+        console.debug('follow tx id:', txId)
         addTransaction(profile.id, { action: OptimisticAction.follow, txId })
         return
       } catch {
@@ -234,6 +231,7 @@ const FollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'id'
             sig: { v, r, s, deadline: value.deadline, },
           }]
         })
+        console.debug('follow tx hash:', tx.hash)
         addTransaction(profile.id, { action: OptimisticAction.follow, txHash: tx.hash })
         return
       } catch {
@@ -264,10 +262,9 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
   const addTransaction = useOptimisticCache((state) => state.addTransaction)
   const removeTransaction = useOptimisticCache((state) => state.removeTransaction)
   const setShowSignIn = useAppStore((state) => state.setShowSignIn)
-  const hasSignedIn = useAppStore((state) => state.hasSignedIn)
+  const currentAddress = useAppStore((state) => state.currentAddress)
   const [unfollowInProgress, setUnfollowInProgress] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
-  const { address } = useAccount()
   const { chain } = useNetwork()
   const { signTypedDataAsync, error: signTypedDataError, isLoading: isSignTypedDataLoading } = useSignTypedData()
   const { writeAsync, error: writeError, isLoading: isWriteLoading } = useContractWrite({
@@ -285,11 +282,7 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
     try {
       setUnfollowInProgress(true)
 
-      if (!address || address !== localStorage.getItem(JWT_ADDRESS_KEY)) {
-        await signOut()
-      }
-
-      if (!hasSignedIn) {
+      if (!currentAddress) {
         enqueueSnackbar(
           'Not authenticated',
           {
@@ -333,6 +326,7 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
 
       try {
         const txId = await broadcastTypedData({ typedData, signature })
+        console.debug('follow tx id:', txId)
         addTransaction(profile.id, { action: OptimisticAction.unfollow, txId })
         return
       } catch {
@@ -348,6 +342,7 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
             sig: { v, r, s, deadline: value.deadline, },
           }]
         })
+        console.debug('follow tx hash:', tx.hash)
         addTransaction(profile.id, { action: OptimisticAction.unfollow, txHash: tx.hash })
         return
       } catch {
@@ -471,13 +466,15 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const isOptimisticUnfollowInProgress = transactions[profile?.id]?.action === OptimisticAction.unfollow
   const isFollowing = isOptimisticFollowInProgress || (profile?.isFollowedByMe && !isOptimisticUnfollowInProgress)
 
-  // Refetch profile data when profile is switched
+
   const currentProfileId = useAppStore((state) => state.currentProfileId)
+  const currentAddress = useAppStore((state) => state.currentAddress)
   useEffect(() => {
-    console.debug(`Profile switched to ${currentProfileId} -> refetching profile data`)
+    console.debug('refetch profile')
     refetchProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProfileId])
+  }, [currentAddress, currentProfileId])
+
 
   if (fetching) return <Loading />
   if (error || !profile) return <ErrorComponent />

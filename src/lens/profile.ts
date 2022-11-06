@@ -146,3 +146,26 @@ export const getProfileNode = async (handleSource: string) => {
 
   return { profile, requestCount }
 }
+
+const ProfilesOwnedByAddressQuery = graphql(`
+  query ProfilesOwnedByAddress($ethereumAddress: EthereumAddress!) {
+    profiles(request: { ownedBy: [$ethereumAddress]}) {
+      items {
+        id
+        isDefault
+      }
+    }
+  }
+`)
+
+export const getProfilesOwnedByAddress = async (ethereumAddress: string): Promise<{ id: string, isDefault: boolean }[]> => {
+  const result = await api.client
+    .query(ProfilesOwnedByAddressQuery, { ethereumAddress })
+    .toPromise()
+
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.profiles.items
+}
