@@ -13,7 +13,7 @@
     "@types/jest": "^29.2.1",
     "@types/lodash": "^4.14.187",
     "@types/node": "^16.11.65",
-    "@types/react": "^18.0.24",
+    "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "@urql/exchange-auth": "^1.0.0",
     "ethers": "5.7.2",
