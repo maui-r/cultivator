@@ -9,5 +9,5 @@ updates:
       interval: "weekly"
     # Follow conventional commit specification
     commit-message:
-      prefix: build
-      prefix-development: build
+      prefix: "build"
+      prefix-development: "build"
