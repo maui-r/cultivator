@@ -1,3 +1,27 @@
+# [1.4.0](https://github.com/maui-r/cultivator/compare/v1.3.0...v1.4.0) (2022-11-06)
+
+
+### Bug Fixes
+
+* clear optimistic cache when profile is switched ([1f68d56](https://github.com/maui-r/cultivator/commit/1f68d5608d34aec2faf880c8b1f91c8a0f807392))
+* clear urql cache when user profile changes ([ee81029](https://github.com/maui-r/cultivator/commit/ee810294a675abb07b3486d5131fbc675d30f7f9))
+* hide add followers button when profile has no followers ([22618d4](https://github.com/maui-r/cultivator/commit/22618d46fccf25e969eb771e36fb075d07a51af2))
+* refetch profile data when user profile changes ([83e288b](https://github.com/maui-r/cultivator/commit/83e288b184712a3fb3ba1579b9aa641369932679))
+* show stat name in singular when value is one ([54e87b1](https://github.com/maui-r/cultivator/commit/54e87b17cf0a1ce397bb804921d9ba24af5777b4))
+
+
+### Features
+
+* add unfollow button ([c3a2403](https://github.com/maui-r/cultivator/commit/c3a2403705d42e490cf6926ec9185527fa71f2dd))
+* don't require profile to be set as default ([9b5bf50](https://github.com/maui-r/cultivator/commit/9b5bf5099412362ae0371baadd8b32b681e17d26))
+* make follow optimistic ([7b43d93](https://github.com/maui-r/cultivator/commit/7b43d93d35b22dc3c907c51c58d932d938e45536))
+* support optimistic proxy action follow ([949be0b](https://github.com/maui-r/cultivator/commit/949be0b6bcd0d856453aafb281e0adbb7021f616))
+
+
+### Performance Improvements
+
+* only update graph when nodes were added or removed ([0dc8f37](https://github.com/maui-r/cultivator/commit/0dc8f3769756cce70ca3babec4953d27440f7f84))
+
 # [1.3.0](https://github.com/maui-r/cultivator/compare/v1.2.1...v1.3.0) (2022-11-02)
 
 
