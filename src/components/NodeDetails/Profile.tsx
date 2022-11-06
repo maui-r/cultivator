@@ -490,7 +490,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
         <ProfileStatCard variant='outlined'>
           <Box>
             <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
-            <ProfileStatName>Followers</ProfileStatName>
+            <ProfileStatName>{profile.stats.totalFollowers === 1 ? 'Follower' : 'Followers'}</ProfileStatName>
           </Box>
           {profile.stats.totalFollowers ? <QueryFollowersButton profileId={profileId} /> : null}
         </ProfileStatCard>
@@ -504,25 +504,25 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
         <ProfileStatCard variant='outlined'>
           <Box>
             <ProfileStatValue>{profile.stats.totalPosts}</ProfileStatValue>
-            <ProfileStatName>Posts</ProfileStatName>
+            <ProfileStatName>{profile.stats.totalPosts === 1 ? 'Post' : 'Posts'}</ProfileStatName>
           </Box>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
           <Box>
             <ProfileStatValue>{profile.stats.totalComments}</ProfileStatValue>
-            <ProfileStatName>Comments</ProfileStatName>
+            <ProfileStatName>{profile.stats.totalComments === 1 ? 'Comment' : 'Comments'}</ProfileStatName>
           </Box>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
           <Box>
             <ProfileStatValue>{profile.stats.totalMirrors}</ProfileStatValue>
-            <ProfileStatName>Mirrors</ProfileStatName>
+            <ProfileStatName>{profile.stats.totalMirrors === 1 ? 'Mirror' : 'Mirrors'}</ProfileStatName>
           </Box>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
           <Box>
             <ProfileStatValue>{profile.stats.totalCollects}</ProfileStatValue>
-            <ProfileStatName>Collects</ProfileStatName>
+            <ProfileStatName>{profile.stats.totalCollects === 1 ? 'Collect' : 'Collects'}</ProfileStatName>
           </Box>
         </ProfileStatCard>
       </Stack>
