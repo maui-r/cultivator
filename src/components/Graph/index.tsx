@@ -101,6 +101,9 @@ export const Graph3D = () => {
         linkDirectionalArrowRelPos={1}
         linkCurvature={0.25}
         showNavInfo={false}
+        // dragging causes performance issues
+        // when there are many nodes
+        enableNodeDrag={false}
         {...graphProps}
       />
     </Grid>
