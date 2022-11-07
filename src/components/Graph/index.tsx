@@ -89,17 +89,16 @@ export const Graph3D = () => {
   return (
     <Grid item xs zeroMinWidth ref={ref}>
       <ForceGraph3D
+        onNodeClick={handleNodeClick}
+        graphData={graphData}
         width={width}
         height={height}
         backgroundColor={'rgba(0,0,0,0)'}
         linkColor={getLinkColor}
         linkOpacity={0.7}
-        enableNodeDrag={false}
-        onNodeClick={handleNodeClick}
-        showNavInfo={false}
-        graphData={graphData}
         linkDirectionalArrowLength={2.5}
         linkDirectionalArrowRelPos={1}
+        showNavInfo={false}
         {...graphProps}
       />
     </Grid>
