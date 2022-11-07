@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/maui-r/cultivator/compare/v1.5.0...v1.6.0) (2022-11-07)
+
+
+### Features
+
+* increase following limit ([0520e7c](https://github.com/maui-r/cultivator/commit/0520e7c21cba07c054ba9336bc59a691c2afa151))
+
 # [1.5.0](https://github.com/maui-r/cultivator/compare/v1.4.0...v1.5.0) (2022-11-06)
 
 
