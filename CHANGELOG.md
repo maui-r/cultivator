@@ -1,3 +1,19 @@
+# [1.7.0](https://github.com/maui-r/cultivator/compare/v1.6.0...v1.7.0) (2022-11-07)
+
+
+### Features
+
+* add curvature to links ([b2f0457](https://github.com/maui-r/cultivator/commit/b2f04571944b7151155365d4ad9a8bcee041e01f))
+* enable node drag ([c9ef06a](https://github.com/maui-r/cultivator/commit/c9ef06a027dae7f1c94cbc7fb3ecaf71c01e7842))
+* increase link width ([51974c4](https://github.com/maui-r/cultivator/commit/51974c46e752974d78af49afdbfb9d137dd062f5))
+* show arrows instead of particles ([26f77ce](https://github.com/maui-r/cultivator/commit/26f77ce30f49c5540de3c3f443c4b4526ec91bab))
+
+
+### Performance Improvements
+
+* disable dragging ([949590a](https://github.com/maui-r/cultivator/commit/949590a7159c4fcaf3c9a2dc5cc7b32ce4340245))
+* memoize functions and values ([3522111](https://github.com/maui-r/cultivator/commit/3522111b99469fdd03d77b053c38bbe314396228))
+
 # [1.6.0](https://github.com/maui-r/cultivator/compare/v1.5.0...v1.6.0) (2022-11-07)
 
 
