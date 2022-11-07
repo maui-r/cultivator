@@ -95,6 +95,7 @@ export const Graph3D = () => {
         height={height}
         backgroundColor={'rgba(0,0,0,0)'}
         linkColor={getLinkColor}
+        linkWidth={0.15}
         linkOpacity={0.7}
         linkDirectionalArrowLength={2.5}
         linkDirectionalArrowRelPos={1}
