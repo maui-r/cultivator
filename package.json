@@ -28,7 +28,7 @@
     "react-scripts": "5.0.1",
     "three-spritetext": "^1.6.5",
     "urql": "^3.0.3",
-    "wagmi": "^0.7.9",
+    "wagmi": "^0.7.13",
     "web-vitals": "^3.0.4",
     "zustand": "^4.1.4"
   },
