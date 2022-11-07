@@ -98,7 +98,8 @@ export const Graph3D = () => {
         onNodeClick={handleNodeClick}
         showNavInfo={false}
         graphData={graphData}
-        linkDirectionalParticles={1}
+        linkDirectionalArrowLength={2.5}
+        linkDirectionalArrowRelPos={1}
         {...graphProps}
       />
     </Grid>
