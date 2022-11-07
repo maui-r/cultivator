@@ -98,6 +98,7 @@ export const Graph3D = () => {
         linkOpacity={0.7}
         linkDirectionalArrowLength={2.5}
         linkDirectionalArrowRelPos={1}
+        linkCurvature={0.25}
         showNavInfo={false}
         {...graphProps}
       />
