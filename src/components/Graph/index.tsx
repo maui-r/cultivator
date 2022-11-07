@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Grid, useTheme } from '@mui/material'
 import ForceGraph3D, { ForceGraphProps, NodeObject } from 'react-force-graph-3d'
 import SpriteText from 'three-spritetext'
@@ -17,16 +17,49 @@ export const Graph3D = () => {
   const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
   const theme = useTheme()
 
-  const handleResize = () => {
-    if (!ref?.current) return
-    setWidth(ref.current.offsetWidth)
-    setHeight(ref.current.offsetHeight)
-  }
+  const handleNodeClick = useCallback((node: NodeObject, event: MouseEvent) => {
+    if (typeof node?.id !== 'string') return
+    selectNode(node.id)
+  }, [selectNode])
 
-  useEffect(() => {
-    handleResize()
-    window.addEventListener('resize', handleResize)
-  }, [])
+  const getNodeColor = useCallback((node: NodeObject) => {
+    if (node.id === selectedNodeId) return theme.palette.success.main
+    return theme.palette.text.primary
+  }, [theme, selectedNodeId])
+
+  const getLinkColor = useCallback(() => {
+    return theme.palette.text.secondary
+  }, [theme])
+
+  const graphProps: ForceGraphProps = useMemo(() => {
+    let props: ForceGraphProps = {
+      // make sure to define defaults for props that may be overwritten
+      nodeColor: 'color',
+      nodeLabel: 'name',
+      nodeThreeObject: () => { return false },
+    }
+    switch (nodeStyle) {
+      case NodeStyle.Bubble:
+        props = {
+          ...props,
+          nodeColor: getNodeColor,
+          nodeLabel: 'handle',
+        }
+        break
+      case NodeStyle.LensHandle:
+        props = {
+          ...props,
+          nodeThreeObject: (node: Node) => {
+            const sprite = new SpriteText(node.handle)
+            sprite.textHeight = 2
+            sprite.color = getNodeColor(node)
+            return sprite
+          },
+        }
+        break
+    }
+    return props
+  }, [getNodeColor, nodeStyle])
 
   const graphData = useMemo(() => {
     const nodeIds = Object.keys(nodes)
@@ -41,50 +74,25 @@ export const Graph3D = () => {
     return { nodes: nodeIds.map(id => ({ ...nodes[id] })), links }
   }, [nodes])
 
-  const handleNodeClick = (node: NodeObject, event: MouseEvent) => {
-    if (typeof node?.id !== 'string') return
-    selectNode(node.id)
+  const handleResize = () => {
+    if (!ref?.current) return
+    console.debug('resizing graph')
+    setWidth(ref.current.offsetWidth)
+    setHeight(ref.current.offsetHeight)
   }
 
-  const getColor = (node: NodeObject) => {
-    if (node.id === selectedNodeId) return theme.palette.success.main
-    return theme.palette.text.primary
-  }
-
-  var graphProps: ForceGraphProps
-  switch (nodeStyle) {
-    case NodeStyle.Bubble:
-      graphProps = {
-        nodeLabel: 'handle',
-        nodeColor: getColor,
-        // default value
-        nodeThreeObject: () => { return false },
-      }
-      break
-    case NodeStyle.LensHandle:
-      graphProps = {
-        nodeThreeObject: (node: Node) => {
-          const sprite = new SpriteText(node.handle)
-          sprite.textHeight = 2
-          sprite.color = getColor(node)
-          return sprite
-        },
-        // default value
-        nodeLabel: 'name',
-      }
-      break
-  }
-
-  const backgroundColor = useMemo(() => { return 'rgba(0,0,0,0)' }, [])
-  const linkColor = useMemo(() => () => { return theme.palette.text.secondary }, [theme])
+  useEffect(() => {
+    handleResize()
+    window.addEventListener('resize', handleResize)
+  }, [])
 
   return (
     <Grid item xs zeroMinWidth ref={ref}>
       <ForceGraph3D
         width={width}
         height={height}
-        backgroundColor={backgroundColor}
-        linkColor={linkColor}
+        backgroundColor={'rgba(0,0,0,0)'}
+        linkColor={getLinkColor}
         linkOpacity={0.7}
         enableNodeDrag={false}
         onNodeClick={handleNodeClick}
