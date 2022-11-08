@@ -18,7 +18,7 @@ export const BetaDialog = () => {
   return (
     <Dialog open={showBeta} onClose={handleClose}>
       <DialogTitle>You're early 🌱</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <Typography>
           Cultivator is still in beta. Things may break or behave in unexpected ways.
           If you find bugs don't keep them all for yourself!

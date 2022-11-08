@@ -17,7 +17,7 @@ export default function HelpDialog() {
   return (
     <Dialog open={showHelp} onClose={handleClose}>
       <DialogTitle>Controls</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers>
         <Typography gutterBottom>
           Scroll: zoom
         </Typography>
