@@ -5,7 +5,8 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { Box, Button, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
+import { Box, Button, Chip, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { signOut } from '../../lens/auth'
@@ -145,6 +146,7 @@ const CurrentProfileMenu = () => {
 const Header = () => {
   const { address } = useAccount()
   const currentAddress = useAppStore((state) => state.currentAddress)
+  const setShowBeta = useAppStore((state) => state.setShowBeta)
 
   // Sign out if address changed
   useEffect(() => {
@@ -162,9 +164,12 @@ const Header = () => {
   return (
     <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
       <Toolbar>
-        <Typography variant='h6' component='h1' sx={{ flexGrow: 1 }}>
+        <Typography variant='h6' component='h1'>
           Cultivator
         </Typography>
+        <Chip icon={<WarningRoundedIcon />} onClick={() => setShowBeta(true)} label='Beta' color='warning' sx={{ ml: 1.5, p: 0.5 }} />
+
+        <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction='row' spacing={1.3}>
           <SettingsButton />

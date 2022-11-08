@@ -12,6 +12,8 @@ interface AppState {
   setShowSettings: (showSettings: boolean) => void
   showHelp: boolean
   setShowHelp: (showHelp: boolean) => void
+  showBeta: boolean
+  setShowBeta: (showBeta: boolean) => void
   showSignIn: boolean
   setShowSignIn: (showSignIn: boolean) => void
   currentAddress: string | null
@@ -29,6 +31,8 @@ const appStore: StateCreator<AppState, [], []> = (set) => ({
   setShowSettings: (showSettings) => set(() => ({ showSettings })),
   showHelp: false,
   setShowHelp: (showHelp) => set(() => ({ showHelp })),
+  showBeta: false,
+  setShowBeta: (showBeta) => set(() => ({ showBeta })),
   showSignIn: false,
   setShowSignIn: (showSignIn) => set(() => ({ showSignIn })),
   currentAddress: localStorage.getItem(JWT_ADDRESS_KEY),
