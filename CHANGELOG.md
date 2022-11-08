@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/maui-r/cultivator/compare/v1.7.0...v1.8.0) (2022-11-08)
+
+
+### Features
+
+* add beta warning ([e13026e](https://github.com/maui-r/cultivator/commit/e13026e7c1f4b6687bb636b68ea6a4bacc2133ef))
+
 # [1.7.0](https://github.com/maui-r/cultivator/compare/v1.6.0...v1.7.0) (2022-11-07)
 
 
