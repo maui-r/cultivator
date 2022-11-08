@@ -51,9 +51,10 @@ const SignInButton = () => {
 
   return (
     <LoadingButton
-      color='inherit'
       loading={showSignIn}
       onClick={() => setShowSignIn(true)}
+      color='inherit'
+      variant='outlined'
     >
       Sign In
     </LoadingButton>

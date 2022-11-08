@@ -135,11 +135,18 @@ export const SignInDialog = () => {
             disabled={!connector.ready}
             key={connector.id}
             onClick={() => connect({ connector })}
+            variant='outlined'
           >
             {connector.name}
           </LoadingButton>
         ))}
-        <Button color='error' onClick={handleClose}>Cancel</Button>
+        <Button
+          onClick={handleClose}
+          color='error'
+          variant='outlined'
+        >
+          Cancel
+        </Button>
       </DialogActions>
     </Dialog >
   )
@@ -155,8 +162,20 @@ export const SignInDialog = () => {
         {error && <ErrorContentText />}
       </DialogContent>
       <DialogActions>
-        <LoadingButton loading={isLoading} onClick={() => switchNetwork?.(APP_CHAIN_ID)}>Switch Network</LoadingButton>
-        <Button color='error' onClick={handleClose}>Cancel</Button>
+        <LoadingButton
+          loading={isLoading}
+          onClick={() => switchNetwork?.(APP_CHAIN_ID)}
+          variant='outlined'
+        >
+          Switch Network
+        </LoadingButton>
+        <Button
+          onClick={handleClose}
+          color='error'
+          variant='outlined'
+        >
+          Cancel
+        </Button>
       </DialogActions>
     </Dialog>
   )
@@ -172,8 +191,18 @@ export const SignInDialog = () => {
         {error && <ErrorContentText />}
       </DialogContent>
       <DialogActions>
-        <LoadingButton loading={isLoading} onClick={handleSignIn}>Sign In</LoadingButton>
-        <Button color='error' onClick={handleClose}>Cancel</Button>
+        <LoadingButton
+          loading={isLoading}
+          onClick={handleSignIn}
+          variant='outlined'
+        >
+          Sign In
+        </LoadingButton>
+        <Button
+          onClick={handleClose}
+          color='error'
+          variant='outlined'
+        >Cancel</Button>
       </DialogActions>
     </Dialog>
   )
