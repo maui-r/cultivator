@@ -33,7 +33,7 @@ export const BetaDialog = () => {
 
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>I understand</Button>
+        <Button onClick={handleClose} variant='outlined'>I understand</Button>
       </DialogActions>
     </Dialog>
   )

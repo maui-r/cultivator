@@ -32,7 +32,7 @@ export default function HelpDialog() {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Close</Button>
+        <Button onClick={handleClose} variant='outlined'>Close</Button>
       </DialogActions>
     </Dialog>
   )
