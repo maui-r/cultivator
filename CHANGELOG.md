@@ -1,3 +1,11 @@
+## [1.8.1](https://github.com/maui-r/cultivator/compare/v1.8.0...v1.8.1) (2022-11-09)
+
+
+### Bug Fixes
+
+* change button color ([0f05da0](https://github.com/maui-r/cultivator/commit/0f05da067577621e8d320ffb7badb6b8083aeb4e))
+* hide follow button for current profile ([bd6ad77](https://github.com/maui-r/cultivator/commit/bd6ad7730e073913d078bb10f197841d1cdf2ca8))
+
 # [1.8.0](https://github.com/maui-r/cultivator/compare/v1.7.0...v1.8.0) (2022-11-08)
 
 
