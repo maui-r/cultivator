@@ -484,7 +484,13 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <ProfilePicture profile={profile} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {isFollowing ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} /> : <FollowButton profile={profile} refetchProfile={refetchProfile} />}
+        {
+          profileId === currentProfileId
+            ? null
+            : isFollowing
+              ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} />
+              : <FollowButton profile={profile} refetchProfile={refetchProfile} />
+        }
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>
