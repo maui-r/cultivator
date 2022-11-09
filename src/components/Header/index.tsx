@@ -118,7 +118,7 @@ const CurrentProfileMenu = () => {
             <CurrentProfilePicture profileId={currentProfileId} />
           </IconButton>
           :
-          <Button onClick={handleOpenMenu}>No Profile</Button>
+          <Button color='inherit' variant='outlined' onClick={handleOpenMenu}>No Profile</Button>
         }
       </Tooltip>
       <Menu
