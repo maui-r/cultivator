@@ -437,7 +437,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
     }
   }
 
-  if (isQuerying) return <LoadingButton variant='outlined' size='small' loading={true}>Add</LoadingButton>
+  if (isQuerying) return <Button variant='outlined' size='small' disabled>Add</Button>
 
   if (!node.followersPageInfo) return (
     <Tooltip title='Add to graph'>
