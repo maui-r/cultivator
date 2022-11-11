@@ -1,3 +1,18 @@
+# [1.9.0](https://github.com/maui-r/cultivator/compare/v1.8.1...v1.9.0) (2022-11-11)
+
+
+### Bug Fixes
+
+* clear search options when inconsistent ([e6e6434](https://github.com/maui-r/cultivator/commit/e6e6434061534553a6826d18e4e7362fd2b1790f))
+* reset search bar options when input empty ([f11e0aa](https://github.com/maui-r/cultivator/commit/f11e0aafbeaa703028f2c845b8663a550b7faf44))
+
+
+### Features
+
+* implement 'search as you type' for profiles ([2eac504](https://github.com/maui-r/cultivator/commit/2eac5048d3766f1209b4927c61639f943ca75e4a))
+* move search bar to header ([5268669](https://github.com/maui-r/cultivator/commit/5268669da1791dac56f2a969a1980353529e7070))
+* show querying indicator in header ([c6ffc9f](https://github.com/maui-r/cultivator/commit/c6ffc9fc9fb1258ab429c6605786abbe9875d65b))
+
 ## [1.8.1](https://github.com/maui-r/cultivator/compare/v1.8.0...v1.8.1) (2022-11-09)
 
 
