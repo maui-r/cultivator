@@ -40,7 +40,7 @@ export const SearchBar = () => {
   const { enqueueSnackbar } = useSnackbar()
   const [inputValue, setInputValue] = useState<string>('')
   const [options, setOptions] = useState<Profile[]>([])
-  const [{ data, fetching }, search] = useQuery({
+  const [{ data, fetching, operation }, search] = useQuery({
     query: SearchQuery,
     variables: {
       request: {
@@ -109,6 +109,18 @@ export const SearchBar = () => {
       setOptions([])
       return
     }
+
+    if (
+      operation
+      &&
+      !inputValue.includes(operation.variables.request.query)
+      &&
+      !operation.variables.request.query.includes(inputValue)
+    ) {
+      // previous search contradicts current search
+      setOptions([])
+    }
+
     search()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue])
