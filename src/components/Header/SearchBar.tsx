@@ -105,7 +105,10 @@ export const SearchBar = () => {
   }, [fetching, data])
 
   useEffect(() => {
-    if (inputValue === '') return
+    if (inputValue === '') {
+      setOptions([])
+      return
+    }
     search()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputValue])
