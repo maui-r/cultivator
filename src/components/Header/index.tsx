@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
-import { Box, Button, Chip, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { signOut } from '../../lens/auth'
@@ -149,6 +149,7 @@ const Header = () => {
   const { address } = useAccount()
   const currentAddress = useAppStore((state) => state.currentAddress)
   const setShowBeta = useAppStore((state) => state.setShowBeta)
+  const isQuerying = useAppStore((state) => state.isQuerying)
 
   // Sign out if address changed
   useEffect(() => {
@@ -166,11 +167,14 @@ const Header = () => {
   return (
     <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
       <Toolbar>
-        <Typography variant='h6' component='h1'>
-          Cultivator
-        </Typography>
-        <Chip icon={<WarningRoundedIcon />} onClick={() => setShowBeta(true)} label='Beta' color='warning' sx={{ m: 1.5, p: 0.5 }} />
-        <SearchBar />
+        <Stack direction='row' alignItems='center' spacing={1.3}>
+          <Typography variant='h6' component='h1'>
+            Cultivator
+          </Typography>
+          <Chip icon={<WarningRoundedIcon />} onClick={() => setShowBeta(true)} label='Beta' color='warning' sx={{ p: 0.5 }} />
+          <SearchBar />
+          {isQuerying ? <CircularProgress size={30} /> : null}
+        </Stack>
 
         <Box sx={{ flexGrow: 1 }} />
 
