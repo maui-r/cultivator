@@ -165,7 +165,7 @@ const Header = () => {
   }, [currentAddress, address])
 
   return (
-    <AppBar position='static' sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
+    <AppBar position='static' color='inherit' enableColorOnDark sx={{ zIndex: (theme) => theme.zIndex.appBar }}>
       <Toolbar>
         <Stack direction='row' alignItems='center' spacing={1.3}>
           <Typography variant='h6' component='h1'>
