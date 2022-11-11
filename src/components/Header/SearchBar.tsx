@@ -136,6 +136,7 @@ export const SearchBar = () => {
       filterOptions={(x) => x} // disable built-in filtering
       options={options}
       autoComplete
+      autoHighlight
       clearOnEscape
       onChange={handleSelectSearchResult}
       onInputChange={(event, newInputValue) => { setInputValue(newInputValue) }}
