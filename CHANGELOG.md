@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/maui-r/cultivator/compare/v1.9.0...v1.9.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* hide disabled add button if all followers have been added ([ce5680a](https://github.com/maui-r/cultivator/commit/ce5680a662228a5c4ce63dcdbe6428630ffffe49))
+
 # [1.9.0](https://github.com/maui-r/cultivator/compare/v1.8.1...v1.9.0) (2022-11-11)
 
 
