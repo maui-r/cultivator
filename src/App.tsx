@@ -1,12 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import { styled } from '@mui/material/styles'
-import { createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
+import { Alert, Box, createTheme, CssBaseline, Grid, ThemeProvider, useMediaQuery } from '@mui/material'
 import { SnackbarProvider } from 'notistack'
 import { Provider as UrqlProvider } from 'urql'
+import shallow from 'zustand/shallow'
 import { WagmiConfig } from 'wagmi'
 import wagmiClient from './wallets'
 import { ColorMode } from './types'
-import { useAppPersistStore, useAppStore, useOptimisticCache } from './stores'
+import { useAppPersistStore, useAppStore, useNodeStore, useOptimisticCache } from './stores'
 import Header from './components/Header'
 import SettingsDrawer from './components/Settings'
 import api from './lens/client'
@@ -97,6 +98,8 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAddress, currentProfileId])
 
+  const hasNodes = useNodeStore((state) => Object.keys(state.nodes).length > 0, shallow)
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -109,11 +112,15 @@ const App = () => {
               <Dialogs />
               <SettingsDrawer />
 
+              {!hasNodes ?
+                <Box sx={{ p: 1 }}>
+                  <Alert severity='info'>Use the search bar to add some nodes 👆</Alert>
+                </Box>
+                : null}
               <Content container>
                 <NodeDetails />
                 <Graph3D />
               </Content>
-
             </Wrapper>
 
           </UrqlProvider>
