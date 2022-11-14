@@ -1,5 +1,4 @@
-import React from 'react'
-import { Grid } from '@mui/material'
+import { Alert, Box, Grid } from '@mui/material'
 import { useAppStore } from '../../stores'
 import Profile from './Profile'
 
@@ -12,7 +11,9 @@ export const NodeDetails = () => {
         ?
         <Profile profileId={selectedNodeId} />
         :
-        <p>Click on a node to show info</p>
+        <Box sx={{ p: 1 }}>
+          <Alert severity='info'>Click on a node to show info</Alert>
+        </Box>
     }
   </Grid>
 }
