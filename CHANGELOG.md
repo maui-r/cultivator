@@ -1,3 +1,11 @@
+## [1.9.2](https://github.com/maui-r/cultivator/compare/v1.9.1...v1.9.2) (2022-11-15)
+
+
+### Bug Fixes
+
+* change add followers button behavior ([1092297](https://github.com/maui-r/cultivator/commit/1092297743607781fba6eb10ae9d949b2efc269d))
+* ensure string type for ALCHEMY_API_KEY ([3235a49](https://github.com/maui-r/cultivator/commit/3235a49132ccbf1827a29bf8d88385ede523d7db))
+
 ## [1.9.1](https://github.com/maui-r/cultivator/compare/v1.9.0...v1.9.1) (2022-11-14)
 
 
