@@ -437,21 +437,17 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
     }
   }
 
-  if (isQuerying) return <LoadingButton variant='outlined' size='small' loading={true}>Add</LoadingButton>
+  const buttonText = !node.followersPageInfo ? 'Add' :
+    node?.followersPageInfo?.next < node?.followersPageInfo?.total ? 'Add more' :
+      null
 
-  if (!node.followersPageInfo) return (
+  if (!buttonText) return null
+  if (isQuerying) return <Button variant='outlined' size='small' disabled>{buttonText}</Button>
+  return (
     <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add</Button>
+      <Button variant='outlined' size='small' onClick={handleAddFollowers}>{buttonText}</Button>
     </Tooltip>
   )
-
-  if (node.followersPageInfo.next < node.followersPageInfo.total) return (
-    <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add more</Button>
-    </Tooltip>
-  )
-
-  return null
 }
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
@@ -484,7 +480,13 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <ProfilePicture profile={profile} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
-        {isFollowing ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} /> : <FollowButton profile={profile} refetchProfile={refetchProfile} />}
+        {
+          profileId === currentProfileId
+            ? null
+            : isFollowing
+              ? <UnfollowButton profile={profile} refetchProfile={refetchProfile} />
+              : <FollowButton profile={profile} refetchProfile={refetchProfile} />
+        }
         <Typography sx={{ m: 1 }}>{profile.bio}</Typography>
       </Box>
       <Stack spacing={1}>

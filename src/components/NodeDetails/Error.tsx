@@ -1,5 +1,11 @@
+import { Alert, Box } from '@mui/material'
+
 const Error = () => {
-    return <p>Oh no... Something went wrong.</p>
+  return (
+    <Box sx={{ p: 1 }}>
+      <Alert severity='error'>Oh no... Something went wrong</Alert>
+    </Box>
+  )
 }
 
 export default Error

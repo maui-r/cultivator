@@ -1,3 +1,33 @@
+## [1.9.1](https://github.com/maui-r/cultivator/compare/v1.9.0...v1.9.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* hide disabled add button if all followers have been added ([ce5680a](https://github.com/maui-r/cultivator/commit/ce5680a662228a5c4ce63dcdbe6428630ffffe49))
+
+# [1.9.0](https://github.com/maui-r/cultivator/compare/v1.8.1...v1.9.0) (2022-11-11)
+
+
+### Bug Fixes
+
+* clear search options when inconsistent ([e6e6434](https://github.com/maui-r/cultivator/commit/e6e6434061534553a6826d18e4e7362fd2b1790f))
+* reset search bar options when input empty ([f11e0aa](https://github.com/maui-r/cultivator/commit/f11e0aafbeaa703028f2c845b8663a550b7faf44))
+
+
+### Features
+
+* implement 'search as you type' for profiles ([2eac504](https://github.com/maui-r/cultivator/commit/2eac5048d3766f1209b4927c61639f943ca75e4a))
+* move search bar to header ([5268669](https://github.com/maui-r/cultivator/commit/5268669da1791dac56f2a969a1980353529e7070))
+* show querying indicator in header ([c6ffc9f](https://github.com/maui-r/cultivator/commit/c6ffc9fc9fb1258ab429c6605786abbe9875d65b))
+
+## [1.8.1](https://github.com/maui-r/cultivator/compare/v1.8.0...v1.8.1) (2022-11-09)
+
+
+### Bug Fixes
+
+* change button color ([0f05da0](https://github.com/maui-r/cultivator/commit/0f05da067577621e8d320ffb7badb6b8083aeb4e))
+* hide follow button for current profile ([bd6ad77](https://github.com/maui-r/cultivator/commit/bd6ad7730e073913d078bb10f197841d1cdf2ca8))
+
 # [1.8.0](https://github.com/maui-r/cultivator/compare/v1.7.0...v1.8.0) (2022-11-08)
 
 
