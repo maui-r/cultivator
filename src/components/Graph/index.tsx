@@ -71,6 +71,7 @@ export const Graph3D = () => {
     )
     const links = _.uniq(linksDraft)
 
+    console.debug('nodes:', nodeIds.length, 'links:', links.length)
     return { nodes: nodeIds.map(id => ({ ...nodes[id] })), links }
   }, [nodes])
 
