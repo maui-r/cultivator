@@ -437,19 +437,15 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
     }
   }
 
-  if (!node.followersPageInfo) return (
-    <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add</Button>
-    </Tooltip>
-  )
+  const buttonText = !node.followersPageInfo ? 'Add' :
+    node?.followersPageInfo?.next < node?.followersPageInfo?.total ? 'Add more' :
+      null
 
-  if (node.followersPageInfo.next >= node.followersPageInfo.total) return null
-
-  if (isQuerying) return <Button variant='outlined' size='small' disabled>Add</Button>
-
+  if (!buttonText) return null
+  if (isQuerying) return <Button variant='outlined' size='small' disabled>{buttonText}</Button>
   return (
     <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowers}>Add more</Button>
+      <Button variant='outlined' size='small' onClick={handleAddFollowers}>{buttonText}</Button>
     </Tooltip>
   )
 }
