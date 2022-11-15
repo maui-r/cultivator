@@ -11,3 +11,7 @@ updates:
     commit-message:
       prefix: "build"
       prefix-development: "build"
+    ignore:
+      # For @types/node, ignore all major updates
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
