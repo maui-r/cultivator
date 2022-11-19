@@ -60,7 +60,8 @@ export const SearchBar = () => {
       setIsQuerying(true)
 
       if (nodes.hasOwnProperty(newValue.id)) {
-        enqueueSnackbar('Profile already present', { variant: 'info' })
+        // Profile already present
+        selectNode(newValue.id)
         return
       }
 
