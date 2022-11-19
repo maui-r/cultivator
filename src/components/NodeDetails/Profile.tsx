@@ -16,13 +16,13 @@ import { createFollowTypedData, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
 import ErrorComponent from './Error'
 import Loading from './Loading'
-import { fetchNextFollower, getProfileNode } from '../../lens/profile'
-import { TooManyFollowingException } from '../../errors'
+import { fetchNextFollower } from '../../lens/profile'
 import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
 import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
 import { broadcastTypedData } from '../../lens/broadcast'
 import { createUnfollowTypedData } from '../../lens/unfollow'
 import { ProfilePicture } from '../Shared/ProfilePicture'
+import { getAllFollowing } from '../../subgraph'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -413,23 +413,10 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         }
 
         // Fetch follower's following
-        try {
-          console.debug('--> add', followerMin.id, 'to the graph')
-
-          // TODO: modify getProfileNode function
-          //   we could pass a profileMin object and save one request
-          const { profile: follower, requestCount: rc } = await getProfileNode(followerMin.handle)
-          requestCount += rc
-          addNodes([updatedProfile, follower])
-        } catch (error) {
-          if (error instanceof TooManyFollowingException) {
-            addNodes([updatedProfile])
-            console.debug('--> skip', followerMin.handle, '(following too many profiles)')
-            //enqueueSnackbar(`Skipping ${followerMin.handle} (following too many profiles)`, { variant: 'warning' })
-            continue
-          }
-          throw error
-        }
+        console.debug('--> add', followerMin.id, 'to the graph')
+        const following = await getAllFollowing(followerMin.ownedBy)
+        const follower = { ...followerMin, following }
+        addNodes([updatedProfile, follower])
         console.debug('- request count:', requestCount)
       } while (requestCount < REQUEST_LIMIT)
     } finally {

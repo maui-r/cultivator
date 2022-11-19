@@ -19,7 +19,6 @@ export type Profile = {
   handle: string,
   ownedBy: string,
   following: Array<Node['id']>,
-  followingPageInfo?: QueryPageInfo,
   followersPageInfo?: QueryPageInfo,
 }
 

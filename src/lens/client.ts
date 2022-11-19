@@ -83,7 +83,7 @@ class ApiClientSingleton {
   private _client: Client
 
   private getClientInstance() {
-    console.debug('urql client instantiated')
+    console.debug('lens client instantiated')
     return createClient({
       url: LENS_API_URL,
       requestPolicy: 'network-only',
