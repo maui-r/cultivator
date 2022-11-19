@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { Autocomplete, Box, Grid, TextField, Typography } from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import { useSnackbar } from 'notistack'
-import { getProfileNode } from '../../lens/profile'
-import { TooManyFollowingException } from '../../errors'
 import { useAppStore, useNodeStore } from '../../stores'
 import { useQuery } from 'urql'
 import { graphql } from '../../lens/schema'
 import { SearchRequestTypes } from '../../lens/schema/graphql'
+import { getProfileMin } from '../../lens/profile'
+import { getAllFollowing } from '../../subgraph'
 
 const SearchQuery = graphql(`
 query Search($request: SearchQueryRequest!) {
@@ -66,15 +66,12 @@ export const SearchBar = () => {
       }
 
       try {
-        const { profile } = await getProfileNode(newValue.handle)
-        addNodes([profile])
-        selectNode(profile.id)
+        const { id, handle, ownedBy } = await getProfileMin(newValue.handle)
+        const following = await getAllFollowing(ownedBy)
+        addNodes([{ id, handle, ownedBy, following }])
+        selectNode(id)
         return
       } catch (error) {
-        if (error instanceof TooManyFollowingException) {
-          enqueueSnackbar(`@${newValue.handle} is following too many profiles`, { variant: 'error' })
-          return
-        }
         enqueueSnackbar('Something went wrong...', { variant: 'error' })
       }
     } finally {

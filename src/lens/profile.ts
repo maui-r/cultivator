@@ -1,6 +1,4 @@
-import { FOLLOWING_LIMIT, REQUEST_DELAY } from '../constants'
-import { TooManyFollowingException } from '../errors'
-import { parseOffset, sleep } from '../helpers'
+import { parseOffset } from '../helpers'
 import { Profile } from '../types'
 import api from './client'
 import { graphql } from './schema'
@@ -84,67 +82,6 @@ export const fetchNextFollower = async (profile: Profile) => {
   const isLast = updatedProfile.followersPageInfo!.next === updatedProfile.followersPageInfo!.total
 
   return { follower, updatedProfile, isLast }
-}
-
-const FollowingIdsQuery = graphql(`
-  query FollowingIds($address: EthereumAddress!, $cursor: Cursor!) {
-    following(request: { 
-      address: $address,
-      limit: 50,
-      cursor: $cursor
-    }) {
-      items {
-        profile {
-          id
-        }
-      }
-      pageInfo {
-        next
-        totalCount
-      }
-    }
-  }
-`)
-
-export const getFollowingIds = async ({ address, cursorOffset = 0 }: { address: string, cursorOffset: number }) => {
-  // eslint-disable-next-line no-useless-escape
-  const cursor = `{\"offset\":${cursorOffset}}`
-  const result = await api.client
-    .query(FollowingIdsQuery, { address, cursor })
-    .toPromise()
-
-  if (!result.data?.following) {
-    throw new Error('No result data')
-  }
-
-  return result.data.following
-}
-
-export const getProfileNode = async (handleSource: string) => {
-  const { id, handle, ownedBy } = await getProfileMin(handleSource)
-  let requestCount = 1
-
-  const following: string[] = []
-  // TODO: use urql's simplePagination resolver?!
-  let total = 0
-  let nextOffset = 0
-  let result
-  do {
-    await sleep(REQUEST_DELAY)
-    result = await getFollowingIds({ address: ownedBy, cursorOffset: nextOffset })
-    requestCount++
-    total = result.pageInfo.totalCount ?? 0
-    nextOffset = parseOffset(result.pageInfo.next)
-    result.items.forEach((item: { profile: { id: string } }) => { following.push(item.profile.id) })
-  } while (nextOffset < total && total <= FOLLOWING_LIMIT)
-
-  if (total > FOLLOWING_LIMIT) {
-    throw new TooManyFollowingException()
-  }
-
-  const profile = { id, handle, ownedBy, following, followingPageInfo: { next: nextOffset, total } }
-
-  return { profile, requestCount }
 }
 
 const ProfilesOwnedByAddressQuery = graphql(`
