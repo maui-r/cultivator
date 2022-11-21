@@ -411,7 +411,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         // Get following
         const following = await getAllFollowing(address)
 
-        if (Object.keys(nodes).length < 15) {
+        if (Object.keys(useNodeStore.getState().nodes).length < 10) {
           // Add node immediately to give the user something to explore
           addNodes([{ ...profileMin, following }])
         } else {
