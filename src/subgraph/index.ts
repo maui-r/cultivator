@@ -27,6 +27,7 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
   let result
   let lastId = ''
   do {
+    sleep(REQUEST_DELAY)
     result = await client
       .query(FollowedByAddressQuery, { ethereumAddress, lastId })
       .toPromise()
@@ -40,7 +41,6 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
       lastId = followRelation.id
     }
     console.debug('.... fetched', result.data.account.following.length, 'following ids')
-    sleep(REQUEST_DELAY)
   } while (result.data.account.following.length === 1000)
 
   return following
