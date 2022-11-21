@@ -1,3 +1,24 @@
+# [1.10.0](https://github.com/maui-r/cultivator/compare/v1.9.2...v1.10.0) (2022-11-21)
+
+
+### Bug Fixes
+
+* access non-reactive state to get node count in async function ([10db757](https://github.com/maui-r/cultivator/commit/10db7573cbe369587a188400517af85a26996c1a))
+* return empty array when no followers or following ([dbd8309](https://github.com/maui-r/cultivator/commit/dbd8309f8a3f52f1e20811d19efefc397e2e4cec))
+
+
+### Features
+
+* query followers chronologically ([ecdb69b](https://github.com/maui-r/cultivator/commit/ecdb69b5961f3c4bc26587a7c39fce1aad7611a5))
+* select searched profile if already present ([048ab2f](https://github.com/maui-r/cultivator/commit/048ab2f4f86d2b29dbb8c6d5d259a4780577ad2c))
+* show percentage value in progress indicator ([ffe940c](https://github.com/maui-r/cultivator/commit/ffe940c5dcb7def52a4eefc32f24c4d11e4cca5c))
+
+
+### Performance Improvements
+
+* query following profile ids from subgraph ([c85f257](https://github.com/maui-r/cultivator/commit/c85f257e869a06324a76057726a6d1909998c785))
+* retrieve followers in batches ([afd6bdb](https://github.com/maui-r/cultivator/commit/afd6bdb07167ab6a117afcec125f5a28911e98a2))
+
 ## [1.9.2](https://github.com/maui-r/cultivator/compare/v1.9.1...v1.9.2) (2022-11-15)
 
 
