@@ -411,7 +411,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         }
         const profileId = sortProfiles(profiles)[0].id
         const profileMin = await getProfileMin({ id: profileId })
-        console.debug('-> got profile id', profileMin.id)
+        console.debug('-> got profile', profileMin.handle)
 
         // Check if profile already present
         if (nodes.hasOwnProperty(profileMin.id)) {
