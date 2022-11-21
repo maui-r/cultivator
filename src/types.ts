@@ -9,9 +9,9 @@ export enum ColorMode {
   Dark = 'Dark',
 }
 
-export type QueryPageInfo = {
-  next: number,
-  total: number,
+export type QueryState = {
+  queried: number,
+  allQueried?: boolean,
 }
 
 export type Profile = {
@@ -19,7 +19,7 @@ export type Profile = {
   handle: string,
   ownedBy: string,
   following: Array<Node['id']>,
-  followersPageInfo?: QueryPageInfo,
+  queriedFollowers?: QueryState,
 }
 
 export type Node = Profile

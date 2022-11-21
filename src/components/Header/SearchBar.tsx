@@ -66,7 +66,7 @@ export const SearchBar = () => {
       }
 
       try {
-        const { id, handle, ownedBy } = await getProfileMin(newValue.handle)
+        const { id, handle, ownedBy } = await getProfileMin({ handle: newValue.handle })
         const following = await getAllFollowing(ownedBy)
         addNodes([{ id, handle, ownedBy, following }])
         selectNode(id)
