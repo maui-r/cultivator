@@ -35,6 +35,11 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
       throw new Error('No result data')
     }
 
+    if (!result.data.account?.following) {
+      // Address is not following anyone
+      return []
+    }
+
     for (let followRelation of result.data.account.following) {
       following.push(followRelation.profile.id)
       lastId = followRelation.id
@@ -65,6 +70,11 @@ export const getFollowers = async ({ profileId, first, skip = 0 }: { profileId: 
 
   if (!result.data) {
     throw new Error('No result data')
+  }
+
+  if (!result.data.profile?.followers) {
+    // Profile has no followers
+    return []
   }
 
   return result.data.profile.followers.map((f: { account: { id: string } }) => (f.account.id))
