@@ -39,7 +39,7 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
       following.push(followRelation.profile.id)
       lastId = followRelation.id
     }
-    console.debug('.... fetched', result.data.account.following.length, 'following ids')
+    console.debug('.. fetched', result.data.account.following.length, 'following ids')
   } while (result.data.account.following.length === 1000)
 
   return following

@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import HelpIcon from '@mui/icons-material/Help'
 import SettingsIcon from '@mui/icons-material/Settings'
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded'
-import { Box, Button, Chip, CircularProgress, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, CircularProgressProps, Menu, MenuItem, Stack, Tooltip } from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useAppStore } from '../../stores'
 import { signOut } from '../../lens/auth'
@@ -145,11 +145,45 @@ const CurrentProfileMenu = () => {
   )
 }
 
+const CircularProgressWithLabel = (props: CircularProgressProps & { value: number }) => {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant='determinate' {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant='caption'
+          component='div'
+          color='text.primary'
+        >{`${Math.round(Math.max(0, Math.min(props.value, 99)))}%`}</Typography>
+      </Box>
+    </Box>
+  )
+}
+
+const QueryProgressIndicator = () => {
+  const isQuerying = useAppStore((state) => state.isQuerying)
+  const queryProgress = useAppStore((state) => state.queryProgress)
+
+  if (!isQuerying) return null
+  if (queryProgress === null) return <CircularProgress size={36} />
+  return <CircularProgressWithLabel size={36} value={queryProgress * 100} />
+}
+
 const Header = () => {
   const { address } = useAccount()
   const currentAddress = useAppStore((state) => state.currentAddress)
   const setShowBeta = useAppStore((state) => state.setShowBeta)
-  const isQuerying = useAppStore((state) => state.isQuerying)
 
   // Sign out if address changed
   useEffect(() => {
@@ -173,7 +207,7 @@ const Header = () => {
           </Typography>
           <Chip icon={<WarningRoundedIcon />} onClick={() => setShowBeta(true)} label='Beta' color='warning' sx={{ p: 0.5 }} />
           <SearchBar />
-          {isQuerying ? <CircularProgress size={30} /> : null}
+          <QueryProgressIndicator />
         </Stack>
 
         <Box sx={{ flexGrow: 1 }} />
