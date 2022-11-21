@@ -45,10 +45,10 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
   return following
 }
 
-const FollowersOfProfileIdQuery = `
-  query FollowersOfProfile($profileId: String!, $first: Int!, $skip: Int!) {
+const FollowersOfProfileIdSortedQuery = `
+  query FollowersOfProfileSorted($profileId: String!, $first: Int!, $skip: Int!) {
     profile(id: $profileId) {
-      followers(first: $first, skip: $skip) {
+      followers(first: $first, skip: $skip, orderBy: timestamp, orderDirection: asc) {
         account {
           id
         }
@@ -60,7 +60,7 @@ const FollowersOfProfileIdQuery = `
 export const getFollowers = async ({ profileId, first, skip = 0 }: { profileId: string, first: number, skip: number }): Promise<string[]> => {
   await sleep(REQUEST_DELAY)
   const result = await client
-    .query(FollowersOfProfileIdQuery, { profileId, first, skip })
+    .query(FollowersOfProfileIdSortedQuery, { profileId, first, skip })
     .toPromise()
 
   if (!result.data) {
