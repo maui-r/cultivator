@@ -8,21 +8,21 @@ import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useAppStore, useNodeStore, useOptimisticCache } from '../../stores'
-import { sleep } from '../../helpers'
+import { sleep, sortProfiles } from '../../helpers'
 import { graphql } from '../../lens/schema'
 import { FollowModule, FollowModuleRedeemParams, Profile } from '../../lens/schema/graphql'
-import { APP_CHAIN_ID, REQUEST_DELAY, REQUEST_LIMIT } from '../../constants'
+import { APP_CHAIN_ID, REQUEST_DELAY } from '../../constants'
 import { createFollowTypedData, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
 import ErrorComponent from './Error'
 import Loading from './Loading'
-import { fetchNextFollower } from '../../lens/profile'
+import { getProfileMin, getProfilesOwnedByAddress } from '../../lens/profile'
 import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
 import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
 import { broadcastTypedData } from '../../lens/broadcast'
 import { createUnfollowTypedData } from '../../lens/unfollow'
 import { ProfilePicture } from '../Shared/ProfilePicture'
-import { getAllFollowing } from '../../subgraph'
+import { getAllFollowing, getFollowers } from '../../subgraph'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -380,52 +380,57 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
     if (!node) return
     setIsQuerying(true)
     try {
-      if (node.followersPageInfo && node.followersPageInfo.next === node.followersPageInfo.total) return
+      // 
+      if (node.queriedFollowers?.allQueried) return
       console.debug('- add followers of', profileId)
-      let requestCount = 0
-      let followerMin
-      let updatedProfile = node
-      let isLast
-      do {
-        do {
-          // Fetch follower
-          await sleep(REQUEST_DELAY)
-          const result = await fetchNextFollower(updatedProfile)
-          requestCount++
-          followerMin = result.follower
-          updatedProfile = result.updatedProfile
-          isLast = result.isLast
-          console.debug('-- follower:', result.follower?.id, result.follower?.handle)
-          // followerMin is null if the follower doesn't have a default profile set up
-        } while (!isLast && !followerMin && requestCount < REQUEST_LIMIT)
 
-        if (!followerMin) {
-          addNodes([updatedProfile])
-          console.debug('--> no follower')
-          return
+      // Number of additional followers to query
+      const followersToQuery = 25
+
+      // Get the follower addresses
+      let skip = node.queriedFollowers?.queried ?? 0
+      const followerAddresses = await getFollowers({
+        profileId,
+        first: followersToQuery,
+        skip,
+      })
+
+      const newNodes = []
+      for (const address of followerAddresses) {
+        skip++
+        // Get "default" profile of follower address
+        const profiles = await getProfilesOwnedByAddress(address)
+        await sleep(REQUEST_DELAY)
+        if (profiles.length < 1) continue
+        const profileId = sortProfiles(profiles)[0].id
+        const profileMin = await getProfileMin({ id: profileId })
+
+        // Check if profile already present
+        if (nodes.hasOwnProperty(profileMin.id)) continue
+
+        // Get following
+        const following = await getAllFollowing(address)
+
+        if (Object.keys(nodes).length < 15) {
+          // Add node immediately to give the user something to explore
+          addNodes([{ ...profileMin, following }])
+        } else {
+          newNodes.push({ ...profileMin, following })
         }
+      }
 
-        if (nodes[followerMin.id]) {
-          // Follower is already present
-          addNodes([updatedProfile])
-          console.debug('--> follower already on the graph')
-          continue
-        }
+      // Update "origin" node
+      const allQueried = followerAddresses.length < followersToQuery
+      newNodes.push({ ...node, queriedFollowers: { queried: skip, allQueried } })
 
-        // Fetch follower's following
-        console.debug('--> add', followerMin.id, 'to the graph')
-        const following = await getAllFollowing(followerMin.ownedBy)
-        const follower = { ...followerMin, following }
-        addNodes([updatedProfile, follower])
-        console.debug('- request count:', requestCount)
-      } while (requestCount < REQUEST_LIMIT)
+      addNodes(newNodes)
     } finally {
       setIsQuerying(false)
     }
   }
 
-  const buttonText = !node.followersPageInfo ? 'Add' :
-    node?.followersPageInfo?.next < node?.followersPageInfo?.total ? 'Add more' :
+  const buttonText = !node.queriedFollowers ? 'Add' :
+    !node.queriedFollowers.allQueried ? 'Add more' :
       null
 
   if (!buttonText) return null

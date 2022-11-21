@@ -7,9 +7,8 @@ const client = createClient({
 })
 console.debug('the graph client instantiated')
 
-
 const FollowedByAddressQuery = `
-  query manyTokens($ethereumAddress: Bytes!, $lastId: String) {
+  query FollowedByAddress($ethereumAddress: Bytes!, $lastId: String) {
     account(id: $ethereumAddress) {
       following(first: 1000, where: { id_gt: $lastId}) {
         id
@@ -27,7 +26,7 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
   let result
   let lastId = ''
   do {
-    sleep(REQUEST_DELAY)
+    await sleep(REQUEST_DELAY)
     result = await client
       .query(FollowedByAddressQuery, { ethereumAddress, lastId })
       .toPromise()
@@ -44,4 +43,29 @@ export const getAllFollowing = async (ethereumAddress: string): Promise<string[]
   } while (result.data.account.following.length === 1000)
 
   return following
+}
+
+const FollowersOfProfileIdQuery = `
+  query FollowersOfProfile($profileId: String!, $first: Int!, $skip: Int!) {
+    profile(id: $profileId) {
+      followers(first: $first, skip: $skip) {
+        account {
+          id
+        }
+      }
+    }
+  }
+`
+
+export const getFollowers = async ({ profileId, first, skip = 0 }: { profileId: string, first: number, skip: number }): Promise<string[]> => {
+  await sleep(REQUEST_DELAY)
+  const result = await client
+    .query(FollowersOfProfileIdQuery, { profileId, first, skip })
+    .toPromise()
+
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  return result.data.profile.followers.map((f: { account: { id: string } }) => (f.account.id))
 }
