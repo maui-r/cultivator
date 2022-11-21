@@ -22,6 +22,8 @@ interface AppState {
   setCurrentProfileId: (currentProfileId: string | null) => void
   isQuerying: boolean
   setIsQuerying: (isQuerying: boolean) => void
+  queryProgress: number | null
+  setQueryProgress: (queryProgress: number | null) => void
 }
 
 const appStore: StateCreator<AppState, [], []> = (set) => ({
@@ -55,6 +57,8 @@ const appStore: StateCreator<AppState, [], []> = (set) => ({
   }),
   isQuerying: false,
   setIsQuerying: (isQuerying) => set(() => ({ isQuerying })),
+  queryProgress: null,
+  setQueryProgress: (queryProgress) => set(() => ({ queryProgress })),
 })
 //if (process.env.NODE_ENV === 'development') {
 //  appStore = devtools(appStore)

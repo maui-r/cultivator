@@ -372,6 +372,7 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
 const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
   const isQuerying = useAppStore((state) => state.isQuerying)
   const setIsQuerying = useAppStore((state) => state.setIsQuerying)
+  const setQueryProgress = useAppStore((state) => state.setQueryProgress)
   const addNodes = useNodeStore((state) => state.addNodes)
   const nodes = useNodeStore((state) => state.nodes)
   const node = nodes[profileId]
@@ -379,8 +380,8 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
   const handleAddFollowers = async () => {
     if (!node) return
     setIsQuerying(true)
+    setQueryProgress(0)
     try {
-      // 
       if (node.queriedFollowers?.allQueried) return
       console.debug('- add followers of', profileId)
 
@@ -394,19 +395,30 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         first: followersToQuery,
         skip,
       })
+      const followersReceived = followerAddresses.length
 
+      let followersQueried = 0
       const newNodes = []
       for (const address of followerAddresses) {
         skip++
         // Get "default" profile of follower address
         const profiles = await getProfilesOwnedByAddress(address)
         await sleep(REQUEST_DELAY)
-        if (profiles.length < 1) continue
+        if (profiles.length < 1) {
+          console.debug('->', address, 'has no profile')
+          setQueryProgress(++followersQueried / followersReceived)
+          continue
+        }
         const profileId = sortProfiles(profiles)[0].id
         const profileMin = await getProfileMin({ id: profileId })
+        console.debug('-> got profile id', profileMin.id)
 
         // Check if profile already present
-        if (nodes.hasOwnProperty(profileMin.id)) continue
+        if (nodes.hasOwnProperty(profileMin.id)) {
+          console.debug('--> already present')
+          setQueryProgress(++followersQueried / followersReceived)
+          continue
+        }
 
         // Get following
         const following = await getAllFollowing(address)
@@ -417,15 +429,18 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         } else {
           newNodes.push({ ...profileMin, following })
         }
+        console.debug('--> added')
+        setQueryProgress(++followersQueried / followersReceived)
       }
 
       // Update "origin" node
-      const allQueried = followerAddresses.length < followersToQuery
+      const allQueried = followersReceived < followersToQuery
       newNodes.push({ ...node, queriedFollowers: { queried: skip, allQueried } })
 
       addNodes(newNodes)
     } finally {
       setIsQuerying(false)
+      setQueryProgress(null)
     }
   }
 
