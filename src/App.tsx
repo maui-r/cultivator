@@ -25,6 +25,13 @@ const themeComponents = {
         }
       `,
   },
+  MuiLinearProgress: {
+    styleOverrides: {
+      dashed: {
+        animationIterationCount: 1,
+      }
+    }
+  }
 }
 
 type Mode = 'light' | 'dark'
