@@ -98,7 +98,7 @@ export const Graph3D = () => {
         linkColor={getLinkColor}
         linkWidth={0.15}
         linkOpacity={0.7}
-        linkDirectionalArrowLength={2.5}
+        linkDirectionalArrowLength={1}
         linkDirectionalArrowRelPos={1}
         linkCurvature={0.25}
         showNavInfo={false}
