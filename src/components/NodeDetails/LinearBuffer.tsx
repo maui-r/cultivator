@@ -9,7 +9,7 @@ export const LinearBuffer = ({ progressValue, bufferOffset, maxValue }: { progre
   return (
     <Box sx={{ width: '100%' }}>
       <Tooltip title={`visible: ${netProgress}, without profile: ${bufferOffset ?? 0}`}>
-        <LinearProgress variant='buffer' color='secondary' value={normalize(netProgress)} valueBuffer={normalize(progressValue ?? 0)} />
+        <LinearProgress variant='buffer' value={normalize(netProgress)} valueBuffer={normalize(progressValue ?? 0)} />
       </Tooltip>
     </Box>
   )
