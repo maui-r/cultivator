@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/maui-r/cultivator/compare/v1.10.0...v1.11.0) (2022-11-22)
+
+
+### Features
+
+* show indicator for queried followers per profile ([202905e](https://github.com/maui-r/cultivator/commit/202905ef2c1d9801dadaefce70b015ba3ae3c0b8))
+
 # [1.10.0](https://github.com/maui-r/cultivator/compare/v1.9.2...v1.10.0) (2022-11-21)
 
 
