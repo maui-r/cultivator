@@ -100,7 +100,7 @@ export const Graph3D = () => {
         linkOpacity={0.7}
         linkDirectionalArrowLength={1}
         linkDirectionalArrowRelPos={1}
-        linkCurvature={0.25}
+        linkCurvature={0.01}
         showNavInfo={false}
         // dragging causes performance issues
         // when there are many nodes
