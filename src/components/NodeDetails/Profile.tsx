@@ -16,6 +16,7 @@ import { createFollowTypedData, followProxy } from '../../lens/follow'
 import { lensHubProxyAbi, lensHubProxyAddress } from '../../contracts'
 import ErrorComponent from './Error'
 import Loading from './Loading'
+import { LinearBuffer } from './LinearBuffer'
 import { getProfileMin, getProfilesOwnedByAddress } from '../../lens/profile'
 import { OptimisticAction, OptimisticTransactionStatus } from '../../types'
 import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction'
@@ -24,13 +25,14 @@ import { createUnfollowTypedData } from '../../lens/unfollow'
 import { ProfilePicture } from '../Shared/ProfilePicture'
 import { getAllFollowing, getFollowers } from '../../subgraph'
 
-const ProfileStatCard = styled(Card)(({ theme }) => ({
+const ProfileStatCard = styled(Card)(({ theme }) => ({}))
+const ProfileStatWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   flexGrow: 1,
   justifyContent: 'space-between',
   alignItems: 'flex-end',
   flexWrap: 'wrap',
-  padding: theme.spacing(1),
+  padding: theme.spacing(1)
 }))
 const ProfileStatValue = styled(Typography)({ fontWeight: 700 })
 const ProfileStatName = styled(Typography)({ fontWeight: 300 })
@@ -389,23 +391,25 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
       const followersToQuery = 25
 
       // Get the follower addresses
-      let skip = node.queriedFollowers?.queried ?? 0
+      let queried = node.queriedFollowers?.queried ?? 0
+      let withoutProfile = node.queriedFollowers?.withoutProfile ?? 0
       const followerAddresses = await getFollowers({
         profileId,
         first: followersToQuery,
-        skip,
+        skip: queried,
       })
       const followersReceived = followerAddresses.length
 
       let followersQueried = 0
       const newNodes = []
       for (const address of followerAddresses) {
-        skip++
+        queried++
         // Get "default" profile of follower address
         const profiles = await getProfilesOwnedByAddress(address)
         await sleep(REQUEST_DELAY)
         if (profiles.length < 1) {
           console.debug('->', address, 'has no profile')
+          withoutProfile++
           setQueryProgress(++followersQueried / followersReceived)
           continue
         }
@@ -425,7 +429,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
 
         if (Object.keys(useNodeStore.getState().nodes).length < 10) {
           // Add node immediately to give the user something to explore
-          addNodes([{ ...profileMin, following }])
+          addNodes([{ ...profileMin, following }, { ...node, queriedFollowers: { queried, withoutProfile } }])
         } else {
           newNodes.push({ ...profileMin, following })
         }
@@ -435,7 +439,7 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
 
       // Update "origin" node
       const allQueried = followersReceived < followersToQuery
-      newNodes.push({ ...node, queriedFollowers: { queried: skip, allQueried } })
+      newNodes.push({ ...node, queriedFollowers: { queried, withoutProfile, allQueried } })
 
       addNodes(newNodes)
     } finally {
@@ -470,6 +474,8 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const isOptimisticUnfollowInProgress = transactions[profile?.id]?.action === OptimisticAction.unfollow
   const isFollowing = isOptimisticFollowInProgress || (profile?.isFollowedByMe && !isOptimisticUnfollowInProgress)
 
+  const nodes = useNodeStore((state) => state.nodes)
+  const node = nodes[profileId]
 
   const currentProfileId = useAppStore((state) => state.currentProfileId)
   const currentAddress = useAppStore((state) => state.currentAddress)
@@ -498,42 +504,55 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       </Box>
       <Stack spacing={1}>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
-            <ProfileStatName>{profile.stats.totalFollowers === 1 ? 'Follower' : 'Followers'}</ProfileStatName>
-          </Box>
-          {profile.stats.totalFollowers ? <QueryFollowersButton profileId={profileId} /> : null}
+          <LinearBuffer progressValue={node.queriedFollowers?.queried} bufferOffset={node.queriedFollowers?.withoutProfile} maxValue={profile.stats.totalFollowers} />
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalFollowers}</ProfileStatValue>
+              <ProfileStatName>{profile.stats.totalFollowers === 1 ? 'Follower' : 'Followers'}</ProfileStatName>
+            </Box>
+            {profile.stats.totalFollowers ? <QueryFollowersButton profileId={profileId} /> : null}
+          </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalFollowing}</ProfileStatValue>
-            <ProfileStatName>Following</ProfileStatName>
-          </Box>
-          {/* <AddFollowingButton profileId={profileId} /> */}
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalFollowing}</ProfileStatValue>
+              <ProfileStatName>Following</ProfileStatName>
+            </Box>
+            {/* <AddFollowingButton profileId={profileId} /> */}
+          </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalPosts}</ProfileStatValue>
-            <ProfileStatName>{profile.stats.totalPosts === 1 ? 'Post' : 'Posts'}</ProfileStatName>
-          </Box>
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalPosts}</ProfileStatValue>
+              <ProfileStatName>{profile.stats.totalPosts === 1 ? 'Post' : 'Posts'}</ProfileStatName>
+            </Box>
+          </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalComments}</ProfileStatValue>
-            <ProfileStatName>{profile.stats.totalComments === 1 ? 'Comment' : 'Comments'}</ProfileStatName>
-          </Box>
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalComments}</ProfileStatValue>
+              <ProfileStatName>{profile.stats.totalComments === 1 ? 'Comment' : 'Comments'}</ProfileStatName>
+            </Box>
+          </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalMirrors}</ProfileStatValue>
-            <ProfileStatName>{profile.stats.totalMirrors === 1 ? 'Mirror' : 'Mirrors'}</ProfileStatName>
-          </Box>
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalMirrors}</ProfileStatValue>
+              <ProfileStatName>{profile.stats.totalMirrors === 1 ? 'Mirror' : 'Mirrors'}</ProfileStatName>
+            </Box>
+          </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
-          <Box>
-            <ProfileStatValue>{profile.stats.totalCollects}</ProfileStatValue>
-            <ProfileStatName>{profile.stats.totalCollects === 1 ? 'Collect' : 'Collects'}</ProfileStatName>
-          </Box>
+          <ProfileStatWrapper>
+            <Box>
+              <ProfileStatValue>{profile.stats.totalCollects}</ProfileStatValue>
+              <ProfileStatName>{profile.stats.totalCollects === 1 ? 'Collect' : 'Collects'}</ProfileStatName>
+            </Box>
+          </ProfileStatWrapper>
         </ProfileStatCard>
       </Stack>
     </Box>

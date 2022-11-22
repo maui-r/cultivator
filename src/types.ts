@@ -11,6 +11,7 @@ export enum ColorMode {
 
 export type QueryState = {
   queried: number,
+  withoutProfile: number,
   allQueried?: boolean,
 }
 
