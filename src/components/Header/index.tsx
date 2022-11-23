@@ -77,6 +77,7 @@ const ProfilePictureQuery = graphql(`
         }
         __typename
       }
+      ownedBy
     }
   }
 `)
