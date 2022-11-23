@@ -79,3 +79,33 @@ export const getFollowers = async ({ profileId, first, skip = 0 }: { profileId: 
 
   return result.data.profile.followers.map((f: { account: { id: string } }) => (f.account.id))
 }
+
+const FollowedByAddressSortedQuery = `
+  query FollowedByAddress($ethereumAddress: Bytes!, $first: Int!, $skip: Int!) {
+    account(id: $ethereumAddress) {
+      following(first: $first, skip: $skip, orderBy: timestamp, orderDirection: asc) {
+        profile {
+          id
+        }
+      }
+    }
+  }
+`
+
+export const getFollowing = async ({ ethereumAddress, first, skip = 0 }: { ethereumAddress: string, first: number, skip: number }): Promise<string[]> => {
+  await sleep(REQUEST_DELAY)
+  const result = await client
+    .query(FollowedByAddressSortedQuery, { ethereumAddress, first, skip })
+    .toPromise()
+
+  if (!result.data) {
+    throw new Error('No result data')
+  }
+
+  if (!result.data.account?.following) {
+    // Address is not following anyone
+    return []
+  }
+
+  return result.data.account.following.map((f: { profile: { id: string } }) => (f.profile.id))
+}

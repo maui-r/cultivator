@@ -23,7 +23,7 @@ import { getOptimisticTransactionStatus } from '../../lens/optimisticTransaction
 import { broadcastTypedData } from '../../lens/broadcast'
 import { createUnfollowTypedData } from '../../lens/unfollow'
 import { ProfilePicture } from '../Shared/ProfilePicture'
-import { getAllFollowing, getFollowers } from '../../subgraph'
+import { getAllFollowing, getFollowers, getFollowing } from '../../subgraph'
 
 const ProfileStatCard = styled(Card)(({ theme }) => ({}))
 const ProfileStatWrapper = styled('div')(({ theme }) => ({
@@ -371,8 +371,19 @@ const UnfollowButton = ({ profile, refetchProfile }: { profile: Pick<Profile, 'i
   )
 }
 
-const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
+const AddButton = ({ onClick, text }: { onClick: React.MouseEventHandler<HTMLButtonElement> | undefined, text: string | null }) => {
   const isQuerying = useAppStore((state) => state.isQuerying)
+
+  if (!text) return null
+  if (isQuerying) return <Button variant='outlined' size='small' disabled>{text}</Button>
+  return (
+    <Tooltip title='Add to graph'>
+      <Button variant='outlined' size='small' onClick={onClick}>{text}</Button>
+    </Tooltip>
+  )
+}
+
+const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
   const setIsQuerying = useAppStore((state) => state.setIsQuerying)
   const setQueryProgress = useAppStore((state) => state.setQueryProgress)
   const addNodes = useNodeStore((state) => state.addNodes)
@@ -452,13 +463,80 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
     !node.queriedFollowers.allQueried ? 'Add more' :
       null
 
-  if (!buttonText) return null
-  if (isQuerying) return <Button variant='outlined' size='small' disabled>{buttonText}</Button>
-  return (
-    <Tooltip title='Add to graph'>
-      <Button variant='outlined' size='small' onClick={handleAddFollowers}>{buttonText}</Button>
-    </Tooltip>
-  )
+  return <AddButton onClick={handleAddFollowers} text={buttonText} />
+}
+
+const QueryFollowingButton = ({ profileId }: { profileId: string }) => {
+  const setIsQuerying = useAppStore((state) => state.setIsQuerying)
+  const setQueryProgress = useAppStore((state) => state.setQueryProgress)
+  const addNodes = useNodeStore((state) => state.addNodes)
+  const nodes = useNodeStore((state) => state.nodes)
+  const node = nodes[profileId]
+
+  const handleAddFollowing = async () => {
+    if (!node) return
+    setIsQuerying(true)
+    setQueryProgress(0)
+    try {
+      if (node.queriedFollowing?.allQueried) return
+      console.debug('- add following of', profileId)
+
+      // Number of additional following to query
+      const followingToQuery = 25
+
+      // Get the following profile ids
+      let queried = node.queriedFollowing?.queried ?? 0
+      const followingProfiles = await getFollowing({
+        ethereumAddress: node.ownedBy,
+        first: followingToQuery,
+        skip: queried,
+      })
+      const followingReceived = followingProfiles.length
+
+      let followingQueried = 0
+      const newNodes = []
+      for (const profileId of followingProfiles) {
+        queried++
+
+        // Check if profile already present
+        if (nodes.hasOwnProperty(profileId)) {
+          console.debug('--> already present:', profileId)
+          setQueryProgress(++followingQueried / followingReceived)
+          continue
+        }
+
+        const profileMin = await getProfileMin({ id: profileId })
+        console.debug('-> got profile', profileMin.handle)
+
+        // Get following
+        const following = await getAllFollowing(profileMin.ownedBy)
+
+        if (Object.keys(useNodeStore.getState().nodes).length < 10) {
+          // Add node immediately to give the user something to explore
+          addNodes([{ ...profileMin, following }, { ...node, queriedFollowing: { queried } }])
+        } else {
+          newNodes.push({ ...profileMin, following })
+        }
+        console.debug('--> added')
+        setQueryProgress(++followingQueried / followingReceived)
+      }
+
+      // Update "origin" node
+      const allQueried = followingReceived < followingToQuery
+      newNodes.push({ ...node, queriedFollowing: { queried, allQueried } })
+
+      addNodes(newNodes)
+    } finally {
+      setIsQuerying(false)
+      setQueryProgress(null)
+    }
+  }
+
+  const buttonText = !node.queriedFollowing ? 'Add' :
+    !node.queriedFollowing.allQueried ? 'Add more' :
+      null
+
+  return <AddButton onClick={handleAddFollowing} text={buttonText} />
 }
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
@@ -514,12 +592,13 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
           </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
+          <LinearBuffer progressValue={node.queriedFollowing?.queried} bufferOffset={0} maxValue={profile.stats.totalFollowing} />
           <ProfileStatWrapper>
             <Box>
               <ProfileStatValue>{profile.stats.totalFollowing}</ProfileStatValue>
               <ProfileStatName>Following</ProfileStatName>
             </Box>
-            {/* <AddFollowingButton profileId={profileId} /> */}
+            {profile.stats.totalFollowing ? <QueryFollowingButton profileId={profileId} /> : null}
           </ProfileStatWrapper>
         </ProfileStatCard>
         <ProfileStatCard variant='outlined'>
