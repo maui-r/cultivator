@@ -11,7 +11,7 @@ export enum ColorMode {
 
 export type QueryState = {
   queried: number,
-  withoutProfile: number,
+  withoutProfile?: number,
   allQueried?: boolean,
 }
 
@@ -21,6 +21,7 @@ export type Profile = {
   ownedBy: string,
   following: Array<Node['id']>,
   queriedFollowers?: QueryState,
+  queriedFollowing?: QueryState,
 }
 
 export type Node = Profile
