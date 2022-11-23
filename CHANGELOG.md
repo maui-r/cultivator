@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/maui-r/cultivator/compare/v1.11.0...v1.12.0) (2022-11-23)
+
+
+### Features
+
+* add button which adds followed profiles ([ae5093e](https://github.com/maui-r/cultivator/commit/ae5093ea78feab089d64b310a20a8c7b59c32be1))
+
 # [1.11.0](https://github.com/maui-r/cultivator/compare/v1.10.0...v1.11.0) (2022-11-22)
 
 
