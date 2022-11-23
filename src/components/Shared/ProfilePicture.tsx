@@ -4,10 +4,13 @@ import { MediaSet, NftImage } from '../../lens/schema/graphql'
 
 interface ProfileWithPictureInfo {
   picture?: MediaSet | Pick<NftImage, '__typename' | 'uri'> | null
+  ownedBy: string
 }
 
 const getProfilePictureUrl = (profile: ProfileWithPictureInfo) => {
-  if (!profile.picture) return
+  if (!profile.picture) {
+    return `https://cdn.stamp.fyi/avatar/${profile.ownedBy}`
+  }
 
   if (profile.picture?.__typename === 'MediaSet') {
     return parseIpfs(profile.picture.original.url)

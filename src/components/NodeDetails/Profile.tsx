@@ -43,6 +43,7 @@ const ProfileQuery = graphql(`
       id
       name
       handle
+      ownedBy
       bio
       picture {
         ... on NftImage {
