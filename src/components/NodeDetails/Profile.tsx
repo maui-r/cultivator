@@ -3,7 +3,7 @@ import { utils } from 'ethers'
 import { useQuery } from 'urql'
 import { useSnackbar } from 'notistack'
 import { useAccount, useContractWrite, useNetwork, useSignTypedData } from 'wagmi'
-import { Box, Button, Card, Stack, styled, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Card, Chip, Stack, styled, Tooltip, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
@@ -38,7 +38,7 @@ const ProfileStatValue = styled(Typography)({ fontWeight: 700 })
 const ProfileStatName = styled(Typography)({ fontWeight: 300 })
 
 const ProfileQuery = graphql(`
-  query Profile($profileId: ProfileId!) {
+  query Profile($profileId: ProfileId!, $currentProfileId: ProfileId) {
     profile(request: { profileId: $profileId }) {
       id
       name
@@ -66,6 +66,7 @@ const ProfileQuery = graphql(`
         totalCollects
       }
       isFollowedByMe
+      isFollowing(who: $currentProfileId)
       followModule {
         ... on UnknownFollowModuleSettings {
          type
@@ -541,10 +542,12 @@ const QueryFollowingButton = ({ profileId }: { profileId: string }) => {
 }
 
 const ProfileDetails = ({ profileId }: { profileId: string }) => {
+  const currentProfileId = useAppStore((state) => state.currentProfileId)
+  const currentAddress = useAppStore((state) => state.currentAddress)
   const transactions = useOptimisticCache((state) => state.transactions)
   const [{ data, fetching, error }, refetchProfile] = useQuery({
     query: ProfileQuery,
-    variables: { profileId },
+    variables: { profileId, currentProfileId },
     requestPolicy: 'cache-and-network',
   })
   if (error) console.log(error.message)
@@ -556,14 +559,11 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
   const nodes = useNodeStore((state) => state.nodes)
   const node = nodes[profileId]
 
-  const currentProfileId = useAppStore((state) => state.currentProfileId)
-  const currentAddress = useAppStore((state) => state.currentAddress)
   useEffect(() => {
     console.debug('refetch selected profile')
     refetchProfile()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAddress, currentProfileId])
-
 
   if (fetching) return <Loading />
   if (error || !profile) return <ErrorComponent />
@@ -572,6 +572,7 @@ const ProfileDetails = ({ profileId }: { profileId: string }) => {
       <Box sx={{ textAlign: 'center' }}>
         <ProfilePicture profile={profile} sx={{ margin: 'auto', width: 80, height: 80 }} />
         <Typography variant='h5' component='h3' sx={{ mt: 1 }}>{profile.name ?? profile.handle}</Typography>
+        {profile.isFollowing ? <Chip label='follows you' size='small' sx={{ mb: 1 }} /> : null}
         {
           profileId === currentProfileId
             ? null
