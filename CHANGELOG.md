@@ -1,3 +1,11 @@
+# [1.13.0](https://github.com/maui-r/cultivator/compare/v1.12.0...v1.13.0) (2022-11-28)
+
+
+### Features
+
+* show chip when followed by profile ([afeae4f](https://github.com/maui-r/cultivator/commit/afeae4fdfe736ce9ef76b721dfac08a8bed839ad))
+* use stamp when profile picture is missing ([65e1563](https://github.com/maui-r/cultivator/commit/65e1563bab4949a64467c885454fa8dc76a569f9))
+
 # [1.12.0](https://github.com/maui-r/cultivator/compare/v1.11.0...v1.12.0) (2022-11-23)
 
 
