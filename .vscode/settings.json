@@ -1,27 +1,29 @@
 {
-    "cSpell.words": [
-        "Codegen",
-        "commitlint",
-        "datas",
-        "dedup",
-        "fontsource",
-        "Frens",
-        "immer",
-        "ipfs",
-        "lensprotocol",
-        "notistack",
-        "qrcode",
-        "roboto",
-        "spritetext",
-        "urql",
-        "VERCEL",
-        "Wagmi",
-        "wagoid",
-        "zustand"
-    ],
-    // Workaround to avoid automatic expansion of node_modules folder
-    // https://github.com/microsoft/vscode/issues/87956
-    "explorer.autoReveal": false,
-    "editor.detectIndentation": false,
-    "editor.tabSize": 2
+  "cSpell.words": [
+    "Codegen",
+    "commitlint",
+    "datas",
+    "dedup",
+    "fontsource",
+    "Frens",
+    "immer",
+    "ipfs",
+    "lensprotocol",
+    "lensverse",
+    "notistack",
+    "qrcode",
+    "roboto",
+    "spritetext",
+    "urql",
+    "VERCEL",
+    "Wagmi",
+    "wagoid",
+    "webfonts",
+    "zustand"
+  ],
+  // Workaround to avoid automatic expansion of node_modules folder
+  // https://github.com/microsoft/vscode/issues/87956
+  "explorer.autoReveal": false,
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2
 }
