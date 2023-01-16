@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/maui-r/cultivator/compare/v1.13.0...v1.14.0) (2023-01-16)
+
+
+### Features
+
+* add plausible analytics script ([a4184c9](https://github.com/maui-r/cultivator/commit/a4184c94e3f725d3fcc7eba518b17b8349f045ac))
+
 # [1.13.0](https://github.com/maui-r/cultivator/compare/v1.12.0...v1.13.0) (2022-11-28)
 
 
