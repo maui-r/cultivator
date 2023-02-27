@@ -39,3 +39,7 @@ export const compareNodes = (oldNodes: { [key: Node['id']]: Node }, newNodes: { 
   })
   return true
 }
+
+export const getRandom = (array: Array<any>) => {
+  return array[Math.floor((Math.random() * array.length))];
+}

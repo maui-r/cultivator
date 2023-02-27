@@ -26,7 +26,7 @@ export type Profile = {
 
 export type Node = Profile
 
-export type Link = {
+export type Edge = {
   source: string,
   target: string,
 }
