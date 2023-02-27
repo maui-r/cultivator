@@ -12,7 +12,7 @@ import Header from './components/Header'
 import SettingsDrawer from './components/Settings'
 import api from './lens/client'
 import { Dialogs } from './components/Dialog'
-import { Graph3D } from './components/Graph'
+import { Graph2D } from './components/Graph'
 import { NodeDetails } from './components/NodeDetails'
 
 const themeComponents = {
@@ -126,7 +126,7 @@ const App = () => {
                 : null}
               <Content container>
                 <NodeDetails />
-                <Graph3D />
+                <Graph2D />
               </Content>
             </Wrapper>
 
