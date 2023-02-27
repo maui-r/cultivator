@@ -6,7 +6,7 @@ export const IS_MAINNET = APP_CHAIN_ID === 137
 
 export const ALCHEMY_API_KEY = process.env.REACT_APP_ALCHEMY_API_KEY ?? ''
 
-export const REQUEST_DELAY = 1000
+export const REQUEST_DELAY = 500
 export const REQUEST_LIMIT = 50
 
 // local storage keys
