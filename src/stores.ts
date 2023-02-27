@@ -66,19 +66,21 @@ const appStore: StateCreator<AppState, [], []> = (set) => ({
 export const useAppStore = create<AppState>(appStore)
 
 interface AppPersistState {
-  nodeStyle: NodeStyle
-  setNodeStyle: (nodeStyle: NodeStyle) => void
   colorMode: ColorMode
   setColorMode: (colorMode: ColorMode) => void
+  // deprecated
+  nodeStyle: NodeStyle
+  setNodeStyle: (nodeStyle: NodeStyle) => void
 }
 
 export const useAppPersistStore = create(
   persist<AppPersistState>(
     (set) => ({
-      nodeStyle: NodeStyle.LensHandle,
-      setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle })),
       colorMode: ColorMode.System,
       setColorMode: (colorMode) => set(() => ({ colorMode })),
+      // deprecated
+      nodeStyle: NodeStyle.LensHandle,
+      setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle })),
     }),
     { name: 'cultivator.store' }
   )
