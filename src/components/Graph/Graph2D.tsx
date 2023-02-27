@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Grid, useTheme } from '@mui/material'
 import { useAppPersistStore, useAppStore, useNodeStore } from '../../stores'
-import { Edge, Node, NodeStyle } from '../../types'
+import { Edge } from '../../types'
 import { compareNodes, getRandom } from '../../helpers'
 import G6, { Graph } from '@antv/g6'
 import _ from 'lodash'
@@ -10,9 +10,7 @@ const Graph2D = () => {
   const ref = useRef<HTMLDivElement>(null)
   const graphRef = useRef<Graph | null>(null)
   const nodes = useNodeStore((state) => state.nodes, compareNodes)
-  const selectedNodeId = useAppStore((state) => state.selectedNodeId)
   const selectNode = useAppStore((state) => state.selectNode)
-  const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
   const theme = useTheme()
 
   const layouts = useMemo(() => {
@@ -43,11 +41,6 @@ const Graph2D = () => {
       },
     ]
   }, [])
-
-  //const handleNodeClick = useCallback((node: Node, event: MouseEvent) => {
-  //  if (typeof node?.id !== 'string') return
-  //  selectNode(node.id)
-  //}, [selectNode])
 
   //const getNodeColor = useCallback((node: Node) => {
   //  if (node.id === selectedNodeId) return theme.palette.success.main
@@ -88,21 +81,12 @@ const Graph2D = () => {
   //  return props
   //}, [getNodeColor, nodeStyle])
 
-  const graphData = useMemo(() => {
-    const nodeIds = Object.keys(nodes)
-    const edgesWithRedundancies: Edge[] = []
-    nodeIds.forEach((nodeId) =>
-      nodes[nodeId].following
-        .filter((followingId) => nodeIds.includes(followingId))
-        .forEach((followingId) =>
-          edgesWithRedundancies.push({ source: nodeId, target: followingId })
-        )
-    )
-    const edges = _.uniq(edgesWithRedundancies)
-
-    console.debug(nodeIds.length, 'nodes,', edges.length, 'edges')
-    return { nodes: nodeIds.map((id) => ({ ...nodes[id] })), edges }
-  }, [nodes])
+  const handleNodeClick = useCallback((event: any) => {
+    // event is a GraphEvent from '@antv/g-base/lib/event/graph-event'
+    // but GraphEvent doesn't have an item property...
+    if (!event.item._cfg.id || typeof event.item._cfg.id !== 'string') return
+    selectNode(event.item._cfg.id)
+  }, [selectNode])
 
   const handleResize = () => {
     console.debug('resizing graph')
@@ -138,11 +122,30 @@ const Graph2D = () => {
     graphRef.current.data(graphData)
     graphRef.current.fitCenter()
     graphRef.current.render()
+
+    // Bind events
     graphRef.current.on('afterlayout', () => {
       graphRef?.current?.fitView()
     })
+    graphRef.current.on('node:click', handleNodeClick)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const graphData = useMemo(() => {
+    const nodeIds = Object.keys(nodes)
+    const edgesWithRedundancies: Edge[] = []
+    nodeIds.forEach((nodeId) =>
+      nodes[nodeId].following
+        .filter((followingId) => nodeIds.includes(followingId))
+        .forEach((followingId) =>
+          edgesWithRedundancies.push({ source: nodeId, target: followingId })
+        )
+    )
+    const edges = _.uniq(edgesWithRedundancies)
+
+    console.debug(nodeIds.length, 'nodes,', edges.length, 'edges')
+    return { nodes: nodeIds.map((id) => ({ ...nodes[id] })), edges }
+  }, [nodes])
 
   // Update graph when underlying data changes
   useEffect(() => {
