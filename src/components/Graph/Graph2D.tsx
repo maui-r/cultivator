@@ -109,7 +109,7 @@ const Graph2D = () => {
     if (!graphRef.current || graphRef.current.get('destroyed')) return
     if (!ref.current || !ref.current.scrollWidth || !ref.current.scrollHeight)
       return
-    graphRef.current.changeSize(ref.current.scrollWidth, ref.current.scrollHeight);
+    graphRef.current.changeSize(ref.current.scrollWidth, ref.current.scrollHeight)
   }
 
   useEffect(() => {
