@@ -107,7 +107,7 @@ const Graph2D = () => {
       width: ref.current.scrollWidth,
       height: ref.current.scrollHeight,
       modes: {
-        default: ['drag-canvas', 'zoom-canvas', 'drag-node'],
+        default: ['drag-canvas', 'zoom-canvas', 'drag-node', 'activate-relations'],
       },
       animate: true,
       layout: getLayout(graphLayout),
