@@ -1,3 +1,19 @@
+# [1.15.0](https://github.com/maui-r/cultivator/compare/v1.14.0...v1.15.0) (2023-02-27)
+
+
+### Features
+
+* add dropdown for graph layout ([0a3888d](https://github.com/maui-r/cultivator/commit/0a3888d30f677080c57046d591752c0a5d87c700))
+* highlight relations of hovered node ([4a277d5](https://github.com/maui-r/cultivator/commit/4a277d580c2b09077585b212d1f63b0de927786c))
+* highlight selected node ([76983ab](https://github.com/maui-r/cultivator/commit/76983abc93c6fcfe76c63ea7ce54064daf72c1f2))
+* select node when clicked ([77c5f8b](https://github.com/maui-r/cultivator/commit/77c5f8bfe502ff96a4545bb6b2ef30c0f43106d6))
+* use G6 for graph visualization ([aed2d59](https://github.com/maui-r/cultivator/commit/aed2d59b5f611c02c4683f21b2d572082f25476e))
+
+
+### Performance Improvements
+
+* decrease request delay ([4648866](https://github.com/maui-r/cultivator/commit/46488666a3a0e61b8bb9944fa90edff4128a8cfd))
+
 # [1.14.0](https://github.com/maui-r/cultivator/compare/v1.13.0...v1.14.0) (2023-01-16)
 
 
