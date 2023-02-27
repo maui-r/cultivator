@@ -1,46 +1,63 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Grid, useTheme } from '@mui/material'
 import { useAppPersistStore, useAppStore, useNodeStore } from '../../stores'
-import { Edge } from '../../types'
-import { compareNodes, getRandom } from '../../helpers'
+import { Edge, GraphLayout } from '../../types'
+import { compareNodes } from '../../helpers'
 import G6, { Graph } from '@antv/g6'
 import _ from 'lodash'
+
+
+const getLayout = (graphLayout: GraphLayout) => {
+  switch (graphLayout) {
+    case GraphLayout.Circular:
+      return {
+        type: 'circular',
+        radius: 200,
+      }
+    case GraphLayout.Concentric:
+      return {
+        type: 'concentric',
+        linkDistance: 50,
+        preventOverlap: true,
+        nodeSize: 30,
+        sweep: 10,
+        equidistant: false,
+        startAngle: 0,
+        clockwise: false,
+        maxLevelDiff: 5,
+        sortBy: 'degree',
+      }
+    case GraphLayout.Grid:
+      return {
+        type: 'grid'
+      }
+    case GraphLayout.Radial:
+      return {
+        type: 'radial',
+        preventOverlap: true,
+        nodeSize: 15,
+      }
+    //case GraphLayout.Force:
+    //  return {
+    //    type: 'force',
+    //    preventOverlap: true,
+    //    nodeSize: 20,
+    //  }
+    //case GraphLayout.MDS:
+    //  return {
+    //    type: 'mds',
+    //    linkDistance: 100,
+    //  }
+  }
+}
 
 const Graph2D = () => {
   const ref = useRef<HTMLDivElement>(null)
   const graphRef = useRef<Graph | null>(null)
   const nodes = useNodeStore((state) => state.nodes, compareNodes)
   const selectNode = useAppStore((state) => state.selectNode)
+  const graphLayout = useAppPersistStore((state) => state.graphLayout)
   const theme = useTheme()
-
-  const layouts = useMemo(() => {
-    return [
-      {
-        type: 'circular',
-        radius: 200,
-      },
-      {
-        type: 'grid',
-      },
-      {
-        type: 'force',
-        preventOverlap: true,
-        nodeSize: 20,
-      }, {
-        type: 'radial',
-        preventOverlap: true,
-        nodeSize: 15,
-      }, {
-        type: 'concentric',
-        minNodeSpacing: 30,
-        maxLevelDiff: 5,
-      },
-      {
-        type: 'mds',
-        linkDistance: 100,
-      },
-    ]
-  }, [])
 
   //const getNodeColor = useCallback((node: Node) => {
   //  if (node.id === selectedNodeId) return theme.palette.success.main
@@ -58,28 +75,8 @@ const Graph2D = () => {
   //    nodeLabel: 'name',
   //    nodeThreeObject: () => { return false },
   //  }
-  //  switch (nodeStyle) {
-  //    case NodeStyle.Bubble:
-  //      props = {
-  //        ...props,
-  //        nodeColor: getNodeColor,
-  //        nodeLabel: 'handle',
-  //      }
-  //      break
-  //    case NodeStyle.LensHandle:
-  //      props = {
-  //        ...props,
-  //        nodeThreeObject: (node: Node) => {
-  //          const sprite = new SpriteText(node.handle)
-  //          sprite.textHeight = 2
-  //          sprite.color = getNodeColor(node)
-  //          return sprite
-  //        },
-  //      }
-  //      break
-  //  }
   //  return props
-  //}, [getNodeColor, nodeStyle])
+  //}, [getNodeColor])
 
   const handleNodeClick = useCallback((event: any) => {
     // event is a GraphEvent from '@antv/g-base/lib/event/graph-event'
@@ -112,7 +109,7 @@ const Graph2D = () => {
         default: ['drag-canvas', 'zoom-canvas', 'drag-node'],
       },
       animate: true,
-      layout: getRandom(layouts),
+      layout: getLayout(graphLayout),
       defaultEdge: {
         style: {
           endArrow: true,
@@ -151,8 +148,11 @@ const Graph2D = () => {
   useEffect(() => {
     if (!graphRef.current) return
     graphRef.current.changeData(graphData)
-    graphRef?.current?.updateLayout(getRandom(layouts))
-  }, [graphData, layouts])
+  }, [graphData])
+
+  useEffect(() => {
+    graphRef?.current?.updateLayout(getLayout(graphLayout))
+  }, [graphLayout])
 
   return <Grid item xs zeroMinWidth ref={ref}></Grid>
 }

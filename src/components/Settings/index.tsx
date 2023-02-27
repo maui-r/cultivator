@@ -1,12 +1,10 @@
-import { Box, Divider, Drawer, IconButton, styled, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Box, Divider, Drawer, FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, styled, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness'
 import CloseIcon from '@mui/icons-material/Close'
-import BubbleChartIcon from '@mui/icons-material/BubbleChart'
-import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
 import { useAppPersistStore, useAppStore } from '../../stores'
-import { ColorMode, NodeStyle } from '../../types'
+import { ColorMode, GraphLayout } from '../../types'
 
 export const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -34,6 +32,40 @@ const IconToggleButton = styled(ToggleButton)({
     marginRight: '8px',
   },
 })
+
+const SelectGraphLayoutButtonGroup = () => {
+  const graphLayout = useAppPersistStore((state) => state.graphLayout)
+  const setGraphLayout = useAppPersistStore((state) => state.setGraphLayout)
+
+  const handleGraphLayoutChange = (event: SelectChangeEvent) => {
+    setGraphLayout(event.target.value as GraphLayout)
+  }
+
+
+  return (
+    <>
+      <Heading gutterBottom id='settings-graph-layout'>Graph Layout</Heading>
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel id='settings-graph-layout-label'>Graph Layout</InputLabel>
+          <Select
+            labelId='settings-graph-layout-label'
+            id='settings-graph-layout-select'
+            value={graphLayout}
+            label='Graph Layout'
+            onChange={handleGraphLayoutChange}
+          >
+            {
+              (Object.keys(GraphLayout) as Array<GraphLayout>).map((key) => {
+                return <MenuItem value={key}>{key}</MenuItem>
+              })
+            }
+          </Select>
+        </FormControl>
+      </Box>
+    </>
+  )
+}
 
 const SelectColorModeButtonGroup = () => {
   const colorMode = useAppPersistStore((state) => state.colorMode)
@@ -96,6 +128,7 @@ const SettingsDrawer = () => {
 
       <Box sx={{ pl: 2, pr: 2 }}>
         <SelectColorModeButtonGroup />
+        <SelectGraphLayoutButtonGroup />
       </Box>
     </Drawer>
   )
