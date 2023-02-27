@@ -55,6 +55,7 @@ const Graph2D = () => {
   const ref = useRef<HTMLDivElement>(null)
   const graphRef = useRef<Graph | null>(null)
   const nodes = useNodeStore((state) => state.nodes, compareNodes)
+  const selectedNodeId = useAppStore((state) => state.selectedNodeId)
   const selectNode = useAppStore((state) => state.selectNode)
   const graphLayout = useAppPersistStore((state) => state.graphLayout)
   const theme = useTheme()
@@ -146,9 +147,26 @@ const Graph2D = () => {
 
   // Update graph when underlying data changes
   useEffect(() => {
-    if (!graphRef.current) return
-    graphRef.current.changeData(graphData)
+    graphRef.current?.changeData(graphData)
+    if (selectedNodeId) {
+      graphRef.current?.setItemState(selectedNodeId, 'selected', true)
+    }
+    // Don't run this effect when selectedNodeId is updated. There is a
+    // separate effect for it. Selected node is set, here, because the
+    // changeData call resets the selected node on the graph.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graphData])
+
+  useEffect(() => {
+    // Unselect all selected nodes
+    graphRef.current?.findAllByState('node', 'selected').forEach(node => {
+      if (node.getID() === selectedNodeId) return
+      graphRef.current?.setItemState(node, 'selected', false)
+    })
+    if (!selectedNodeId) return
+    // Select selected node
+    graphRef.current?.setItemState(selectedNodeId, 'selected', true)
+  }, [selectedNodeId])
 
   useEffect(() => {
     graphRef?.current?.updateLayout(getLayout(graphLayout))
