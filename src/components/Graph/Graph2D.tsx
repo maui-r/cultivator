@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Grid, useTheme } from '@mui/material'
+import { Grid } from '@mui/material'
 import { useAppPersistStore, useAppStore, useNodeStore } from '../../stores'
 import { Edge, GraphLayout } from '../../types'
 import { compareNodes } from '../../helpers'
@@ -58,7 +58,7 @@ const Graph2D = () => {
   const selectedNodeId = useAppStore((state) => state.selectedNodeId)
   const selectNode = useAppStore((state) => state.selectNode)
   const graphLayout = useAppPersistStore((state) => state.graphLayout)
-  const theme = useTheme()
+  //const theme = useTheme()
 
   //const getNodeColor = useCallback((node: Node) => {
   //  if (node.id === selectedNodeId) return theme.palette.success.main
