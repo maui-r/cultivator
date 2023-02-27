@@ -1,8 +1,3 @@
-export enum NodeStyle {
-  Bubble = 'Bubble',
-  LensHandle = 'LensHandle',
-}
-
 export enum ColorMode {
   System = 'System',
   Light = 'Light',
@@ -43,8 +38,15 @@ export type OptimisticTransaction = {
   txId?: string
   txHash?: string
 }
+
 export enum OptimisticTransactionStatus {
   pending = 'pending',
   error = 'error',
   success = 'success',
+}
+
+// deprecated
+export enum NodeStyle {
+  Bubble = 'Bubble',
+  LensHandle = 'LensHandle',
 }

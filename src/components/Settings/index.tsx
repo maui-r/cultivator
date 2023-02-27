@@ -9,133 +9,96 @@ import { useAppPersistStore, useAppStore } from '../../stores'
 import { ColorMode, NodeStyle } from '../../types'
 
 export const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-end',
 }))
 
 const Heading = styled(Typography)(({ theme }) => ({
-    margin: '20px 0 10px',
-    color: theme.palette.grey[600],
-    fontWeight: 700,
-    fontSize: theme.typography.pxToRem(11),
-    textTransform: 'uppercase',
-    letterSpacing: '.08rem',
+  margin: '20px 0 10px',
+  color: theme.palette.grey[600],
+  fontWeight: 700,
+  fontSize: theme.typography.pxToRem(11),
+  textTransform: 'uppercase',
+  letterSpacing: '.08rem',
 }))
 
 const IconToggleButton = styled(ToggleButton)({
-    display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-    '& > *': {
-        marginRight: '8px',
-    },
+  display: 'flex',
+  justifyContent: 'center',
+  width: '100%',
+  '& > *': {
+    marginRight: '8px',
+  },
 })
 
-const SelectNodeStyleButtonGroup = () => {
-    const nodeStyle = useAppPersistStore((state) => state.nodeStyle)
-    const setNodeStyle = useAppPersistStore((state) => state.setNodeStyle)
-
-    const handleNodeStyleChange = (
-        event: React.MouseEvent<HTMLElement>,
-        newNodeStyle: NodeStyle | null,
-    ) => {
-        if (!newNodeStyle) return
-        setNodeStyle(newNodeStyle)
-    }
-
-
-    return (
-        <>
-            <Heading gutterBottom id='settings-node-style'>Node Style</Heading>
-            <ToggleButtonGroup
-                exclusive
-                value={nodeStyle}
-                onChange={handleNodeStyleChange}
-                aria-labelledby='settings-node-style'
-                fullWidth
-            >
-                <IconToggleButton value={NodeStyle.LensHandle} aria-label='Lens Handle'>
-                    <AlternateEmailIcon fontSize='small' />
-                    Handle
-                </IconToggleButton>
-                <IconToggleButton value={NodeStyle.Bubble} aria-label='Bubble'>
-                    <BubbleChartIcon fontSize='small' />
-                    Bubble
-                </IconToggleButton>
-            </ToggleButtonGroup>
-        </>
-    )
-}
-
 const SelectColorModeButtonGroup = () => {
-    const colorMode = useAppPersistStore((state) => state.colorMode)
-    const setColorMode = useAppPersistStore((state) => state.setColorMode)
+  const colorMode = useAppPersistStore((state) => state.colorMode)
+  const setColorMode = useAppPersistStore((state) => state.setColorMode)
 
-    const handleChangeColorMode = (event: React.MouseEvent<HTMLElement>, colorMode: ColorMode | null) => {
-        if (!colorMode) return
-        setColorMode(colorMode)
-    }
+  const handleChangeColorMode = (event: React.MouseEvent<HTMLElement>, colorMode: ColorMode | null) => {
+    if (!colorMode) return
+    setColorMode(colorMode)
+  }
 
-    return (
-        <>
-            <Heading gutterBottom id='settings-color-mode'>Color Mode</Heading>
-            <ToggleButtonGroup
-                exclusive
-                value={colorMode}
-                onChange={handleChangeColorMode}
-                aria-labelledby='settings-color-mode'
-                fullWidth
-            >
-                <IconToggleButton value={ColorMode.Light} aria-label='Light'>
-                    <LightModeIcon fontSize='small' />
-                    Light
-                </IconToggleButton>
-                <IconToggleButton value={ColorMode.System} aria-label='System'>
-                    <SettingsBrightnessIcon fontSize='small' />
-                    System
-                </IconToggleButton>
-                <IconToggleButton value={ColorMode.Dark} aria-label='Dark'>
-                    <DarkModeOutlinedIcon fontSize='small' />
-                    Dark
-                </IconToggleButton>
-            </ToggleButtonGroup>
-        </>
-    )
+  return (
+    <>
+      <Heading gutterBottom id='settings-color-mode'>Color Mode</Heading>
+      <ToggleButtonGroup
+        exclusive
+        value={colorMode}
+        onChange={handleChangeColorMode}
+        aria-labelledby='settings-color-mode'
+        fullWidth
+      >
+        <IconToggleButton value={ColorMode.Light} aria-label='Light'>
+          <LightModeIcon fontSize='small' />
+          Light
+        </IconToggleButton>
+        <IconToggleButton value={ColorMode.System} aria-label='System'>
+          <SettingsBrightnessIcon fontSize='small' />
+          System
+        </IconToggleButton>
+        <IconToggleButton value={ColorMode.Dark} aria-label='Dark'>
+          <DarkModeOutlinedIcon fontSize='small' />
+          Dark
+        </IconToggleButton>
+      </ToggleButtonGroup>
+    </>
+  )
 }
 
 const SettingsDrawer = () => {
-    const showSettings = useAppStore((state) => state.showSettings)
-    const setShowSettings = useAppStore((state) => state.setShowSettings)
-    const onClose = () => setShowSettings(false)
+  const showSettings = useAppStore((state) => state.showSettings)
+  const setShowSettings = useAppStore((state) => state.setShowSettings)
+  const onClose = () => setShowSettings(false)
 
-    return (
-        <Drawer
-            anchor='left'
-            open={showSettings}
-            onClose={onClose}
-            PaperProps={{
-                elevation: 0,
-                sx: { width: { xs: 310, sm: 360 } },
-            }}
-        >
-            <DrawerHeader>
-                <IconButton onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
-            </DrawerHeader>
+  return (
+    <Drawer
+      anchor='left'
+      open={showSettings}
+      onClose={onClose}
+      PaperProps={{
+        elevation: 0,
+        sx: { width: { xs: 310, sm: 360 } },
+      }}
+    >
+      <DrawerHeader>
+        <IconButton onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </DrawerHeader>
 
-            <Divider />
+      <Divider />
 
-            <Box sx={{ pl: 2, pr: 2 }}>
-                <SelectColorModeButtonGroup />
-                <SelectNodeStyleButtonGroup />
-            </Box>
-        </Drawer>
-    )
+      <Box sx={{ pl: 2, pr: 2 }}>
+        <SelectColorModeButtonGroup />
+      </Box>
+    </Drawer>
+  )
 }
 
 export default SettingsDrawer
