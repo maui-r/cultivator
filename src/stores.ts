@@ -3,7 +3,7 @@ import create, { StateCreator } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CURRENT_PROFILE_ID_KEY, JWT_ADDRESS_KEY } from './constants'
 import { signOut } from './lens/auth'
-import { ColorMode, Node, NodeStyle, OptimisticTransaction } from './types'
+import { ColorMode, GraphLayout, Node, NodeStyle, OptimisticTransaction } from './types'
 
 interface AppState {
   selectedNodeId: string | null
@@ -68,6 +68,8 @@ export const useAppStore = create<AppState>(appStore)
 interface AppPersistState {
   colorMode: ColorMode
   setColorMode: (colorMode: ColorMode) => void
+  graphLayout: GraphLayout
+  setGraphLayout: (graphLayout: GraphLayout) => void
   // deprecated
   nodeStyle: NodeStyle
   setNodeStyle: (nodeStyle: NodeStyle) => void
@@ -78,6 +80,8 @@ export const useAppPersistStore = create(
     (set) => ({
       colorMode: ColorMode.System,
       setColorMode: (colorMode) => set(() => ({ colorMode })),
+      graphLayout: GraphLayout.Grid,
+      setGraphLayout: (graphLayout) => set(() => ({ graphLayout })),
       // deprecated
       nodeStyle: NodeStyle.LensHandle,
       setNodeStyle: (nodeStyle) => set(() => ({ nodeStyle })),

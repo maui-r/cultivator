@@ -4,6 +4,13 @@ export enum ColorMode {
   Dark = 'Dark',
 }
 
+export enum GraphLayout {
+  Circular = 'Circular',
+  Concentric = 'Concentric',
+  Grid = 'Grid',
+  Radial = 'Radial',
+}
+
 export type QueryState = {
   queried: number,
   withoutProfile?: number,
