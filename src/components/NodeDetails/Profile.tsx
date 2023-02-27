@@ -414,7 +414,6 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
       const followersReceived = followerAddresses.length
 
       let followersQueried = 0
-      const newNodes = []
       for (const address of followerAddresses) {
         queried++
         // Get "default" profile of follower address
@@ -440,21 +439,15 @@ const QueryFollowersButton = ({ profileId }: { profileId: string }) => {
         // Get following
         const following = await getAllFollowing(address)
 
-        if (Object.keys(useNodeStore.getState().nodes).length < 10) {
-          // Add node immediately to give the user something to explore
-          addNodes([{ ...profileMin, following }, { ...node, queriedFollowers: { queried, withoutProfile } }])
-        } else {
-          newNodes.push({ ...profileMin, following })
-        }
+        //if (Object.keys(useNodeStore.getState().nodes).length < 10) {
+        addNodes([{ ...profileMin, following }, { ...node, queriedFollowers: { queried, withoutProfile } }])
         console.debug('--> added')
         setQueryProgress(++followersQueried / followersReceived)
       }
 
       // Update "origin" node
       const allQueried = followersReceived < followersToQuery
-      newNodes.push({ ...node, queriedFollowers: { queried, withoutProfile, allQueried } })
-
-      addNodes(newNodes)
+      addNodes([{ ...node, queriedFollowers: { queried, withoutProfile, allQueried } }])
     } finally {
       setIsQuerying(false)
       setQueryProgress(null)
@@ -496,7 +489,6 @@ const QueryFollowingButton = ({ profileId }: { profileId: string }) => {
       const followingReceived = followingProfiles.length
 
       let followingQueried = 0
-      const newNodes = []
       for (const profileId of followingProfiles) {
         queried++
 
@@ -513,21 +505,14 @@ const QueryFollowingButton = ({ profileId }: { profileId: string }) => {
         // Get following
         const following = await getAllFollowing(profileMin.ownedBy)
 
-        if (Object.keys(useNodeStore.getState().nodes).length < 10) {
-          // Add node immediately to give the user something to explore
-          addNodes([{ ...profileMin, following }, { ...node, queriedFollowing: { queried } }])
-        } else {
-          newNodes.push({ ...profileMin, following })
-        }
+        addNodes([{ ...profileMin, following }, { ...node, queriedFollowing: { queried } }])
         console.debug('--> added')
         setQueryProgress(++followingQueried / followingReceived)
       }
 
       // Update "origin" node
       const allQueried = followingReceived < followingToQuery
-      newNodes.push({ ...node, queriedFollowing: { queried, allQueried } })
-
-      addNodes(newNodes)
+      addNodes([{ ...node, queriedFollowing: { queried, allQueried } }])
     } finally {
       setIsQuerying(false)
       setQueryProgress(null)
